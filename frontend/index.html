@@ -603,7 +603,6 @@
             color: #333;
         }
 
-        /* Estilos para botón de guardar según rol */
         .btn-guardar-mantenimiento {
             background-color: #00B42A;
             color: white;
@@ -847,7 +846,6 @@
             <h3 class="font-bold mb-3">⚙️ Configuración</h3>
             <div class="bg-white rounded shadow p-4 mb-4 space-y-4">
                 
-                <!-- 🔑 Cambiar Credenciales -->
                 <div>
                     <h4 class="font-bold mb-2 text-colegio-azul">🔑 Cambiar Credenciales de Mantenimiento</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -873,7 +871,6 @@
                 
                 <hr>
                 
-                <!-- 👤 Usuario de Mantenimiento -->
                 <div>
                     <h4 class="font-bold mb-2">👤 Usuario de Mantenimiento</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -890,7 +887,6 @@
                 
                 <hr>
                 
-                <!-- 🖼️ Logo -->
                 <div>
                     <h4 class="font-bold mb-2">🖼️ Logo del Colegio</h4>
                     <div class="flex flex-col md:flex-row gap-4 items-start">
@@ -914,7 +910,6 @@
                 
                 <hr>
                 
-                <!-- 📱 WhatsApp -->
                 <div>
                     <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
                     <div class="flex gap-2">
@@ -925,7 +920,6 @@
                 
                 <hr>
                 
-                <!-- 💾 Respaldos -->
                 <div>
                     <h4 class="font-bold mb-2">💾 Respaldar / Restaurar Información</h4>
                     <button onclick="crearRespaldo()" class="bg-colegio-verde text-white px-4 py-2 rounded mr-2">⬇️ Respaldar Información</button>
@@ -945,220 +939,144 @@
 <script>
 // ==================== CONFIGURACIÓN DE API ====================
 const API_URL = 'https://gestion-mantenimiento-api-p76j.onrender.com/api';
-    
-// ==================== DATOS INICIALES ====================
+
+// ==================== VARIABLES GLOBALES ====================
 let usuarioActivo = null;
-let usuarios = JSON.parse(localStorage.getItem('listaUsuarios')) || {};
+let solicitudes = [];
+let usuarios = {};
+let inventario = [];
+let asignaciones = [];
+let programacion = [];
+let contadorId = 1;
+let numeroWhatsAppDestino = '';
+let logoDataURL = '';
+let nombreResponsableMantenimiento = 'Ricardo Madera';
 
-let nombreResponsableMantenimiento = localStorage.getItem('nombreResponsableMantenimiento') || 'Ricardo Madera';
-
-if (!usuarios.admin) {
-    usuarios.admin = { pass: 'admin123', rol: 'admin', nombre: nombreResponsableMantenimiento };
-} else {
-    usuarios.admin.nombre = nombreResponsableMantenimiento;
-}
-
-if (!usuarios.proyectos) {
-    usuarios.proyectos = { pass: 'proy123', rol: 'proyectos', nombre: 'Proyectos Generales' };
-}
-
-let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
-let inventario = JSON.parse(localStorage.getItem('inventario')) || [];
-let asignaciones = JSON.parse(localStorage.getItem('asignaciones')) || [];
-let programacion = JSON.parse(localStorage.getItem('programacion')) || [];
-let contadorId = parseInt(localStorage.getItem('contadorId')) || 1;
-let numeroWhatsAppDestino = localStorage.getItem('numeroWhatsApp') || '';
-let logoDataURL = localStorage.getItem('logoDataURL') || '';
-
-function guardarDatos() {
-    localStorage.setItem('listaUsuarios', JSON.stringify(usuarios));
-    localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
-    localStorage.setItem('inventario', JSON.stringify(inventario));
-    localStorage.setItem('asignaciones', JSON.stringify(asignaciones));
-    localStorage.setItem('programacion', JSON.stringify(programacion));
-    localStorage.setItem('contadorId', contadorId.toString());
-    localStorage.setItem('numeroWhatsApp', numeroWhatsAppDestino);
-    localStorage.setItem('logoDataURL', logoDataURL);
-    localStorage.setItem('nombreResponsableMantenimiento', nombreResponsableMantenimiento);
-}
-
-// ==================== NOMBRE DE MANTENIMIENTO ====================
-function guardarNombreMantenimiento() {
-    const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
-    if (!nuevoNombre) {
-        alert('⚠️ Por favor ingresa un nombre válido');
-        return;
-    }
-    
-    nombreResponsableMantenimiento = nuevoNombre;
-    if (usuarios.admin) {
-        usuarios.admin.nombre = nuevoNombre;
-    }
-    guardarDatos();
-    
-    if (usuarioActivo && usuarioActivo.id === 'admin') {
-        usuarioActivo.nombre = nuevoNombre;
-        localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-        document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre;
-    }
-    
-    alert('✅ Nombre del responsable de mantenimiento actualizado correctamente');
-    cargarListaUsuarios();
-}
-
-function cargarNombreMantenimiento() {
-    document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
-}
-
-// ==================== CAMBIAR CREDENCIALES ADMIN ====================
-function cambiarCredencialesAdmin() {
-    const nuevoUsuario = document.getElementById('nuevoUsuarioAdmin').value.trim();
-    const nuevaPass = document.getElementById('nuevaPassAdmin').value.trim();
-    
-    if (!nuevoUsuario && !nuevaPass) {
-        alert('⚠️ Debes ingresar al menos un nuevo usuario o una nueva contraseña');
-        return;
-    }
-    
-    let mensaje = '⚠️ ¿Estás seguro de que quieres cambiar las credenciales?\n\n';
-    if (nuevoUsuario) {
-        mensaje += `📝 Nuevo usuario: ${nuevoUsuario}\n`;
-    }
-    if (nuevaPass) {
-        mensaje += `🔑 Nueva contraseña: ${nuevaPass}\n`;
-    }
-    mensaje += '\n⚠️ Después del cambio, deberás iniciar sesión con las nuevas credenciales.';
-    
-    if (!confirm(mensaje)) return;
-    
-    const adminActual = usuarios.admin;
-    if (!adminActual) {
-        alert('❌ No se encontró la cuenta de administrador');
-        return;
-    }
-    
-    const nuevoAdmin = {
-        pass: nuevaPass || adminActual.pass,
-        rol: 'admin',
-        nombre: adminActual.nombre
-    };
-    
-    if (nuevoUsuario && nuevoUsuario !== 'admin') {
-        if (usuarios[nuevoUsuario]) {
-            alert(`❌ El usuario "${nuevoUsuario}" ya existe. Elige otro nombre.`);
-            return;
-        }
-        delete usuarios.admin;
-        usuarios[nuevoUsuario] = nuevoAdmin;
-        
-        if (usuarioActivo && usuarioActivo.id === 'admin') {
-            usuarioActivo.id = nuevoUsuario;
-            usuarioActivo.nombre = nuevoAdmin.nombre;
-            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-            document.getElementById('nombreUsuarioActivo').textContent = nuevoAdmin.nombre;
-        }
-        
-        alert(`✅ Credenciales actualizadas correctamente.\n\n📝 Nuevo usuario: ${nuevoUsuario}\n🔑 Nueva contraseña: ${nuevoAdmin.pass}\n\n⚠️ Usa estas credenciales para iniciar sesión.`);
-    } else {
-        usuarios.admin = nuevoAdmin;
-        alert(`✅ Contraseña actualizada correctamente.\n\n🔑 Nueva contraseña: ${nuevoAdmin.pass}`);
-    }
-    
-    guardarDatos();
-    cargarListaUsuarios();
-    
-    document.getElementById('nuevoUsuarioAdmin').value = '';
-    document.getElementById('nuevaPassAdmin').value = '';
-    
-    if (nuevoUsuario && nuevoUsuario !== 'admin') {
-        if (confirm('🔄 ¿Quieres cerrar sesión para probar las nuevas credenciales?')) {
-            cerrarSesion();
-        }
-    }
-}
-
-function restablecerCredencialesAdmin() {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres RESTABLECER las credenciales?\n\nUsuario: admin\nContraseña: admin123\n\n⚠️ Esta acción eliminará cualquier cambio que hayas hecho.')) return;
-    
-    let usuarioAdminActual = 'admin';
-    if (!usuarios.admin) {
-        for (const [key, value] of Object.entries(usuarios)) {
-            if (value.rol === 'admin') {
-                usuarioAdminActual = key;
-                break;
+// ==================== FUNCIONES DE API ====================
+async function apiRequest(endpoint, method = 'GET', data = null) {
+    try {
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
             }
+        };
+        if (data) {
+            options.body = JSON.stringify(data);
         }
+        const response = await fetch(`${API_URL}${endpoint}`, options);
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || 'Error en la petición');
+        }
+        return result;
+    } catch (error) {
+        console.error(`❌ Error en ${method} ${endpoint}:`, error);
+        throw error;
+    }
+}
+
+// ==================== INICIO DE SESIÓN ====================
+async function iniciarSesion() {
+    const user = document.getElementById('usuarioLogin').value.trim();
+    const pass = document.getElementById('passLogin').value;
+    
+    if (!user || !pass) {
+        alert('⚠️ Ingresa usuario y contraseña');
+        return;
     }
     
-    const adminDefault = {
-        pass: 'admin123',
-        rol: 'admin',
-        nombre: nombreResponsableMantenimiento || 'Ricardo Madera'
-    };
-    
-    if (usuarioAdminActual !== 'admin' && usuarios[usuarioAdminActual]) {
-        delete usuarios[usuarioAdminActual];
-    }
-    
-    usuarios.admin = adminDefault;
-    
-    guardarDatos();
-    cargarListaUsuarios();
-    
-    alert('✅ Credenciales restablecidas correctamente.\n\n📝 Usuario: admin\n🔑 Contraseña: admin123');
-    
-    if (usuarioActivo && usuarioActivo.id !== 'admin') {
-        if (confirm('🔄 Las credenciales han cambiado. ¿Quieres cerrar sesión?')) {
-            cerrarSesion();
-        }
-    } else {
-        if (usuarioActivo) {
-            usuarioActivo.id = 'admin';
-            usuarioActivo.nombre = adminDefault.nombre;
+    try {
+        const data = await apiRequest('/login', 'POST', { usuario: user, password: pass });
+        
+        if (data.success) {
+            usuarioActivo = { id: user, ...data };
             localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-            document.getElementById('nombreUsuarioActivo').textContent = adminDefault.nombre;
+            
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('barraSuperior').classList.remove('hidden');
+            document.getElementById('menuNavegacion').classList.remove('hidden');
+            document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+            
+            if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
+            if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
+            
+            await cargarDatosIniciales();
+            actualizarTextoBoton();
+            nuevaSolicitud();
+        } else {
+            alert('❌ Usuario o contraseña incorrectos');
         }
+    } catch (error) {
+        alert('❌ Error al conectar con el servidor. Verifica tu conexión.');
+        console.error(error);
     }
-    
-    document.getElementById('nuevoUsuarioAdmin').value = '';
-    document.getElementById('nuevaPassAdmin').value = '';
 }
 
-// ==================== LOGO ====================
-function cargarLogo(input) {
-    const file = input.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        logoDataURL = e.target.result;
-        guardarDatos();
+function cerrarSesion() {
+    localStorage.removeItem('usuarioActivo');
+    location.reload();
+}
+
+// ==================== CARGAR DATOS INICIALES ====================
+async function cargarDatosIniciales() {
+    try {
+        // Cargar solicitudes
+        const solicitudesData = await apiRequest('/solicitudes');
+        solicitudes = solicitudesData;
+        
+        // Cargar usuarios
+        const usuariosData = await apiRequest('/usuarios');
+        usuarios = usuariosData;
+        
+        // Cargar configuración
+        const configData = await apiRequest('/configuracion');
+        numeroWhatsAppDestino = configData.numeroWhatsApp || '';
+        nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
+        logoDataURL = configData.logoDataURL || '';
+        
+        // Actualizar UI
+        document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
+        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
+        document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
         mostrarLogo();
-        alert('✅ Logo cargado correctamente');
-    };
-    reader.readAsDataURL(file);
-}
-
-function mostrarLogo() {
-    const preview = document.getElementById('previewLogo');
-    const sinLogoText = document.getElementById('sinLogoText');
-    if (logoDataURL) {
-        preview.src = logoDataURL;
-        preview.style.display = 'block';
-        sinLogoText.style.display = 'none';
-    } else {
-        preview.style.display = 'none';
-        sinLogoText.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error al cargar datos iniciales:', error);
+        // Si falla, intentar cargar desde localStorage como respaldo
+        cargarDatosLocal();
     }
 }
 
-function eliminarLogo() {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres eliminar el logo?')) return;
-    logoDataURL = '';
-    guardarDatos();
-    mostrarLogo();
-    document.getElementById('inputLogo').value = '';
-    alert('🗑️ Logo eliminado correctamente');
+function cargarDatosLocal() {
+    usuarios = JSON.parse(localStorage.getItem('listaUsuarios')) || {};
+    solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+    inventario = JSON.parse(localStorage.getItem('inventario')) || [];
+    asignaciones = JSON.parse(localStorage.getItem('asignaciones')) || [];
+    programacion = JSON.parse(localStorage.getItem('programacion')) || [];
+    contadorId = parseInt(localStorage.getItem('contadorId')) || 1;
+    numeroWhatsAppDestino = localStorage.getItem('numeroWhatsApp') || '';
+    logoDataURL = localStorage.getItem('logoDataURL') || '';
+    nombreResponsableMantenimiento = localStorage.getItem('nombreResponsableMantenimiento') || 'Ricardo Madera';
+}
+
+// ==================== RECUPERAR SESIÓN ====================
+async function recuperarSesion() {
+    const guardado = localStorage.getItem('usuarioActivo');
+    if (guardado) {
+        usuarioActivo = JSON.parse(guardado);
+        document.getElementById('loginModal').classList.add('hidden');
+        document.getElementById('barraSuperior').classList.remove('hidden');
+        document.getElementById('menuNavegacion').classList.remove('hidden');
+        document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+        
+        if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
+        if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
+        
+        await cargarDatosIniciales();
+        actualizarTextoBoton();
+        nuevaSolicitud();
+    }
 }
 
 // ==================== ACTUALIZAR TEXTO DEL BOTÓN ====================
@@ -1170,7 +1088,6 @@ function actualizarTextoBoton() {
     
     if (!btnTexto || !btnIcono || !btnGuardar) return;
     
-    // Si estamos editando (idEditar > 0)
     if (idEditar > 0) {
         btnTexto.textContent = 'Guardar Cambios';
         btnIcono.className = 'fas fa-save';
@@ -1178,97 +1095,22 @@ function actualizarTextoBoton() {
         return;
     }
     
-    // Si es una nueva solicitud, según el rol
     if (usuarioActivo && usuarioActivo.rol === 'admin') {
-        // Mantenimiento
         btnTexto.textContent = 'Guardar Solicitud';
         btnIcono.className = 'fas fa-save';
         btnGuardar.className = 'btn-guardar-mantenimiento';
     } else if (usuarioActivo && usuarioActivo.rol === 'proyectos') {
-        // Proyectos Generales
         btnTexto.textContent = 'Enviar a Mantenimiento';
         btnIcono.className = 'fas fa-tools';
         btnGuardar.className = 'btn-enviar-mantenimiento';
     } else {
-        // Usuario de Sección
         btnTexto.textContent = 'Enviar a Proyectos Generales';
         btnIcono.className = 'fas fa-paper-plane';
         btnGuardar.className = 'btn-enviar-proyectos';
     }
 }
 
-// ==================== SESIÓN ====================
-function iniciarSesion() {
-    const user = document.getElementById('usuarioLogin').value.trim();
-    const pass = document.getElementById('passLogin').value;
-    
-    if (!usuarios[user] || usuarios[user].pass !== pass) {
-        alert('❌ Usuario o contraseña incorrectos');
-        return;
-    }
-    
-    usuarioActivo = { id: user, ...usuarios[user] };
-    localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-    document.getElementById('loginModal').classList.add('hidden');
-    document.getElementById('barraSuperior').classList.remove('hidden');
-    document.getElementById('menuNavegacion').classList.remove('hidden');
-    document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
-    
-    if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
-    if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
-    
-    document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
-    cargarNombreMantenimiento();
-    mostrarLogo();
-    
-    // Actualizar el botón según el rol
-    actualizarTextoBoton();
-    nuevaSolicitud();
-}
-
-function cerrarSesion() {
-    localStorage.removeItem('usuarioActivo');
-    location.reload();
-}
-
-// ==================== RECUPERAR SESIÓN ====================
-function recuperarSesion() {
-    const guardado = localStorage.getItem('usuarioActivo');
-    if (guardado) {
-        usuarioActivo = JSON.parse(guardado);
-        document.getElementById('loginModal').classList.add('hidden');
-        document.getElementById('barraSuperior').classList.remove('hidden');
-        document.getElementById('menuNavegacion').classList.remove('hidden');
-        document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
-        if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
-        if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
-        document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
-        cargarNombreMantenimiento();
-        mostrarLogo();
-        actualizarTextoBoton();
-        nuevaSolicitud();
-    }
-}
-
-// ==================== NAVEGACIÓN ====================
-function ocultarTodasSecciones() {
-    document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden'));
-}
-
-function mostrarSeccion(id) {
-    ocultarTodasSecciones();
-    document.getElementById(id).classList.remove('hidden');
-    if (id === 'misSolicitudes') cargarMisSolicitudes();
-    if (id === 'bandaProyectos') cargarBandejaProyectos();
-    if (id === 'panelCoordinacion') {
-        subPanelAdmin('solicitudes');
-        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
-        cargarNombreMantenimiento();
-        mostrarLogo();
-    }
-}
-
-// ==================== NUEVA SOLICITUD ====================
+// ==================== SOLICITUDES ====================
 function nuevaSolicitud() {
     cancelarEdicionSol();
     mostrarSeccion('nuevaSolicitud');
@@ -1282,241 +1124,11 @@ function nuevaSolicitud() {
     document.getElementById('nuevaSolicitud').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ==================== SUBPANELES MANTENIMIENTO ====================
-function subPanelAdmin(panel) {
-    const paneles = ['adminSolicitudes','adminUsuarios','adminConfiguracion'];
-    paneles.forEach(p => document.getElementById(p).classList.add('hidden'));
-    document.getElementById('admin'+panel.charAt(0).toUpperCase()+panel.slice(1)).classList.remove('hidden');
-    if (panel==='solicitudes') filtrarSolicitudesCoordinacion();
-    if (panel==='usuarios') cargarListaUsuarios();
-    if (panel==='configuracion') { cargarNombreMantenimiento(); mostrarLogo(); }
-}
-
-// ==================== MOSTRAR CAMPOS DE EVENTO ====================
-function mostrarCamposEvento() {
-    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
-}
-
-// ==================== FUNCIÓN DE DESBLOQUEO ====================
-function desbloquearSolicitud(id) {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres DESBLOQUEAR esta solicitud?')) {
-        return;
-    }
-    
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    solicitudes[idx].estadoAnterior = solicitudes[idx].estado;
-    solicitudes[idx].estado = 'DESBLOQUEADA';
-    solicitudes[idx].fechaDesbloqueo = new Date().toLocaleString('es-MX');
-    solicitudes[idx].desbloqueadoPor = usuarioActivo.nombre;
-    
-    guardarDatos();
-    alert('🔓 Solicitud desbloqueada correctamente.');
-    
-    const seccionActual = document.querySelector('main>section:not(.hidden)');
-    if (seccionActual) {
-        const idSeccion = seccionActual.id;
-        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
-        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
-    }
-}
-
-// ==================== FUNCIÓN DE BLOQUEO ====================
-function bloquearSolicitud(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    if (s.estado !== 'DESBLOQUEADA') {
-        alert('⚠️ Esta solicitud no está desbloqueada.');
-        return;
-    }
-    
-    let mensaje = `🔒 ¿Estás seguro de que quieres BLOQUEAR esta solicitud?\n\n`;
-    mensaje += `📋 Solicitud #${s.id}\n`;
-    mensaje += `👤 Solicitante: ${s.solicitante}\n`;
-    mensaje += `📅 Fecha: ${s.fechaSolicitud}\n`;
-    mensaje += `📌 Estado actual: DESBLOQUEADA\n\n`;
-    mensaje += `Volverá a su estado anterior: ${s.estadoAnterior || 'PENDIENTE_PROYECTOS'}`;
-    
-    if (!confirm(mensaje)) return;
-    
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    const estadoRestaurado = solicitudes[idx].estadoAnterior || 'PENDIENTE_PROYECTOS';
-    solicitudes[idx].estado = estadoRestaurado;
-    solicitudes[idx].estadoAnterior = undefined;
-    solicitudes[idx].fechaDesbloqueo = undefined;
-    solicitudes[idx].desbloqueadoPor = undefined;
-    solicitudes[idx].fechaBloqueo = new Date().toLocaleString('es-MX');
-    solicitudes[idx].bloqueadoPor = usuarioActivo.nombre;
-    
-    guardarDatos();
-    alert(`🔒 Solicitud bloqueada correctamente.`);
-    
-    const seccionActual = document.querySelector('main>section:not(.hidden)');
-    if (seccionActual) {
-        const idSeccion = seccionActual.id;
-        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
-        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
-    }
-}
-
-// ==================== ELIMINAR SOLICITUD ====================
-function eliminarSolicitud(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    let mensaje = `⚠️ ¿Estás seguro de que quieres ELIMINAR esta solicitud?\n\n`;
-    mensaje += `📋 Solicitud #${s.id}\n`;
-    mensaje += `👤 Solicitante: ${s.solicitante}\n`;
-    mensaje += `📅 Fecha: ${s.fechaSolicitud}\n`;
-    mensaje += `📌 Estado: ${s.estado}\n\n`;
-    mensaje += `❌ Esta acción NO se puede deshacer.`;
-    
-    if (!confirm(mensaje)) return;
-    
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    solicitudes.splice(idx, 1);
-    guardarDatos();
-    alert('🗑️ Solicitud eliminada correctamente');
-    
-    const seccionActual = document.querySelector('main>section:not(.hidden)');
-    if (seccionActual) {
-        const idSeccion = seccionActual.id;
-        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
-        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
-    }
-}
-
-// ==================== EDITAR SOLICITUD ====================
-function editarSolicitud(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) { alert('❌ No se encontró la solicitud'); return; }
-    
-    const estaDesbloqueada = s.estado === 'DESBLOQUEADA';
-    
-    if (estaDesbloqueada) {
-        const esCreador = s.solicitante === usuarioActivo.nombre;
-        const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos';
-        
-        if (!esCreador && !tienePermiso) {
-            alert('🔒 Esta solicitud está desbloqueada, pero solo el creador o Administración/Proyectos pueden modificarla.');
-            return;
-        }
-        
-        cargarDatosEdicion(s);
-        return;
-    }
-    
-    if (s.estado === 'RECHAZADA') { 
-        alert('❌ No se puede modificar una solicitud rechazada'); 
-        return; 
-    }
-
-    const esUsuarioComun = (!usuarioActivo.rol || usuarioActivo.rol === 'seccion');
-    if (esUsuarioComun && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO')) {
-        alert('🔒 Esta solicitud ya fue autorizada. Solo Proyectos o Mantenimiento pueden modificarla o desbloquearla.');
-        return;
-    }
-    
-    if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
-        if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') {
-            if (confirm('🔓 Esta solicitud está ' + s.estado + '.\n\n¿Quieres DESBLOQUEARLA para que el creador pueda modificarla?\n\n• "Aceptar" = Desbloquear\n• "Cancelar" = Editar directamente')) {
-                desbloquearSolicitud(id);
-                return;
-            }
-        }
-        cargarDatosEdicion(s);
-        return;
-    }
-    
-    if (s.estado === 'PENDIENTE_PROYECTOS') {
-        cargarDatosEdicion(s);
-        return;
-    }
-}
-
-function cargarDatosEdicion(s) {
-    document.getElementById('idEditarSol').value = s.id;
-    document.getElementById('tituloFormSol').innerHTML = '📝 Editar Solicitud #' + s.id + (s.estado === 'DESBLOQUEADA' ? ' 🔓 (Desbloqueada)' : '');
-    document.getElementById('tipoSolicitud').value = s.tipo;
-    document.getElementById('areaSolicitante').value = s.area;
-    document.getElementById('nombreSolicitante').value = s.solicitante;
-    document.getElementById('descripcionSol').value = s.descripcion;
-    document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
-
-    if (s.tipo === 'evento') {
-        document.getElementById('nombreEvento').value = s.nombreEvento || '';
-        document.getElementById('fechaEvento').value = s.fechaEvento || '';
-        document.getElementById('lugarEvento').value = s.lugarEvento || '';
-        document.getElementById('camposEvento').classList.remove('hidden');
-    } else {
-        document.getElementById('nombreEvento').value = '';
-        document.getElementById('fechaEvento').value = '';
-        document.getElementById('lugarEvento').value = '';
-        document.getElementById('camposEvento').classList.add('hidden');
-    }
-
-    // Cambiar el botón a modo edición
-    const btnGuardar = document.getElementById('btnGuardarSol');
-    const btnIcono = document.getElementById('btnIconoGuardar');
-    const btnTexto = document.getElementById('btnTextoGuardar');
-    
-    btnGuardar.className = 'btn-guardar-edicion';
-    btnIcono.className = 'fas fa-save';
-    btnTexto.textContent = 'Guardar Cambios';
-    
-    document.getElementById('btnCancelarSol').classList.remove('hidden');
-    mostrarSeccion('nuevaSolicitud');
-}
-
-function cancelarEdicionSol() {
-    document.getElementById('idEditarSol').value = '0';
-    document.getElementById('tituloFormSol').innerHTML = '📝 Nueva Solicitud';
-    document.getElementById('tipoSolicitud').value = 'servicio';
-    document.getElementById('areaSolicitante').value = 'Preescolar';
-    document.getElementById('nombreSolicitante').value = '';
-    document.getElementById('descripcionSol').value = '';
-    document.getElementById('fechaSolicitud').value = '';
-    document.getElementById('nombreEvento').value = '';
-    document.getElementById('fechaEvento').value = '';
-    document.getElementById('lugarEvento').value = '';
-    document.getElementById('camposEvento').classList.add('hidden');
-    
-    // Restaurar el botón según el rol
-    actualizarTextoBoton();
-    document.getElementById('btnCancelarSol').classList.add('hidden');
-}
-
-// ==================== GUARDAR SOLICITUD ====================
-function guardarSolicitud() {
+async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
     
     const s = {
-        id: idEditar > 0 ? idEditar : contadorId++,
         tipo: tipo,
         area: document.getElementById('areaSolicitante').value,
         descripcion: document.getElementById('descripcionSol').value.trim(),
@@ -1538,180 +1150,81 @@ function guardarSolicitud() {
         return; 
     }
 
-    if (idEditar > 0) {
-        const idx = solicitudes.findIndex(x => x.id === idEditar);
-        if (idx === -1) {
-            alert('❌ Error: No se encontró la solicitud a editar');
-            return;
-        }
-        
-        const estadoActual = solicitudes[idx].estado;
-        const estaDesbloqueada = estadoActual === 'DESBLOQUEADA';
-        
-        if (estaDesbloqueada) {
-            const estadoAnterior = solicitudes[idx].estadoAnterior || 'PENDIENTE_PROYECTOS';
-            s.estado = estadoAnterior;
-            s.estadoAnterior = undefined;
-            s.fechaDesbloqueo = undefined;
-            s.desbloqueadoPor = undefined;
-            s.observaciones = solicitudes[idx].observaciones || [];
-            alert('🔓 Solicitud desbloqueada → ahora vuelve a estado: ' + estadoAnterior);
-        } else if (usuarioActivo.rol === 'admin') {
-            s.estado = estadoActual;
-            s.observaciones = solicitudes[idx].observaciones || [];
-            alert('✅ Solicitud actualizada directamente (Mantenimiento)');
-        } else if (usuarioActivo.rol === 'proyectos') {
-            s.estado = estadoActual;
-            s.observaciones = solicitudes[idx].observaciones || [];
-            alert('✅ Solicitud actualizada directamente (Proyectos Generales)');
-        } else if (usuarioActivo.rol === 'seccion' || !usuarioActivo.rol) {
-            s.estado = 'PENDIENTE_PROYECTOS';
-            s.observaciones = solicitudes[idx].observaciones || [];
-            alert('✅ Modificación enviada → requiere revisión de Proyectos');
-        }
-        
-        solicitudes[idx] = s;
-    } else {
-        // 🔧 NUEVA LÓGICA SEGÚN EL ROL
-        if (usuarioActivo.rol === 'admin') {
-            // Mantenimiento: crea directamente
-            s.estado = 'PENDIENTE_MANTENIMIENTO';
-            alert('✅ Solicitud creada directamente por Mantenimiento');
-        } else if (usuarioActivo.rol === 'proyectos') {
-            // Proyectos Generales: se autoautoriza y envía a mantenimiento
-            s.estado = 'APROBADA';
-            s.autorizadoPor = usuarioActivo.nombre;
-            s.fechaAutorizacion = new Date().toLocaleString('es-MX');
-            alert('✅ Solicitud autorizada automáticamente por Proyectos Generales y enviada a Mantenimiento');
+    try {
+        let result;
+        if (idEditar > 0) {
+            // Actualizar solicitud existente
+            const solicitudExistente = solicitudes.find(x => x.id === idEditar);
+            if (!solicitudExistente) {
+                alert('❌ No se encontró la solicitud');
+                return;
+            }
+            s.id = idEditar;
+            s.estado = solicitudExistente.estado;
+            s.observaciones = solicitudExistente.observaciones || [];
+            
+            result = await apiRequest(`/solicitudes/${idEditar}`, 'PUT', s);
+            alert('✅ Solicitud actualizada correctamente');
         } else {
-            // Usuario de Sección: envía a Proyectos
-            s.estado = 'PENDIENTE_PROYECTOS';
-            alert('✅ Solicitud enviada a Proyectos Generales');
+            // Crear nueva solicitud según el rol
+            if (usuarioActivo.rol === 'admin') {
+                s.estado = 'PENDIENTE_MANTENIMIENTO';
+                alert('✅ Solicitud creada directamente por Mantenimiento');
+            } else if (usuarioActivo.rol === 'proyectos') {
+                s.estado = 'APROBADA';
+                s.autorizadoPor = usuarioActivo.nombre;
+                s.fechaAutorizacion = new Date().toLocaleString('es-MX');
+                alert('✅ Solicitud autorizada automáticamente por Proyectos Generales');
+            } else {
+                s.estado = 'PENDIENTE_PROYECTOS';
+                alert('✅ Solicitud enviada a Proyectos Generales');
+            }
+            result = await apiRequest('/solicitudes', 'POST', s);
         }
-        solicitudes.push(s);
-    }
-
-    guardarDatos();
-    cancelarEdicionSol();
-
-    if (usuarioActivo.rol === 'proyectos') {
-        mostrarSeccion('bandaProyectos');
-    } else if (usuarioActivo.rol === 'admin') {
-        mostrarSeccion('panelCoordinacion');
-    } else {
-        mostrarSeccion('misSolicitudes');
-    }
-}
-
-// ==================== CONCLUIR DIRECTAMENTE ====================
-function concluirDirecto(id) {
-    if (!confirm('✅ ¿Estás seguro de que quieres CONCLUIR esta solicitud directamente?\n\nNo necesita autorización de Proyectos Generales.')) return;
-    
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    solicitudes[idx].estado = 'CONCLUIDO';
-    solicitudes[idx].concluidoPor = usuarioActivo.nombre;
-    solicitudes[idx].fechaConclusion = new Date().toLocaleString('es-MX');
-    
-    guardarDatos();
-    alert('✅ Solicitud concluida directamente por Mantenimiento');
-    
-    const seccionActual = document.querySelector('main>section:not(.hidden)');
-    if (seccionActual) {
-        const idSeccion = seccionActual.id;
-        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
-        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+        
+        if (result && result.success) {
+            await cargarDatosIniciales();
+            cancelarEdicionSol();
+            
+            if (usuarioActivo.rol === 'proyectos') {
+                mostrarSeccion('bandaProyectos');
+            } else if (usuarioActivo.rol === 'admin') {
+                mostrarSeccion('panelCoordinacion');
+            } else {
+                mostrarSeccion('misSolicitudes');
+            }
+        }
+    } catch (error) {
+        alert('❌ Error al guardar la solicitud');
+        console.error(error);
     }
 }
 
-// ==================== FUNCIÓN PARA ENVIAR POR WHATSAPP ====================
-function enviarWhatsApp(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    if (!numeroWhatsAppDestino) {
-        alert('⚠️ No hay número de WhatsApp configurado. Ve a Configuración y agrega un número.');
-        return;
-    }
-    
-    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n';
-    mensaje += '📌 Folio: #' + s.id + '\n';
-    mensaje += '👤 Solicitante: ' + s.solicitante + '\n';
-    mensaje += '🏫 Sección: ' + s.area + '\n';
-    mensaje += '📅 Fecha: ' + s.fechaSolicitud + '\n';
-    mensaje += '📝 Descripción: ' + s.descripcion + '\n';
-    
-    if (s.tipo === 'evento') {
-        mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n';
-        mensaje += '📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n';
-        mensaje += '📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
-    }
-    
-    mensaje += '\n📌 *Estado: ' + s.estado + '*';
-    
-    if (s.autorizadoPor) {
-        mensaje += '\n✅ Autorizado por: ' + s.autorizadoPor;
-    }
-    
-    if (s.concluidoPor) {
-        mensaje += '\n🔧 Concluido por: ' + s.concluidoPor;
-    }
-    
-    if (s.observaciones && s.observaciones.length > 0) {
-        mensaje += '\n\n📝 *Observaciones:*';
-        s.observaciones.forEach(obs => {
-            mensaje += '\n• ' + obs.autor + ' (' + obs.rol + '): ' + obs.texto;
-        });
-    }
-    
-    const mensajeCodificado = encodeURIComponent(mensaje);
-    const url = 'https://wa.me/' + numeroWhatsAppDestino + '?text=' + mensajeCodificado;
-    window.open(url, '_blank');
+// ==================== FUNCIONES DE NAVEGACIÓN ====================
+function ocultarTodasSecciones() {
+    document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden'));
 }
 
-// ==================== FUNCIÓN PARA AGREGAR OBSERVACIONES ====================
-function agregarObservacion(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) {
-        alert('❌ No se encontró la solicitud');
-        return;
+function mostrarSeccion(id) {
+    ocultarTodasSecciones();
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'misSolicitudes') cargarMisSolicitudes();
+    if (id === 'bandaProyectos') cargarBandejaProyectos();
+    if (id === 'panelCoordinacion') {
+        subPanelAdmin('solicitudes');
+        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
+        cargarNombreMantenimiento();
+        mostrarLogo();
     }
-    
-    if (usuarioActivo.rol !== 'proyectos' && usuarioActivo.rol !== 'admin') {
-        alert('⚠️ Solo Proyectos Generales y Mantenimiento pueden agregar observaciones.');
-        return;
-    }
-    
-    const observacion = prompt('📝 Ingresa tu observación para la solicitud #' + id + ':');
-    if (!observacion || observacion.trim() === '') return;
-    
-    if (!s.observaciones) s.observaciones = [];
-    
-    s.observaciones.push({
-        autor: usuarioActivo.nombre,
-        rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos Generales',
-        fecha: new Date().toLocaleString('es-MX'),
-        texto: observacion.trim()
-    });
-    
-    guardarDatos();
-    alert('✅ Observación agregada correctamente');
-    
-    const seccionActual = document.querySelector('main>section:not(.hidden)');
-    if (seccionActual) {
-        const idSeccion = seccionActual.id;
-        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
-        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
-    }
+}
+
+function subPanelAdmin(panel) {
+    const paneles = ['adminSolicitudes','adminUsuarios','adminConfiguracion'];
+    paneles.forEach(p => document.getElementById(p).classList.add('hidden'));
+    document.getElementById('admin'+panel.charAt(0).toUpperCase()+panel.slice(1)).classList.remove('hidden');
+    if (panel==='solicitudes') filtrarSolicitudesCoordinacion();
+    if (panel==='usuarios') cargarListaUsuarios();
+    if (panel==='configuracion') { cargarNombreMantenimiento(); mostrarLogo(); }
 }
 
 // ==================== MIS SOLICITUDES ====================
@@ -1853,55 +1366,235 @@ function cargarBandejaProyectos() {
     });
 }
 
-// ==================== FUNCIONES AUTORIZAR, RECHAZAR Y CONCLUIR ====================
-function autorizar(id) {
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
+// ==================== AUTORIZAR, RECHAZAR, CONCLUIR ====================
+async function autorizar(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) return;
     
-    if (solicitudes[idx].estado === 'PENDIENTE_MANTENIMIENTO') {
+    if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
         alert('⚠️ Esta solicitud es de Mantenimiento, no necesita autorización.');
         return;
     }
     
-    solicitudes[idx].autorizadoPor = usuarioActivo.nombre;
-    solicitudes[idx].fechaAutorizacion = new Date().toLocaleString('es-MX');
-    solicitudes[idx].estado = 'APROBADA';
-    
-    guardarDatos();
-    alert('✅ Solicitud autorizada por: ' + usuarioActivo.nombre);
-    cargarBandejaProyectos();
+    try {
+        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+            estado: 'APROBADA',
+            autorizadoPor: usuarioActivo.nombre,
+            fechaAutorizacion: new Date().toLocaleString('es-MX')
+        });
+        await cargarDatosIniciales();
+        alert('✅ Solicitud autorizada por: ' + usuarioActivo.nombre);
+        cargarBandejaProyectos();
+    } catch (error) {
+        alert('❌ Error al autorizar');
+        console.error(error);
+    }
 }
 
-function rechazar(id) {
+async function rechazar(id) {
     if(!confirm('¿Rechazar esta solicitud?')) return;
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) return;
-    
-    solicitudes[idx].estado = 'RECHAZADA';
-    solicitudes[idx].rechazadoPor = usuarioActivo.nombre;
-    solicitudes[idx].fechaRechazo = new Date().toLocaleString('es-MX');
-    
-    guardarDatos();
-    alert('🔴 Solicitud rechazada por: ' + usuarioActivo.nombre);
-    cargarBandejaProyectos();
+    try {
+        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+            estado: 'RECHAZADA',
+            rechazadoPor: usuarioActivo.nombre,
+            fechaRechazo: new Date().toLocaleString('es-MX')
+        });
+        await cargarDatosIniciales();
+        alert('🔴 Solicitud rechazada por: ' + usuarioActivo.nombre);
+        cargarBandejaProyectos();
+    } catch (error) {
+        alert('❌ Error al rechazar');
+        console.error(error);
+    }
 }
 
-function marcarConcluida(id) {
+async function marcarConcluida(id) {
     if(!confirm('¿El trabajo fue realizado? Se marcará como ✅ CONCLUIDA.')) return;
+    try {
+        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+            estado: 'CONCLUIDO',
+            concluidoPor: usuarioActivo.nombre,
+            fechaConclusion: new Date().toLocaleString('es-MX')
+        });
+        await cargarDatosIniciales();
+        alert('✅ Trabajo concluido por: ' + usuarioActivo.nombre);
+        filtrarSolicitudesCoordinacion();
+    } catch (error) {
+        alert('❌ Error al concluir');
+        console.error(error);
+    }
+}
+
+async function concluirDirecto(id) {
+    if (!confirm('✅ ¿Estás seguro de que quieres CONCLUIR esta solicitud directamente?')) return;
+    await marcarConcluida(id);
+}
+
+async function eliminarSolicitud(id) {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres ELIMINAR esta solicitud?')) return;
+    try {
+        await apiRequest(`/solicitudes/${id}`, 'DELETE');
+        await cargarDatosIniciales();
+        alert('🗑️ Solicitud eliminada correctamente');
+        const seccionActual = document.querySelector('main>section:not(.hidden)');
+        if (seccionActual) {
+            const idSeccion = seccionActual.id;
+            if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+            if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+            if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+        }
+    } catch (error) {
+        alert('❌ Error al eliminar');
+        console.error(error);
+    }
+}
+
+// ==================== DESBLOQUEAR / BLOQUEAR ====================
+async function desbloquearSolicitud(id) {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres DESBLOQUEAR esta solicitud?')) return;
+    try {
+        const s = solicitudes.find(x => x.id === id);
+        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+            estado: 'DESBLOQUEADA',
+            estadoAnterior: s.estado,
+            desbloqueadoPor: usuarioActivo.nombre,
+            fechaDesbloqueo: new Date().toLocaleString('es-MX')
+        });
+        await cargarDatosIniciales();
+        alert('🔓 Solicitud desbloqueada correctamente.');
+        recargarVistaActual();
+    } catch (error) {
+        alert('❌ Error al desbloquear');
+        console.error(error);
+    }
+}
+
+async function bloquearSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) return;
+    if (s.estado !== 'DESBLOQUEADA') {
+        alert('⚠️ Esta solicitud no está desbloqueada.');
+        return;
+    }
+    if (!confirm('🔒 ¿Estás seguro de que quieres BLOQUEAR esta solicitud?')) return;
+    try {
+        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+            estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS',
+            estadoAnterior: undefined,
+            bloqueadoPor: usuarioActivo.nombre,
+            fechaBloqueo: new Date().toLocaleString('es-MX')
+        });
+        await cargarDatosIniciales();
+        alert('🔒 Solicitud bloqueada correctamente.');
+        recargarVistaActual();
+    } catch (error) {
+        alert('❌ Error al bloquear');
+        console.error(error);
+    }
+}
+
+function recargarVistaActual() {
+    const seccionActual = document.querySelector('main>section:not(.hidden)');
+    if (seccionActual) {
+        const idSeccion = seccionActual.id;
+        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+    }
+}
+
+// ==================== EDITAR SOLICITUD ====================
+function editarSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) { alert('❌ No se encontró la solicitud'); return; }
     
-    const idx = solicitudes.findIndex(x => x.id === id);
-    if (idx === -1) return;
+    const estaDesbloqueada = s.estado === 'DESBLOQUEADA';
     
-    solicitudes[idx].estado = 'CONCLUIDO';
-    solicitudes[idx].concluidoPor = usuarioActivo.nombre;
-    solicitudes[idx].fechaConclusion = new Date().toLocaleString('es-MX');
+    if (estaDesbloqueada) {
+        const esCreador = s.solicitante === usuarioActivo.nombre;
+        const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos';
+        if (!esCreador && !tienePermiso) {
+            alert('🔒 Esta solicitud está desbloqueada, pero solo el creador o Administración/Proyectos pueden modificarla.');
+            return;
+        }
+        cargarDatosEdicion(s);
+        return;
+    }
     
-    guardarDatos();
-    alert('✅ Trabajo concluido por: ' + usuarioActivo.nombre);
-    filtrarSolicitudesCoordinacion();
+    if (s.estado === 'RECHAZADA') { 
+        alert('❌ No se puede modificar una solicitud rechazada'); 
+        return; 
+    }
+
+    const esUsuarioComun = (!usuarioActivo.rol || usuarioActivo.rol === 'seccion');
+    if (esUsuarioComun && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO')) {
+        alert('🔒 Esta solicitud ya fue autorizada. Solo Proyectos o Mantenimiento pueden modificarla.');
+        return;
+    }
+    
+    if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
+        if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') {
+            if (confirm('🔓 ¿Quieres DESBLOQUEARLA para que el creador pueda modificarla?')) {
+                desbloquearSolicitud(id);
+                return;
+            }
+        }
+        cargarDatosEdicion(s);
+        return;
+    }
+    
+    if (s.estado === 'PENDIENTE_PROYECTOS') {
+        cargarDatosEdicion(s);
+        return;
+    }
+}
+
+function cargarDatosEdicion(s) {
+    document.getElementById('idEditarSol').value = s.id;
+    document.getElementById('tituloFormSol').innerHTML = '📝 Editar Solicitud #' + s.id + (s.estado === 'DESBLOQUEADA' ? ' 🔓 (Desbloqueada)' : '');
+    document.getElementById('tipoSolicitud').value = s.tipo;
+    document.getElementById('areaSolicitante').value = s.area;
+    document.getElementById('nombreSolicitante').value = s.solicitante;
+    document.getElementById('descripcionSol').value = s.descripcion;
+    document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
+
+    if (s.tipo === 'evento') {
+        document.getElementById('nombreEvento').value = s.nombreEvento || '';
+        document.getElementById('fechaEvento').value = s.fechaEvento || '';
+        document.getElementById('lugarEvento').value = s.lugarEvento || '';
+        document.getElementById('camposEvento').classList.remove('hidden');
+    } else {
+        document.getElementById('nombreEvento').value = '';
+        document.getElementById('fechaEvento').value = '';
+        document.getElementById('lugarEvento').value = '';
+        document.getElementById('camposEvento').classList.add('hidden');
+    }
+
+    const btnGuardar = document.getElementById('btnGuardarSol');
+    const btnIcono = document.getElementById('btnIconoGuardar');
+    const btnTexto = document.getElementById('btnTextoGuardar');
+    
+    btnGuardar.className = 'btn-guardar-edicion';
+    btnIcono.className = 'fas fa-save';
+    btnTexto.textContent = 'Guardar Cambios';
+    document.getElementById('btnCancelarSol').classList.remove('hidden');
+    mostrarSeccion('nuevaSolicitud');
+}
+
+function cancelarEdicionSol() {
+    document.getElementById('idEditarSol').value = '0';
+    document.getElementById('tituloFormSol').innerHTML = '📝 Nueva Solicitud';
+    document.getElementById('tipoSolicitud').value = 'servicio';
+    document.getElementById('areaSolicitante').value = 'Preescolar';
+    document.getElementById('nombreSolicitante').value = '';
+    document.getElementById('descripcionSol').value = '';
+    document.getElementById('fechaSolicitud').value = '';
+    document.getElementById('nombreEvento').value = '';
+    document.getElementById('fechaEvento').value = '';
+    document.getElementById('lugarEvento').value = '';
+    document.getElementById('camposEvento').classList.add('hidden');
+    actualizarTextoBoton();
+    document.getElementById('btnCancelarSol').classList.add('hidden');
 }
 
 // ==================== MANTENIMIENTO - FILTRAR ====================
@@ -2014,7 +1707,374 @@ function limpiarFiltros() {
     filtrarSolicitudesCoordinacion();
 }
 
-// ==================== IMPRESIÓN CON OBSERVACIONES ====================
+// ==================== OBSERVACIONES ====================
+async function agregarObservacion(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    if (usuarioActivo.rol !== 'proyectos' && usuarioActivo.rol !== 'admin') {
+        alert('⚠️ Solo Proyectos Generales y Mantenimiento pueden agregar observaciones.');
+        return;
+    }
+    
+    const observacion = prompt('📝 Ingresa tu observación para la solicitud #' + id + ':');
+    if (!observacion || observacion.trim() === '') return;
+    
+    try {
+        await apiRequest(`/solicitudes/${id}/observaciones`, 'POST', {
+            autor: usuarioActivo.nombre,
+            rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos Generales',
+            texto: observacion.trim()
+        });
+        await cargarDatosIniciales();
+        alert('✅ Observación agregada correctamente');
+        recargarVistaActual();
+    } catch (error) {
+        alert('❌ Error al agregar observación');
+        console.error(error);
+    }
+}
+
+// ==================== WHATSAPP ====================
+function enviarWhatsApp(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    if (!numeroWhatsAppDestino) {
+        alert('⚠️ No hay número de WhatsApp configurado.');
+        return;
+    }
+    
+    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n';
+    mensaje += '📌 Folio: #' + s.id + '\n';
+    mensaje += '👤 Solicitante: ' + s.solicitante + '\n';
+    mensaje += '🏫 Sección: ' + s.area + '\n';
+    mensaje += '📅 Fecha: ' + s.fechaSolicitud + '\n';
+    mensaje += '📝 Descripción: ' + s.descripcion + '\n';
+    
+    if (s.tipo === 'evento') {
+        mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n';
+        mensaje += '📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n';
+        mensaje += '📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
+    }
+    
+    mensaje += '\n📌 *Estado: ' + s.estado + '*';
+    
+    if (s.autorizadoPor) {
+        mensaje += '\n✅ Autorizado por: ' + s.autorizadoPor;
+    }
+    
+    if (s.concluidoPor) {
+        mensaje += '\n🔧 Concluido por: ' + s.concluidoPor;
+    }
+    
+    if (s.observaciones && s.observaciones.length > 0) {
+        mensaje += '\n\n📝 *Observaciones:*';
+        s.observaciones.forEach(obs => {
+            mensaje += '\n• ' + obs.autor + ' (' + obs.rol + '): ' + obs.texto;
+        });
+    }
+    
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const url = 'https://wa.me/' + numeroWhatsAppDestino + '?text=' + mensajeCodificado;
+    window.open(url, '_blank');
+}
+
+// ==================== USUARIOS ====================
+async function agregarUsuario() {
+    const user = document.getElementById('nuevoUsuario').value.trim();
+    const pass = document.getElementById('nuevoPass').value.trim();
+    const nombre = document.getElementById('nombreCompletoUsuario').value.trim();
+    const rol = document.getElementById('rolUsuario').value;
+    const editando = document.getElementById('editandoUsuario').value;
+    
+    if (!user || !pass || !nombre) {
+        alert('⚠️ Todos los campos son obligatorios');
+        return;
+    }
+    
+    try {
+        if (editando) {
+            await apiRequest(`/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol });
+            document.getElementById('editandoUsuario').value = '';
+            document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
+            document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
+            alert('✅ Usuario actualizado correctamente');
+        } else {
+            await apiRequest('/usuarios', 'POST', { usuario: user, password: pass, nombre, rol });
+            alert('✅ Usuario agregado correctamente');
+        }
+        await cargarDatosIniciales();
+        cargarListaUsuarios();
+        limpiarFormularioUsuario();
+    } catch (error) {
+        alert('❌ Error al guardar usuario');
+        console.error(error);
+    }
+}
+
+function editarUsuario(username) {
+    const user = usuarios[username];
+    if (!user) return;
+    document.getElementById('nuevoUsuario').value = username;
+    document.getElementById('nuevoPass').value = user.pass || '';
+    document.getElementById('nombreCompletoUsuario').value = user.nombre;
+    document.getElementById('rolUsuario').value = user.rol;
+    document.getElementById('editandoUsuario').value = username;
+    document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
+    document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
+}
+
+function cancelarEdicionUsuario() {
+    limpiarFormularioUsuario();
+    document.getElementById('editandoUsuario').value = '';
+    document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
+    document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
+}
+
+function limpiarFormularioUsuario() {
+    document.getElementById('nuevoUsuario').value = '';
+    document.getElementById('nuevoPass').value = '';
+    document.getElementById('nombreCompletoUsuario').value = '';
+    document.getElementById('rolUsuario').value = 'seccion';
+}
+
+function cargarListaUsuarios() {
+    const c = document.getElementById('listaUsuarios');
+    c.innerHTML = '';
+    
+    if (Object.keys(usuarios).length === 0) {
+        c.innerHTML = '<p class="text-gray-500">No hay usuarios registrados.</p>';
+        return;
+    }
+    
+    for (const [k, v] of Object.entries(usuarios)) {
+        let rolTexto = '';
+        if (v.rol === 'admin') rolTexto = 'Mantenimiento';
+        else if (v.rol === 'proyectos') rolTexto = 'Proyectos Generales';
+        else rolTexto = 'Usuario de Sección';
+        
+        c.innerHTML += `
+        <div class="border rounded p-3 bg-white flex justify-between items-center mb-2">
+            <div>
+                <b>${v.nombre}</b><br>
+                Usuario: ${k} | Rol: ${rolTexto}
+            </div>
+            <div class="flex gap-2">
+                ${k !== 'admin' ? `
+                    <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
+                    <button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>
+                ` : '<span class="text-gray-400 text-sm">Principal</span>'}
+            </div>
+        </div>`;
+    }
+}
+
+async function eliminarUsuario(u) { 
+    if (!confirm(`⚠️ ¿Estás seguro de que quieres ELIMINAR al usuario "${u}"?`)) return;
+    try {
+        await apiRequest(`/usuarios/${u}`, 'DELETE');
+        await cargarDatosIniciales();
+        cargarListaUsuarios();
+        alert('🗑️ Usuario eliminado correctamente');
+    } catch (error) {
+        alert('❌ Error al eliminar usuario');
+        console.error(error);
+    }
+}
+
+// ==================== CONFIGURACIÓN ====================
+async function guardarNombreMantenimiento() {
+    const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
+    if (!nuevoNombre) {
+        alert('⚠️ Por favor ingresa un nombre válido');
+        return;
+    }
+    
+    try {
+        await apiRequest('/configuracion', 'PUT', {
+            nombreResponsableMantenimiento: nuevoNombre
+        });
+        nombreResponsableMantenimiento = nuevoNombre;
+        
+        if (usuarioActivo && usuarioActivo.id === 'admin') {
+            usuarioActivo.nombre = nuevoNombre;
+            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+            document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre;
+        }
+        
+        alert('✅ Nombre actualizado correctamente');
+        cargarListaUsuarios();
+    } catch (error) {
+        alert('❌ Error al guardar el nombre');
+        console.error(error);
+    }
+}
+
+function cargarNombreMantenimiento() {
+    document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
+}
+
+// ==================== LOGO ====================
+function cargarLogo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        logoDataURL = e.target.result;
+        try {
+            await apiRequest('/configuracion', 'PUT', { logoDataURL: logoDataURL });
+            mostrarLogo();
+            alert('✅ Logo cargado correctamente');
+        } catch (error) {
+            alert('❌ Error al guardar el logo');
+            console.error(error);
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function mostrarLogo() {
+    const preview = document.getElementById('previewLogo');
+    const sinLogoText = document.getElementById('sinLogoText');
+    if (logoDataURL) {
+        preview.src = logoDataURL;
+        preview.style.display = 'block';
+        sinLogoText.style.display = 'none';
+    } else {
+        preview.style.display = 'none';
+        sinLogoText.style.display = 'block';
+    }
+}
+
+async function eliminarLogo() {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres eliminar el logo?')) return;
+    logoDataURL = '';
+    try {
+        await apiRequest('/configuracion', 'PUT', { logoDataURL: '' });
+        mostrarLogo();
+        document.getElementById('inputLogo').value = '';
+        alert('🗑️ Logo eliminado correctamente');
+    } catch (error) {
+        alert('❌ Error al eliminar el logo');
+        console.error(error);
+    }
+}
+
+// ==================== WHATSAPP CONFIG ====================
+async function actualizarWhatsApp() {
+    numeroWhatsAppDestino = document.getElementById('numeroWhatsApp').value.trim();
+    try {
+        await apiRequest('/configuracion', 'PUT', { numeroWhatsApp: numeroWhatsAppDestino });
+        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
+        alert('✅ Número WhatsApp actualizado');
+    } catch (error) {
+        alert('❌ Error al guardar el número');
+        console.error(error);
+    }
+}
+
+// ==================== CAMBIAR CREDENCIALES ADMIN ====================
+async function cambiarCredencialesAdmin() {
+    const nuevoUsuario = document.getElementById('nuevoUsuarioAdmin').value.trim();
+    const nuevaPass = document.getElementById('nuevaPassAdmin').value.trim();
+    
+    if (!nuevoUsuario && !nuevaPass) {
+        alert('⚠️ Debes ingresar al menos un nuevo usuario o una nueva contraseña');
+        return;
+    }
+    
+    let mensaje = '⚠️ ¿Estás seguro de que quieres cambiar las credenciales?\n\n';
+    if (nuevoUsuario) mensaje += `📝 Nuevo usuario: ${nuevoUsuario}\n`;
+    if (nuevaPass) mensaje += `🔑 Nueva contraseña: ${nuevaPass}\n`;
+    mensaje += '\n⚠️ Después del cambio, deberás iniciar sesión con las nuevas credenciales.';
+    
+    if (!confirm(mensaje)) return;
+    
+    try {
+        // Actualizar el usuario admin
+        const adminActual = usuarios.admin || { nombre: nombreResponsableMantenimiento };
+        
+        if (nuevoUsuario && nuevoUsuario !== 'admin') {
+            // Crear nuevo usuario admin
+            await apiRequest('/usuarios', 'POST', {
+                usuario: nuevoUsuario,
+                password: nuevaPass || adminActual.pass || 'admin123',
+                nombre: adminActual.nombre || nombreResponsableMantenimiento,
+                rol: 'admin'
+            });
+            // Eliminar el admin viejo
+            await apiRequest('/usuarios/admin', 'DELETE');
+        } else {
+            // Solo actualizar contraseña
+            await apiRequest('/usuarios/admin', 'PUT', {
+                password: nuevaPass || adminActual.pass,
+                nombre: adminActual.nombre || nombreResponsableMantenimiento,
+                rol: 'admin'
+            });
+        }
+        
+        await cargarDatosIniciales();
+        alert('✅ Credenciales actualizadas correctamente');
+        
+        document.getElementById('nuevoUsuarioAdmin').value = '';
+        document.getElementById('nuevaPassAdmin').value = '';
+        
+        if (nuevoUsuario && nuevoUsuario !== 'admin') {
+            if (confirm('🔄 ¿Quieres cerrar sesión para probar las nuevas credenciales?')) {
+                cerrarSesion();
+            }
+        }
+    } catch (error) {
+        alert('❌ Error al cambiar credenciales');
+        console.error(error);
+    }
+}
+
+async function restablecerCredencialesAdmin() {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres RESTABLECER las credenciales?\n\nUsuario: admin\nContraseña: admin123')) return;
+    
+    try {
+        // Verificar si el admin existe
+        const adminActual = usuarios.admin;
+        
+        if (!adminActual) {
+            // Buscar usuario con rol admin y eliminarlo
+            for (const [key, value] of Object.entries(usuarios)) {
+                if (value.rol === 'admin') {
+                    await apiRequest(`/usuarios/${key}`, 'DELETE');
+                }
+            }
+        } else {
+            await apiRequest('/usuarios/admin', 'PUT', {
+                password: 'admin123',
+                nombre: nombreResponsableMantenimiento || 'Ricardo Madera',
+                rol: 'admin'
+            });
+        }
+        
+        await cargarDatosIniciales();
+        alert('✅ Credenciales restablecidas correctamente.\n\n📝 Usuario: admin\n🔑 Contraseña: admin123');
+        
+        if (usuarioActivo && usuarioActivo.id !== 'admin') {
+            if (confirm('🔄 Las credenciales han cambiado. ¿Quieres cerrar sesión?')) {
+                cerrarSesion();
+            }
+        }
+    } catch (error) {
+        alert('❌ Error al restablecer credenciales');
+        console.error(error);
+    }
+}
+
+// ==================== IMPRESIÓN ====================
 function imprimirSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
     if (!s) { alert('❌ No se encontró la solicitud'); return; }
@@ -2075,16 +2135,6 @@ function imprimirSolicitud(id) {
     let autorizadoPor = s.autorizadoPor || '';
     let fechaAutorizacion = s.fechaAutorizacion || '';
     
-    if ((s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA') && !autorizadoPor) {
-        if (s.estadoAnterior === 'APROBADA') {
-            autorizadoPor = s.autorizadoPor || '_________________________';
-        }
-    }
-    
-    if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA') && !autorizadoPor) {
-        autorizadoPor = '_________________________';
-    }
-    
     let concluidoPor = s.concluidoPor || '';
     let fechaConclusion = s.fechaConclusion || '';
     
@@ -2092,92 +2142,37 @@ function imprimirSolicitud(id) {
         ${headerHTML}
         
         <table>
-            <tr>
-                <td>Fecha de solicitud</td>
-                <td>${s.fechaSolicitud}</td>
-            </tr>
-            <tr>
-                <td>Sección que solicita</td>
-                <td>${s.area}</td>
-            </tr>
-            <tr>
-                <td>Solicitante</td>
-                <td>${s.solicitante}</td>
-            </tr>
-            <tr>
-                <td>Descripción / Detalles</td>
-                <td>${s.descripcion}</td>
-            </tr>`;
+            <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr>
+            <tr><td>Sección que solicita</td><td>${s.area}</td></tr>
+            <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
+            <tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
     
     if (s.tipo === 'evento') {
         html += `
-            <tr>
-                <td>Nombre del evento</td>
-                <td>${s.nombreEvento || ''}</td>
-            </tr>
-            <tr>
-                <td>Fecha del evento</td>
-                <td>${s.fechaEvento || ''}</td>
-            </tr>
-            <tr>
-                <td>Lugar solicitado</td>
-                <td>${s.lugarEvento || ''}</td>
-            </tr>`;
+            <tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr>
+            <tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr>
+            <tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
     }
     
     html += `
-            <tr>
-                <td>Estado actual</td>
-                <td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td>
-            </tr>`;
+            <tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
     
     if (autorizadoPor) {
-        html += `
-            <tr>
-                <td>Autorizado por</td>
-                <td>${autorizadoPor}</td>
-            </tr>`;
+        html += `<tr><td>Autorizado por</td><td>${autorizadoPor}</td></tr>`;
         if (fechaAutorizacion) {
-            html += `
-            <tr>
-                <td>Fecha de autorización</td>
-                <td>${fechaAutorizacion}</td>
-            </tr>`;
+            html += `<tr><td>Fecha de autorización</td><td>${fechaAutorizacion}</td></tr>`;
         }
     } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-        html += `
-            <tr>
-                <td>Autorizado por</td>
-                <td>No requiere autorización (Mantenimiento)</td>
-            </tr>`;
+        html += `<tr><td>Autorizado por</td><td>No requiere autorización (Mantenimiento)</td></tr>`;
     } else {
-        html += `
-            <tr>
-                <td>Autorizado por</td>
-                <td>Pendiente de autorización</td>
-            </tr>`;
+        html += `<tr><td>Autorizado por</td><td>Pendiente de autorización</td></tr>`;
     }
     
     if (s.estado === 'CONCLUIDO' && concluidoPor) {
-        html += `
-            <tr>
-                <td>Concluido por</td>
-                <td>${concluidoPor}</td>
-            </tr>`;
+        html += `<tr><td>Concluido por</td><td>${concluidoPor}</td></tr>`;
         if (fechaConclusion) {
-            html += `
-            <tr>
-                <td>Fecha de conclusión</td>
-                <td>${fechaConclusion}</td>
-            </tr>`;
+            html += `<tr><td>Fecha de conclusión</td><td>${fechaConclusion}</td></tr>`;
         }
-    }
-    
-    if (s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor) {
-        html += `<tr><td>Desbloqueada por</td><td>${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</td></tr>`;
-    }
-    if (s.fechaBloqueo) {
-        html += `<tr><td>Bloqueada por</td><td>${s.bloqueadoPor || 'N/A'} - ${s.fechaBloqueo || ''}</td></tr>`;
     }
     
     if (s.observaciones && s.observaciones.length > 0) {
@@ -2185,15 +2180,10 @@ function imprimirSolicitud(id) {
         s.observaciones.forEach(obs => {
             obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`;
         });
-        html += `
-            <tr>
-                <td>Observaciones</td>
-                <td style="white-space: pre-wrap;">${obsText}</td>
-            </tr>`;
+        html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`;
     }
     
     let firmaSolicitante = s.solicitante || '';
-    
     let firmaAutorizacion = autorizadoPor || '_________________________';
     if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') {
         firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente de autorización';
@@ -2214,7 +2204,6 @@ function imprimirSolicitud(id) {
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
         fechaAutorizacionMostrar = 'No requiere autorización';
     }
-    
     let fechaConclusionMostrar = fechaConclusion || (s.estado === 'CONCLUIDO' ? fechaActual : 'Pendiente');
     
     html += `
@@ -2227,14 +2216,12 @@ function imprimirSolicitud(id) {
                 <div class="firma-cargo">Nombre del Solicitante</div>
                 <div class="firma-fecha">${s.fechaSolicitud}</div>
             </div>
-            
             <div class="firma-item">
                 <div class="firma-nombre">${firmaAutorizacion}</div>
                 <div class="linea"></div>
                 <div class="firma-cargo">Autorizado por</div>
                 <div class="firma-fecha">${fechaAutorizacionMostrar}</div>
             </div>
-            
             <div class="firma-item">
                 <div class="firma-nombre">${firmaMantenimiento}</div>
                 <div class="linea"></div>
@@ -2251,10 +2238,8 @@ function imprimirSolicitud(id) {
     `;
     
     c.innerHTML = html;
-    
     c.style.display = 'block';
     document.getElementById('formatoImpresion').style.display = 'block';
-    
     setTimeout(() => {
         window.print();
         setTimeout(() => {
@@ -2264,162 +2249,59 @@ function imprimirSolicitud(id) {
     }, 300);
 }
 
-// ==================== USUARIOS ====================
-function agregarUsuario() {
-    const user = document.getElementById('nuevoUsuario').value.trim();
-    const pass = document.getElementById('nuevoPass').value.trim();
-    const nombre = document.getElementById('nombreCompletoUsuario').value.trim();
-    const rol = document.getElementById('rolUsuario').value;
-    const editando = document.getElementById('editandoUsuario').value;
-    
-    if (!user || !pass || !nombre) {
-        alert('⚠️ Todos los campos son obligatorios');
-        return;
-    }
-    
-    if (editando) {
-        if (editando !== user) {
-            delete usuarios[editando];
-        }
-        usuarios[user] = { pass, rol, nombre };
-        document.getElementById('editandoUsuario').value = '';
-        document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
-        document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
-        alert('✅ Usuario actualizado correctamente');
-    } else {
-        if (usuarios[user]) {
-            alert('❌ Ese nombre de usuario ya existe');
-            return;
-        }
-        usuarios[user] = { pass, rol, nombre };
-        alert('✅ Usuario agregado correctamente');
-    }
-    
-    guardarDatos();
-    cargarListaUsuarios();
-    limpiarFormularioUsuario();
-}
-
-function editarUsuario(username) {
-    const user = usuarios[username];
-    if (!user) return;
-    
-    document.getElementById('nuevoUsuario').value = username;
-    document.getElementById('nuevoPass').value = user.pass;
-    document.getElementById('nombreCompletoUsuario').value = user.nombre;
-    document.getElementById('rolUsuario').value = user.rol;
-    document.getElementById('editandoUsuario').value = username;
-    document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
-    document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
-    
-    document.getElementById('adminUsuarios').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function cancelarEdicionUsuario() {
-    limpiarFormularioUsuario();
-    document.getElementById('editandoUsuario').value = '';
-    document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
-    document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
-}
-
-function limpiarFormularioUsuario() {
-    document.getElementById('nuevoUsuario').value = '';
-    document.getElementById('nuevoPass').value = '';
-    document.getElementById('nombreCompletoUsuario').value = '';
-    document.getElementById('rolUsuario').value = 'seccion';
-}
-
-function cargarListaUsuarios() {
-    const c = document.getElementById('listaUsuarios');
-    c.innerHTML = '';
-    
-    if (Object.keys(usuarios).length === 0) {
-        c.innerHTML = '<p class="text-gray-500">No hay usuarios registrados.</p>';
-        return;
-    }
-    
-    for (const [k, v] of Object.entries(usuarios)) {
-        let rolTexto = '';
-        if (v.rol === 'admin') rolTexto = 'Mantenimiento';
-        else if (v.rol === 'proyectos') rolTexto = 'Proyectos Generales';
-        else rolTexto = 'Usuario de Sección';
-        
-        c.innerHTML += `
-        <div class="border rounded p-3 bg-white flex justify-between items-center mb-2">
-            <div>
-                <b>${v.nombre}</b><br>
-                Usuario: ${k} | Rol: ${rolTexto}
-            </div>
-            <div class="flex gap-2">
-                ${k !== 'admin' ? `
-                    <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
-                    <button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>
-                ` : '<span class="text-gray-400 text-sm">Principal</span>'}
-            </div>
-        </div>`;
-    }
-}
-
-function eliminarUsuario(u) { 
-    if (!confirm(`⚠️ ¿Estás seguro de que quieres ELIMINAR al usuario "${u}"?\n\nEsta acción NO se puede deshacer.`)) return; 
-    delete usuarios[u]; 
-    guardarDatos(); 
-    cargarListaUsuarios(); 
-    alert('🗑️ Usuario eliminado correctamente');
-}
-
-// ==================== WHATSAPP ====================
-function actualizarWhatsApp() {
-    numeroWhatsAppDestino = document.getElementById('numeroWhatsApp').value.trim();
-    guardarDatos();
-    document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
-}
-
 // ==================== RESPALDOS ====================
-function crearRespaldo() {
-    const respaldo = {
-        fecha: new Date().toLocaleString('es-MX'),
-        usuarios,
-        solicitudes,
-        inventario,
-        asignaciones,
-        programacion,
-        contadorId,
-        numeroWhatsAppDestino,
-        logoDataURL,
-        nombreResponsableMantenimiento
-    };
-    const blob = new Blob([JSON.stringify(respaldo, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Respaldo_Mantenimiento_${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    alert('✅ Respaldo descargado correctamente');
+async function crearRespaldo() {
+    try {
+        const datos = {
+            fecha: new Date().toLocaleString('es-MX'),
+            usuarios,
+            solicitudes,
+            inventario,
+            asignaciones,
+            programacion,
+            contadorId,
+            numeroWhatsAppDestino,
+            logoDataURL,
+            nombreResponsableMantenimiento
+        };
+        const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Respaldo_Mantenimiento_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ Respaldo descargado correctamente');
+    } catch (error) {
+        alert('❌ Error al crear respaldo');
+        console.error(error);
+    }
 }
 
-function restaurarRespaldo(input) {
+async function restaurarRespaldo(input) {
     const archivo = input.files[0];
     if (!archivo) return;
     if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
 
     const lector = new FileReader();
-    lector.onload = function(e) {
+    lector.onload = async function(e) {
         try {
             const datos = JSON.parse(e.target.result);
-            usuarios = datos.usuarios;
-            solicitudes = datos.solicitudes;
-            inventario = datos.inventario || [];
-            asignaciones = datos.asignaciones || [];
-            programacion = datos.programacion || [];
-            contadorId = datos.contadorId;
-            numeroWhatsAppDestino = datos.numeroWhatsAppDestino || '';
-            logoDataURL = datos.logoDataURL || '';
-            nombreResponsableMantenimiento = datos.nombreResponsableMantenimiento || 'Ricardo Madera';
-            guardarDatos();
-            mostrarLogo();
-            cargarNombreMantenimiento();
+            // Restaurar usuarios
+            for (const [key, value] of Object.entries(datos.usuarios)) {
+                await apiRequest('/usuarios', 'POST', { usuario: key, ...value });
+            }
+            // Restaurar solicitudes
+            for (const solicitud of datos.solicitudes) {
+                await apiRequest('/solicitudes', 'POST', solicitud);
+            }
+            // Restaurar configuración
+            await apiRequest('/configuracion', 'PUT', {
+                numeroWhatsApp: datos.numeroWhatsAppDestino || '',
+                nombreResponsableMantenimiento: datos.nombreResponsableMantenimiento || 'Ricardo Madera',
+                logoDataURL: datos.logoDataURL || ''
+            });
+            await cargarDatosIniciales();
             alert('✅ Información restaurada correctamente');
             location.reload();
         } catch (err) {
@@ -2429,12 +2311,13 @@ function restaurarRespaldo(input) {
     lector.readAsText(archivo);
 }
 
+// ==================== MOSTRAR CAMPOS DE EVENTO ====================
+function mostrarCamposEvento() {
+    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
+}
+
 // ==================== INICIO ====================
 document.addEventListener('DOMContentLoaded', () => {
-    if (!localStorage.getItem('listaUsuarios')) {
-        guardarDatos();
-    }
-    
     recuperarSesion();
     const campoFecha = document.getElementById('fechaSolicitud');
     if (campoFecha) campoFecha.valueAsDate = new Date();
