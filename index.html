@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Mantenimiento - Colegio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        colegio: {
+                            azul: '#165DFF',
+                            verde: '#00B42A',
+                            naranja: '#FF7D00',
+                            rojo: '#F53F3F',
+                            gris: '#86909C',
+                            morado: '#722ED1',
+                            rosa: '#EB2F96'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            
+            #formatoImpresion, #formatoImpresion * {
+                visibility: visible !important;
+            }
+            
+            #formatoImpresion {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                z-index: 9999 !important;
+                display: block !important;
+                overflow: hidden !important;
+            }
+            
+            .formato-impresion {
+                display: block !important;
+                width: 100% !important;
+                max-width: 210mm !important;
+                min-height: 100% !important;
+                padding: 12mm 15mm !important;
+                margin: 0 auto !important;
+                border: none !important;
+                box-sizing: border-box !important;
+                background: white !important;
+                font-family: 'Segoe UI', Arial, sans-serif !important;
+                font-size: 10pt !important;
+                line-height: 1.5 !important;
+            }
+            
+            .formato-impresion .header-impresion {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                margin-bottom: 15px !important;
+                border-bottom: 3px solid #165DFF !important;
+                padding-bottom: 10px !important;
+            }
+            
+            .formato-impresion .logo-impresion {
+                max-height: 70px !important;
+                max-width: 130px !important;
+                object-fit: contain !important;
+            }
+            
+            .formato-impresion .header-text {
+                text-align: right !important;
+                line-height: 1.4 !important;
+            }
+            
+            .formato-impresion .header-text .titulo-principal {
+                font-size: 14pt !important;
+                font-weight: 800 !important;
+                color: #165DFF !important;
+                text-transform: uppercase !important;
+                letter-spacing: 1px !important;
+            }
+            
+            .formato-impresion .header-text .subtitulo-header {
+                font-size: 9pt !important;
+                color: #555 !important;
+                font-weight: 500 !important;
+            }
+            
+            .formato-impresion .header-text .folio-header {
+                font-size: 10pt !important;
+                color: #333 !important;
+                font-weight: 700 !important;
+            }
+            
+            .formato-impresion .titulo-central {
+                text-align: center !important;
+                font-size: 16pt !important;
+                font-weight: 800 !important;
+                color: #1a1a2e !important;
+                margin: 5px 0 3px 0 !important;
+                letter-spacing: 2px !important;
+                text-transform: uppercase !important;
+            }
+            
+            .formato-impresion .subtitulo-central {
+                text-align: center !important;
+                font-size: 10pt !important;
+                color: #666 !important;
+                margin-bottom: 12px !important;
+                border-bottom: 2px solid #e5e7eb !important;
+                padding-bottom: 8px !important;
+            }
+            
+            .formato-impresion table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin-top: 8px !important;
+                font-size: 10pt !important;
+                border: 1px solid #d1d5db !important;
+            }
+            
+            .formato-impresion td {
+                border: 1px solid #d1d5db !important;
+                padding: 6px 10px !important;
+                vertical-align: top !important;
+                font-size: 10pt !important;
+            }
+            
+            .formato-impresion td:first-child {
+                width: 25% !important;
+                font-weight: 700 !important;
+                background: #f3f4f6 !important;
+                color: #1a1a2e !important;
+            }
+            
+            .formato-impresion td:last-child {
+                width: 75% !important;
+                background: white !important;
+                color: #333 !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+            }
+            
+            .formato-impresion .firmas {
+                margin-top: 20px !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                padding-top: 15px !important;
+                border-top: 1px solid #e5e7eb !important;
+            }
+            
+            .formato-impresion .firma-item {
+                text-align: center !important;
+                width: 30% !important;
+            }
+            
+            .formato-impresion .firma-item .linea {
+                border-top: 1px solid #333 !important;
+                width: 100% !important;
+                margin: 25px 0 4px 0 !important;
+            }
+            
+            .formato-impresion .firma-item .firma-nombre {
+                font-weight: 700 !important;
+                font-size: 9pt !important;
+                color: #1a1a2e !important;
+            }
+            
+            .formato-impresion .firma-item .firma-cargo {
+                font-size: 8pt !important;
+                color: #666 !important;
+            }
+            
+            .formato-impresion .firma-item .firma-fecha {
+                font-size: 7.5pt !important;
+                color: #999 !important;
+            }
+            
+            .formato-impresion .pie-pagina {
+                margin-top: 15px !important;
+                text-align: center !important;
+                font-size: 7.5pt !important;
+                color: #9ca3af !important;
+                border-top: 1px solid #e5e7eb !important;
+                padding-top: 8px !important;
+                display: flex !important;
+                justify-content: space-between !important;
+            }
+            
+            .formato-impresion .pie-pagina span {
+                color: #9ca3af !important;
+            }
+            
+            .formato-impresion .badge-estado {
+                display: inline-block !important;
+                padding: 2px 14px !important;
+                border-radius: 20px !important;
+                font-size: 8.5pt !important;
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+            }
+            .formato-impresion .badge-aprobada {
+                background: #dcfce7 !important;
+                color: #00B42A !important;
+            }
+            .formato-impresion .badge-pendiente {
+                background: #fef3c7 !important;
+                color: #FF7D00 !important;
+            }
+            .formato-impresion .badge-concluida {
+                background: #dbeafe !important;
+                color: #165DFF !important;
+            }
+            .formato-impresion .badge-rechazada {
+                background: #fee2e2 !important;
+                color: #F53F3F !important;
+            }
+            .formato-impresion .badge-desbloqueada {
+                background: #ede9fe !important;
+                color: #722ED1 !important;
+            }
+            
+            @page {
+                size: Letter !important;
+                margin: 8mm 10mm !important;
+            }
+            
+            .formato-impresion * {
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+            }
+        }
+        
+        .formato-impresion {
+            display: none;
+            background: white;
+            padding: 25px 30px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            max-width: 210mm;
+            margin: 20px auto;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            font-size: 10pt;
+            line-height: 1.5;
+        }
+        
+        .formato-impresion .header-impresion {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #165DFF;
+            padding-bottom: 10px;
+        }
+        
+        .formato-impresion .logo-impresion {
+            max-height: 70px;
+            max-width: 130px;
+            object-fit: contain;
+        }
+        
+        .formato-impresion .header-text {
+            text-align: right;
+            line-height: 1.4;
+        }
+        
+        .formato-impresion .header-text .titulo-principal {
+            font-size: 14pt;
+            font-weight: 800;
+            color: #165DFF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .formato-impresion .header-text .subtitulo-header {
+            font-size: 9pt;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .formato-impresion .header-text .folio-header {
+            font-size: 10pt;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .formato-impresion .titulo-central {
+            text-align: center;
+            font-size: 16pt;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin: 5px 0 3px 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .formato-impresion .subtitulo-central {
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+        
+        .formato-impresion table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 10pt;
+            border: 1px solid #d1d5db;
+        }
+        
+        .formato-impresion td {
+            border: 1px solid #d1d5db;
+            padding: 6px 10px;
+            vertical-align: top;
+            font-size: 10pt;
+        }
+        
+        .formato-impresion td:first-child {
+            width: 25%;
+            font-weight: 700;
+            background: #f3f4f6;
+            color: #1a1a2e;
+        }
+        
+        .formato-impresion td:last-child {
+            width: 75%;
+            background: white;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .formato-impresion .firmas {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .formato-impresion .firma-item {
+            text-align: center;
+            width: 30%;
+        }
+        
+        .formato-impresion .firma-item .linea {
+            border-top: 1px solid #333;
+            width: 100%;
+            margin: 25px 0 4px 0;
+        }
+        
+        .formato-impresion .firma-item .firma-nombre {
+            font-weight: 700;
+            font-size: 9pt;
+            color: #1a1a2e;
+        }
+        
+        .formato-impresion .firma-item .firma-cargo {
+            font-size: 8pt;
+            color: #666;
+        }
+        
+        .formato-impresion .firma-item .firma-fecha {
+            font-size: 7.5pt;
+            color: #999;
+        }
+        
+        .formato-impresion .pie-pagina {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 7.5pt;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .formato-impresion .pie-pagina span {
+            color: #9ca3af;
+        }
+        
+        .formato-impresion .badge-estado {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 8.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .formato-impresion .badge-aprobada {
+            background: #dcfce7;
+            color: #00B42A;
+        }
+        .formato-impresion .badge-pendiente {
+            background: #fef3c7;
+            color: #FF7D00;
+        }
+        .formato-impresion .badge-concluida {
+            background: #dbeafe;
+            color: #165DFF;
+        }
+        .formato-impresion .badge-rechazada {
+            background: #fee2e2;
+            color: #F53F3F;
+        }
+        .formato-impresion .badge-desbloqueada {
+            background: #ede9fe;
+            color: #722ED1;
+        }
+
+        .estado-desbloqueado {
+            background-color: #fef3c7 !important;
+            border-left: 4px solid #f59e0b !important;
+        }
+        
+        .badge-desbloqueado {
+            background-color: #f59e0b;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-pendiente-mantenimiento {
+            background-color: #f59e0b;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-bloqueado {
+            background-color: #3b82f6;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-eliminar {
+            background-color: #dc2626;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-eliminar:hover {
+            background-color: #b91c1c;
+            transform: scale(1.05);
+        }
+
+        .btn-bloquear {
+            background-color: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-bloquear:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .btn-editar-usuario {
+            background-color: #f59e0b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-editar-usuario:hover {
+            background-color: #d97706;
+            transform: scale(1.05);
+        }
+
+        .btn-guardar-config {
+            background-color: #165DFF;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-guardar-config:hover {
+            background-color: #0f4bc7;
+            transform: scale(1.02);
+        }
+
+        .btn-observacion {
+            background-color: #8b5cf6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-observacion:hover {
+            background-color: #7c3aed;
+            transform: scale(1.05);
+        }
+
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1da851;
+            transform: scale(1.05);
+        }
+
+        .btn-concluir-directo {
+            background-color: #00B42A;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-concluir-directo:hover {
+            background-color: #008f22;
+            transform: scale(1.05);
+        }
+
+        .estado-bloqueado {
+            background-color: #dbeafe !important;
+            border-left: 4px solid #3b82f6 !important;
+        }
+
+        .logo-preview {
+            max-height: 80px;
+            max-width: 150px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .observacion-item {
+            background-color: #f5f3ff;
+            border-left: 4px solid #8b5cf6;
+            padding: 8px 12px;
+            margin-top: 6px;
+            border-radius: 4px;
+            font-size: 9.5pt;
+        }
+        .observacion-item .obs-autor {
+            font-weight: 600;
+            color: #5b21b6;
+        }
+        .observacion-item .obs-fecha {
+            font-size: 7.5pt;
+            color: #999;
+        }
+        .observacion-item .obs-texto {
+            margin-top: 2px;
+            color: #333;
+        }
+
+        /* Estilos para botón de guardar según rol */
+        .btn-guardar-mantenimiento {
+            background-color: #00B42A;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-guardar-mantenimiento:hover {
+            background-color: #008f22;
+            transform: scale(1.02);
+        }
+
+        .btn-enviar-proyectos {
+            background-color: #165DFF;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-enviar-proyectos:hover {
+            background-color: #0f4bc7;
+            transform: scale(1.02);
+        }
+
+        .btn-enviar-mantenimiento {
+            background-color: #FF7D00;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-enviar-mantenimiento:hover {
+            background-color: #e06a00;
+            transform: scale(1.02);
+        }
+
+        .btn-guardar-edicion {
+            background-color: #FF7D00;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-guardar-edicion:hover {
+            background-color: #e06a00;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- 🔑 INICIO DE SESIÓN -->
+<div id="loginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6 text-colegio-azul">🔐 Inicio de Sesión</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block font-semibold mb-1">Usuario</label>
+                <input type="text" id="usuarioLogin" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-colegio-azul">
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Contraseña</label>
+                <input type="password" id="passLogin" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-colegio-azul">
+            </div>
+            <button onclick="iniciarSesion()" class="w-full bg-colegio-azul text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Entrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- 📱 BARRA SUPERIOR -->
+<header id="barraSuperior" class="hidden bg-colegio-azul text-white py-3 px-6 shadow">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-xl font-bold">🏫 Gestión de Mantenimiento y Eventos</h1>
+        <div class="flex items-center gap-4">
+            <span id="nombreUsuarioActivo"></span>
+            <button onclick="cerrarSesion()" class="bg-white/20 px-3 py-1 rounded hover:bg-white/30">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 🧭 MENÚ DE NAVEGACIÓN -->
+<nav id="menuNavegacion" class="hidden bg-white shadow-sm border-b mb-6">
+    <div class="container mx-auto px-4 py-2 flex flex-wrap gap-2">
+        <button onclick="nuevaSolicitud()" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white">
+            <i class="fas fa-plus-circle"></i> Nueva Solicitud
+        </button>
+        <button onclick="mostrarSeccion('misSolicitudes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white">
+            <i class="fas fa-list"></i> Mis Solicitudes
+        </button>
+        <button id="btnProyectos" onclick="mostrarSeccion('bandaProyectos')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-clipboard-check"></i> Proyectos Generales
+        </button>
+        <button id="btnCoordinacion" onclick="mostrarSeccion('panelCoordinacion')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-cogs"></i> Mantenimiento
+        </button>
+    </div>
+</nav>
+
+<!-- 📄 CONTENIDO PRINCIPAL -->
+<main class="container mx-auto px-4 pb-10">
+
+    <!-- ✅ NUEVA / EDITAR SOLICITUD -->
+    <section id="nuevaSolicitud" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul" id="tituloFormSol">📝 Nueva Solicitud</h2>
+        <div class="bg-white rounded-lg shadow p-6 space-y-4">
+            <input type="hidden" id="idEditarSol" value="0">
+            <div>
+                <label class="block font-semibold mb-1">Tipo de solicitud</label>
+                <select id="tipoSolicitud" class="w-full border rounded-lg px-3 py-2" onchange="mostrarCamposEvento()">
+                    <option value="servicio">🛠️ Servicio de Mantenimiento</option>
+                    <option value="evento">📅 Evento Escolar</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Sección que solicita</label>
+                <select id="areaSolicitante" class="w-full border rounded-lg px-3 py-2">
+                    <option value="Preescolar">Preescolar</option>
+                    <option value="Primaria">Primaria</option>
+                    <option value="Secundaria">Secundaria</option>
+                    <option value="Preparatoria">Preparatoria</option>
+                    <option value="Administrativa">Administrativa</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Solicitante</label>
+                <input type="text" id="nombreSolicitante" class="w-full border rounded-lg px-3 py-2 bg-gray-100" readonly>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Descripción / Detalles</label>
+                <textarea id="descripcionSol" rows="4" class="w-full border rounded-lg px-3 py-2" placeholder="Describe lo que se necesita..."></textarea>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Fecha de solicitud</label>
+                <input type="date" id="fechaSolicitud" class="w-full border rounded-lg px-3 py-2">
+            </div>
+            <div id="camposEvento" class="hidden border p-4 rounded bg-gray-50 space-y-3">
+                <h4 class="font-bold text-colegio-naranja">📅 Datos del Evento</h4>
+                <div>
+                    <label class="block font-semibold mb-1">Nombre del evento</label>
+                    <input type="text" id="nombreEvento" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Fecha en que se requiere / Fecha del evento</label>
+                    <input type="date" id="fechaEvento" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Lugar solicitado</label>
+                    <input type="text" id="lugarEvento" class="w-full border rounded-lg px-3 py-2">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="guardarSolicitud()" id="btnGuardarSol" class="btn-enviar-proyectos">
+                    <i class="fas fa-paper-plane" id="btnIconoGuardar"></i>
+                    <span id="btnTextoGuardar">Enviar a Proyectos Generales</span>
+                </button>
+                <button onclick="cancelarEdicionSol()" id="btnCancelarSol" class="bg-gray-200 px-4 py-2 rounded-lg hidden">Cancelar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 📋 MIS SOLICITUDES -->
+    <section id="misSolicitudes" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Mis Solicitudes</h2>
+        <div id="listaMisSolicitudes" class="space-y-3"></div>
+    </section>
+
+    <!-- ⚖️ BANDEJA DE PROYECTOS GENERALES -->
+    <section id="bandaProyectos" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-naranja">⚖️ Bandeja de Proyectos Generales</h2>
+        <p class="mb-4 text-gray-600">Solicitudes pendientes, autorizadas y concluidas:</p>
+        <div id="listaProyectos" class="space-y-3"></div>
+    </section>
+
+    <!-- 🔧 MANTENIMIENTO -->
+    <section id="panelCoordinacion" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-verde">🔧 Mantenimiento</h2>
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="subPanelAdmin('solicitudes')" class="px-3 py-2 rounded bg-colegio-verde text-white text-sm">📋 Solicitudes</button>
+            <button onclick="subPanelAdmin('usuarios')" class="px-3 py-2 rounded bg-gray-200 text-sm">👤 Usuarios</button>
+            <button onclick="subPanelAdmin('configuracion')" class="px-3 py-2 rounded bg-gray-200 text-sm">⚙️ Configuración</button>
+        </div>
+
+        <div id="adminSolicitudes">
+            <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
+                <h3 class="font-bold">🔍 Filtrar Solicitudes</h3>
+                <div class="flex flex-wrap gap-3">
+                    <div>
+                        <label class="block text-sm font-semibold">Por solicitante</label>
+                        <input type="text" id="filtroSolicitante" placeholder="Nombre" class="border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold">Por fecha</label>
+                        <input type="date" id="filtroFecha" class="border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()">
+                    </div>
+                    <button onclick="limpiarFiltros()" class="bg-gray-200 px-3 py-1 rounded self-end">Limpiar</button>
+                </div>
+            </div>
+            <h3 class="font-bold mb-2">✅ Solicitudes</h3>
+            <div id="listaCoordinacion" class="space-y-3"></div>
+        </div>
+
+        <div id="adminUsuarios" class="hidden">
+            <h3 class="font-bold mb-3">👤 Gestión de Usuarios</h3>
+            <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><label class="font-semibold">Usuario (login)</label><input type="text" id="nuevoUsuario" class="w-full border rounded px-3 py-2"></div>
+                    <div><label class="font-semibold">Contraseña</label><input type="text" id="nuevoPass" class="w-full border rounded px-3 py-2"></div>
+                    <div><label class="font-semibold">Nombre completo</label><input type="text" id="nombreCompletoUsuario" class="w-full border rounded px-3 py-2"></div>
+                    <div><label class="font-semibold">Rol</label>
+                        <select id="rolUsuario" class="w-full border rounded px-3 py-2">
+                            <option value="seccion">Usuario de Sección</option>
+                            <option value="proyectos">Proyectos Generales</option>
+                            <option value="admin">Mantenimiento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="agregarUsuario()" id="btnAgregarUsuario" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Usuario</button>
+                    <button onclick="cancelarEdicionUsuario()" id="btnCancelarEditarUsuario" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar Edición</button>
+                </div>
+                <input type="hidden" id="editandoUsuario" value="">
+            </div>
+            <div id="listaUsuarios"></div>
+        </div>
+
+        <div id="adminConfiguracion" class="hidden">
+            <h3 class="font-bold mb-3">⚙️ Configuración</h3>
+            <div class="bg-white rounded shadow p-4 mb-4 space-y-4">
+                
+                <!-- 🔑 Cambiar Credenciales -->
+                <div>
+                    <h4 class="font-bold mb-2 text-colegio-azul">🔑 Cambiar Credenciales de Mantenimiento</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Nuevo Usuario</label>
+                            <input type="text" id="nuevoUsuarioAdmin" class="w-full border rounded px-3 py-2" placeholder="Ej: mantenimiento">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Nueva Contraseña</label>
+                            <input type="text" id="nuevaPassAdmin" class="w-full border rounded px-3 py-2" placeholder="Ej: nueva123">
+                        </div>
+                    </div>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <button onclick="cambiarCredencialesAdmin()" class="bg-colegio-azul text-white px-4 py-2 rounded hover:bg-blue-700">
+                            🔑 Cambiar Credenciales
+                        </button>
+                        <button onclick="restablecerCredencialesAdmin()" class="bg-colegio-naranja text-white px-4 py-2 rounded hover:bg-orange-600">
+                            🔄 Restablecer a admin/admin123
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">⚠️ Al cambiar el usuario, deberás usar el nuevo nombre para iniciar sesión.</p>
+                </div>
+                
+                <hr>
+                
+                <!-- 👤 Usuario de Mantenimiento -->
+                <div>
+                    <h4 class="font-bold mb-2">👤 Usuario de Mantenimiento</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Nombre del responsable</label>
+                            <input type="text" id="nombreMantenimiento" class="w-full border rounded px-3 py-2" placeholder="Ej: Ricardo Madera">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="guardarNombreMantenimiento()" class="btn-guardar-config w-full md:w-auto">💾 Guardar Nombre</button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Este nombre aparecerá como el responsable de mantenimiento en los documentos.</p>
+                </div>
+                
+                <hr>
+                
+                <!-- 🖼️ Logo -->
+                <div>
+                    <h4 class="font-bold mb-2">🖼️ Logo del Colegio</h4>
+                    <div class="flex flex-col md:flex-row gap-4 items-start">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold mb-1">Seleccionar imagen</label>
+                            <input type="file" id="inputLogo" accept="image/*" class="w-full border rounded px-3 py-2" onchange="cargarLogo(this)">
+                            <p class="text-xs text-gray-500 mt-1">Formatos: PNG, JPG, SVG, GIF. Tamaño recomendado: 120x60px</p>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold mb-1">Vista previa</label>
+                            <div id="previewLogoContainer" class="border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center min-h-[100px] bg-gray-50">
+                                <img id="previewLogo" class="logo-preview" style="display:none;" alt="Vista previa del logo">
+                                <span id="sinLogoText" class="text-gray-400 text-sm">Sin logo configurado</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex gap-2">
+                        <button onclick="eliminarLogo()" class="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200">🗑️ Eliminar Logo</button>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- 📱 WhatsApp -->
+                <div>
+                    <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="numeroWhatsApp" class="flex-1 border rounded px-3 py-2" oninput="actualizarWhatsApp()">
+                        <span id="numeroActualWhatsApp" class="text-colegio-azul font-semibold self-center"></span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- 💾 Respaldos -->
+                <div>
+                    <h4 class="font-bold mb-2">💾 Respaldar / Restaurar Información</h4>
+                    <button onclick="crearRespaldo()" class="bg-colegio-verde text-white px-4 py-2 rounded mr-2">⬇️ Respaldar Información</button>
+                    <button onclick="document.getElementById('archivoRespaldo').click()" class="bg-colegio-naranja text-white px-4 py-2 rounded">⬆️ Restaurar desde Archivo</button>
+                    <input type="file" id="archivoRespaldo" accept=".json" class="hidden" onchange="restaurarRespaldo(this)">
+                    <p class="text-sm text-gray-500 mt-2">• Respaldar: descarga un archivo con toda la información<br>• Restaurar: selecciona un archivo de respaldo para recuperar los datos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ===== CONTENEDOR DE IMPRESIÓN ===== -->
+<div id="formatoImpresion" class="formato-impresion"></div>
+
+<script>
+// ==================== CONFIGURACIÓN DE API ====================
+const API_URL = 'https://gestion-mantenimiento-api-p76j.onrender.com/api';
+    
+// ==================== DATOS INICIALES ====================
+let usuarioActivo = null;
+let usuarios = JSON.parse(localStorage.getItem('listaUsuarios')) || {};
+
+let nombreResponsableMantenimiento = localStorage.getItem('nombreResponsableMantenimiento') || 'Ricardo Madera';
+
+if (!usuarios.admin) {
+    usuarios.admin = { pass: 'admin123', rol: 'admin', nombre: nombreResponsableMantenimiento };
+} else {
+    usuarios.admin.nombre = nombreResponsableMantenimiento;
+}
+
+if (!usuarios.proyectos) {
+    usuarios.proyectos = { pass: 'proy123', rol: 'proyectos', nombre: 'Proyectos Generales' };
+}
+
+let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+let inventario = JSON.parse(localStorage.getItem('inventario')) || [];
+let asignaciones = JSON.parse(localStorage.getItem('asignaciones')) || [];
+let programacion = JSON.parse(localStorage.getItem('programacion')) || [];
+let contadorId = parseInt(localStorage.getItem('contadorId')) || 1;
+let numeroWhatsAppDestino = localStorage.getItem('numeroWhatsApp') || '';
+let logoDataURL = localStorage.getItem('logoDataURL') || '';
+
+function guardarDatos() {
+    localStorage.setItem('listaUsuarios', JSON.stringify(usuarios));
+    localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+    localStorage.setItem('inventario', JSON.stringify(inventario));
+    localStorage.setItem('asignaciones', JSON.stringify(asignaciones));
+    localStorage.setItem('programacion', JSON.stringify(programacion));
+    localStorage.setItem('contadorId', contadorId.toString());
+    localStorage.setItem('numeroWhatsApp', numeroWhatsAppDestino);
+    localStorage.setItem('logoDataURL', logoDataURL);
+    localStorage.setItem('nombreResponsableMantenimiento', nombreResponsableMantenimiento);
+}
+
+// ==================== NOMBRE DE MANTENIMIENTO ====================
+function guardarNombreMantenimiento() {
+    const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
+    if (!nuevoNombre) {
+        alert('⚠️ Por favor ingresa un nombre válido');
+        return;
+    }
+    
+    nombreResponsableMantenimiento = nuevoNombre;
+    if (usuarios.admin) {
+        usuarios.admin.nombre = nuevoNombre;
+    }
+    guardarDatos();
+    
+    if (usuarioActivo && usuarioActivo.id === 'admin') {
+        usuarioActivo.nombre = nuevoNombre;
+        localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+        document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre;
+    }
+    
+    alert('✅ Nombre del responsable de mantenimiento actualizado correctamente');
+    cargarListaUsuarios();
+}
+
+function cargarNombreMantenimiento() {
+    document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
+}
+
+// ==================== CAMBIAR CREDENCIALES ADMIN ====================
+function cambiarCredencialesAdmin() {
+    const nuevoUsuario = document.getElementById('nuevoUsuarioAdmin').value.trim();
+    const nuevaPass = document.getElementById('nuevaPassAdmin').value.trim();
+    
+    if (!nuevoUsuario && !nuevaPass) {
+        alert('⚠️ Debes ingresar al menos un nuevo usuario o una nueva contraseña');
+        return;
+    }
+    
+    let mensaje = '⚠️ ¿Estás seguro de que quieres cambiar las credenciales?\n\n';
+    if (nuevoUsuario) {
+        mensaje += `📝 Nuevo usuario: ${nuevoUsuario}\n`;
+    }
+    if (nuevaPass) {
+        mensaje += `🔑 Nueva contraseña: ${nuevaPass}\n`;
+    }
+    mensaje += '\n⚠️ Después del cambio, deberás iniciar sesión con las nuevas credenciales.';
+    
+    if (!confirm(mensaje)) return;
+    
+    const adminActual = usuarios.admin;
+    if (!adminActual) {
+        alert('❌ No se encontró la cuenta de administrador');
+        return;
+    }
+    
+    const nuevoAdmin = {
+        pass: nuevaPass || adminActual.pass,
+        rol: 'admin',
+        nombre: adminActual.nombre
+    };
+    
+    if (nuevoUsuario && nuevoUsuario !== 'admin') {
+        if (usuarios[nuevoUsuario]) {
+            alert(`❌ El usuario "${nuevoUsuario}" ya existe. Elige otro nombre.`);
+            return;
+        }
+        delete usuarios.admin;
+        usuarios[nuevoUsuario] = nuevoAdmin;
+        
+        if (usuarioActivo && usuarioActivo.id === 'admin') {
+            usuarioActivo.id = nuevoUsuario;
+            usuarioActivo.nombre = nuevoAdmin.nombre;
+            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+            document.getElementById('nombreUsuarioActivo').textContent = nuevoAdmin.nombre;
+        }
+        
+        alert(`✅ Credenciales actualizadas correctamente.\n\n📝 Nuevo usuario: ${nuevoUsuario}\n🔑 Nueva contraseña: ${nuevoAdmin.pass}\n\n⚠️ Usa estas credenciales para iniciar sesión.`);
+    } else {
+        usuarios.admin = nuevoAdmin;
+        alert(`✅ Contraseña actualizada correctamente.\n\n🔑 Nueva contraseña: ${nuevoAdmin.pass}`);
+    }
+    
+    guardarDatos();
+    cargarListaUsuarios();
+    
+    document.getElementById('nuevoUsuarioAdmin').value = '';
+    document.getElementById('nuevaPassAdmin').value = '';
+    
+    if (nuevoUsuario && nuevoUsuario !== 'admin') {
+        if (confirm('🔄 ¿Quieres cerrar sesión para probar las nuevas credenciales?')) {
+            cerrarSesion();
+        }
+    }
+}
+
+function restablecerCredencialesAdmin() {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres RESTABLECER las credenciales?\n\nUsuario: admin\nContraseña: admin123\n\n⚠️ Esta acción eliminará cualquier cambio que hayas hecho.')) return;
+    
+    let usuarioAdminActual = 'admin';
+    if (!usuarios.admin) {
+        for (const [key, value] of Object.entries(usuarios)) {
+            if (value.rol === 'admin') {
+                usuarioAdminActual = key;
+                break;
+            }
+        }
+    }
+    
+    const adminDefault = {
+        pass: 'admin123',
+        rol: 'admin',
+        nombre: nombreResponsableMantenimiento || 'Ricardo Madera'
+    };
+    
+    if (usuarioAdminActual !== 'admin' && usuarios[usuarioAdminActual]) {
+        delete usuarios[usuarioAdminActual];
+    }
+    
+    usuarios.admin = adminDefault;
+    
+    guardarDatos();
+    cargarListaUsuarios();
+    
+    alert('✅ Credenciales restablecidas correctamente.\n\n📝 Usuario: admin\n🔑 Contraseña: admin123');
+    
+    if (usuarioActivo && usuarioActivo.id !== 'admin') {
+        if (confirm('🔄 Las credenciales han cambiado. ¿Quieres cerrar sesión?')) {
+            cerrarSesion();
+        }
+    } else {
+        if (usuarioActivo) {
+            usuarioActivo.id = 'admin';
+            usuarioActivo.nombre = adminDefault.nombre;
+            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+            document.getElementById('nombreUsuarioActivo').textContent = adminDefault.nombre;
+        }
+    }
+    
+    document.getElementById('nuevoUsuarioAdmin').value = '';
+    document.getElementById('nuevaPassAdmin').value = '';
+}
+
+// ==================== LOGO ====================
+function cargarLogo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        logoDataURL = e.target.result;
+        guardarDatos();
+        mostrarLogo();
+        alert('✅ Logo cargado correctamente');
+    };
+    reader.readAsDataURL(file);
+}
+
+function mostrarLogo() {
+    const preview = document.getElementById('previewLogo');
+    const sinLogoText = document.getElementById('sinLogoText');
+    if (logoDataURL) {
+        preview.src = logoDataURL;
+        preview.style.display = 'block';
+        sinLogoText.style.display = 'none';
+    } else {
+        preview.style.display = 'none';
+        sinLogoText.style.display = 'block';
+    }
+}
+
+function eliminarLogo() {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres eliminar el logo?')) return;
+    logoDataURL = '';
+    guardarDatos();
+    mostrarLogo();
+    document.getElementById('inputLogo').value = '';
+    alert('🗑️ Logo eliminado correctamente');
+}
+
+// ==================== ACTUALIZAR TEXTO DEL BOTÓN ====================
+function actualizarTextoBoton() {
+    const btnTexto = document.getElementById('btnTextoGuardar');
+    const btnIcono = document.getElementById('btnIconoGuardar');
+    const btnGuardar = document.getElementById('btnGuardarSol');
+    const idEditar = parseInt(document.getElementById('idEditarSol').value);
+    
+    if (!btnTexto || !btnIcono || !btnGuardar) return;
+    
+    // Si estamos editando (idEditar > 0)
+    if (idEditar > 0) {
+        btnTexto.textContent = 'Guardar Cambios';
+        btnIcono.className = 'fas fa-save';
+        btnGuardar.className = 'btn-guardar-edicion';
+        return;
+    }
+    
+    // Si es una nueva solicitud, según el rol
+    if (usuarioActivo && usuarioActivo.rol === 'admin') {
+        // Mantenimiento
+        btnTexto.textContent = 'Guardar Solicitud';
+        btnIcono.className = 'fas fa-save';
+        btnGuardar.className = 'btn-guardar-mantenimiento';
+    } else if (usuarioActivo && usuarioActivo.rol === 'proyectos') {
+        // Proyectos Generales
+        btnTexto.textContent = 'Enviar a Mantenimiento';
+        btnIcono.className = 'fas fa-tools';
+        btnGuardar.className = 'btn-enviar-mantenimiento';
+    } else {
+        // Usuario de Sección
+        btnTexto.textContent = 'Enviar a Proyectos Generales';
+        btnIcono.className = 'fas fa-paper-plane';
+        btnGuardar.className = 'btn-enviar-proyectos';
+    }
+}
+
+// ==================== SESIÓN ====================
+function iniciarSesion() {
+    const user = document.getElementById('usuarioLogin').value.trim();
+    const pass = document.getElementById('passLogin').value;
+    
+    if (!usuarios[user] || usuarios[user].pass !== pass) {
+        alert('❌ Usuario o contraseña incorrectos');
+        return;
+    }
+    
+    usuarioActivo = { id: user, ...usuarios[user] };
+    localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+    document.getElementById('loginModal').classList.add('hidden');
+    document.getElementById('barraSuperior').classList.remove('hidden');
+    document.getElementById('menuNavegacion').classList.remove('hidden');
+    document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+    
+    if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
+    if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
+    
+    document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
+    cargarNombreMantenimiento();
+    mostrarLogo();
+    
+    // Actualizar el botón según el rol
+    actualizarTextoBoton();
+    nuevaSolicitud();
+}
+
+function cerrarSesion() {
+    localStorage.removeItem('usuarioActivo');
+    location.reload();
+}
+
+// ==================== RECUPERAR SESIÓN ====================
+function recuperarSesion() {
+    const guardado = localStorage.getItem('usuarioActivo');
+    if (guardado) {
+        usuarioActivo = JSON.parse(guardado);
+        document.getElementById('loginModal').classList.add('hidden');
+        document.getElementById('barraSuperior').classList.remove('hidden');
+        document.getElementById('menuNavegacion').classList.remove('hidden');
+        document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+        if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
+        if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
+        document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
+        cargarNombreMantenimiento();
+        mostrarLogo();
+        actualizarTextoBoton();
+        nuevaSolicitud();
+    }
+}
+
+// ==================== NAVEGACIÓN ====================
+function ocultarTodasSecciones() {
+    document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden'));
+}
+
+function mostrarSeccion(id) {
+    ocultarTodasSecciones();
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'misSolicitudes') cargarMisSolicitudes();
+    if (id === 'bandaProyectos') cargarBandejaProyectos();
+    if (id === 'panelCoordinacion') {
+        subPanelAdmin('solicitudes');
+        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
+        cargarNombreMantenimiento();
+        mostrarLogo();
+    }
+}
+
+// ==================== NUEVA SOLICITUD ====================
+function nuevaSolicitud() {
+    cancelarEdicionSol();
+    mostrarSeccion('nuevaSolicitud');
+    document.getElementById('nombreSolicitante').value = usuarioActivo?.nombre || '';
+    const campoFecha = document.getElementById('fechaSolicitud');
+    if (campoFecha) {
+        const hoy = new Date();
+        campoFecha.value = hoy.toISOString().split('T')[0];
+    }
+    actualizarTextoBoton();
+    document.getElementById('nuevaSolicitud').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ==================== SUBPANELES MANTENIMIENTO ====================
+function subPanelAdmin(panel) {
+    const paneles = ['adminSolicitudes','adminUsuarios','adminConfiguracion'];
+    paneles.forEach(p => document.getElementById(p).classList.add('hidden'));
+    document.getElementById('admin'+panel.charAt(0).toUpperCase()+panel.slice(1)).classList.remove('hidden');
+    if (panel==='solicitudes') filtrarSolicitudesCoordinacion();
+    if (panel==='usuarios') cargarListaUsuarios();
+    if (panel==='configuracion') { cargarNombreMantenimiento(); mostrarLogo(); }
+}
+
+// ==================== MOSTRAR CAMPOS DE EVENTO ====================
+function mostrarCamposEvento() {
+    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
+}
+
+// ==================== FUNCIÓN DE DESBLOQUEO ====================
+function desbloquearSolicitud(id) {
+    if (!confirm('⚠️ ¿Estás seguro de que quieres DESBLOQUEAR esta solicitud?')) {
+        return;
+    }
+    
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    solicitudes[idx].estadoAnterior = solicitudes[idx].estado;
+    solicitudes[idx].estado = 'DESBLOQUEADA';
+    solicitudes[idx].fechaDesbloqueo = new Date().toLocaleString('es-MX');
+    solicitudes[idx].desbloqueadoPor = usuarioActivo.nombre;
+    
+    guardarDatos();
+    alert('🔓 Solicitud desbloqueada correctamente.');
+    
+    const seccionActual = document.querySelector('main>section:not(.hidden)');
+    if (seccionActual) {
+        const idSeccion = seccionActual.id;
+        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+    }
+}
+
+// ==================== FUNCIÓN DE BLOQUEO ====================
+function bloquearSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    if (s.estado !== 'DESBLOQUEADA') {
+        alert('⚠️ Esta solicitud no está desbloqueada.');
+        return;
+    }
+    
+    let mensaje = `🔒 ¿Estás seguro de que quieres BLOQUEAR esta solicitud?\n\n`;
+    mensaje += `📋 Solicitud #${s.id}\n`;
+    mensaje += `👤 Solicitante: ${s.solicitante}\n`;
+    mensaje += `📅 Fecha: ${s.fechaSolicitud}\n`;
+    mensaje += `📌 Estado actual: DESBLOQUEADA\n\n`;
+    mensaje += `Volverá a su estado anterior: ${s.estadoAnterior || 'PENDIENTE_PROYECTOS'}`;
+    
+    if (!confirm(mensaje)) return;
+    
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    const estadoRestaurado = solicitudes[idx].estadoAnterior || 'PENDIENTE_PROYECTOS';
+    solicitudes[idx].estado = estadoRestaurado;
+    solicitudes[idx].estadoAnterior = undefined;
+    solicitudes[idx].fechaDesbloqueo = undefined;
+    solicitudes[idx].desbloqueadoPor = undefined;
+    solicitudes[idx].fechaBloqueo = new Date().toLocaleString('es-MX');
+    solicitudes[idx].bloqueadoPor = usuarioActivo.nombre;
+    
+    guardarDatos();
+    alert(`🔒 Solicitud bloqueada correctamente.`);
+    
+    const seccionActual = document.querySelector('main>section:not(.hidden)');
+    if (seccionActual) {
+        const idSeccion = seccionActual.id;
+        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+    }
+}
+
+// ==================== ELIMINAR SOLICITUD ====================
+function eliminarSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    let mensaje = `⚠️ ¿Estás seguro de que quieres ELIMINAR esta solicitud?\n\n`;
+    mensaje += `📋 Solicitud #${s.id}\n`;
+    mensaje += `👤 Solicitante: ${s.solicitante}\n`;
+    mensaje += `📅 Fecha: ${s.fechaSolicitud}\n`;
+    mensaje += `📌 Estado: ${s.estado}\n\n`;
+    mensaje += `❌ Esta acción NO se puede deshacer.`;
+    
+    if (!confirm(mensaje)) return;
+    
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    solicitudes.splice(idx, 1);
+    guardarDatos();
+    alert('🗑️ Solicitud eliminada correctamente');
+    
+    const seccionActual = document.querySelector('main>section:not(.hidden)');
+    if (seccionActual) {
+        const idSeccion = seccionActual.id;
+        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+    }
+}
+
+// ==================== EDITAR SOLICITUD ====================
+function editarSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) { alert('❌ No se encontró la solicitud'); return; }
+    
+    const estaDesbloqueada = s.estado === 'DESBLOQUEADA';
+    
+    if (estaDesbloqueada) {
+        const esCreador = s.solicitante === usuarioActivo.nombre;
+        const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos';
+        
+        if (!esCreador && !tienePermiso) {
+            alert('🔒 Esta solicitud está desbloqueada, pero solo el creador o Administración/Proyectos pueden modificarla.');
+            return;
+        }
+        
+        cargarDatosEdicion(s);
+        return;
+    }
+    
+    if (s.estado === 'RECHAZADA') { 
+        alert('❌ No se puede modificar una solicitud rechazada'); 
+        return; 
+    }
+
+    const esUsuarioComun = (!usuarioActivo.rol || usuarioActivo.rol === 'seccion');
+    if (esUsuarioComun && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO')) {
+        alert('🔒 Esta solicitud ya fue autorizada. Solo Proyectos o Mantenimiento pueden modificarla o desbloquearla.');
+        return;
+    }
+    
+    if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
+        if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') {
+            if (confirm('🔓 Esta solicitud está ' + s.estado + '.\n\n¿Quieres DESBLOQUEARLA para que el creador pueda modificarla?\n\n• "Aceptar" = Desbloquear\n• "Cancelar" = Editar directamente')) {
+                desbloquearSolicitud(id);
+                return;
+            }
+        }
+        cargarDatosEdicion(s);
+        return;
+    }
+    
+    if (s.estado === 'PENDIENTE_PROYECTOS') {
+        cargarDatosEdicion(s);
+        return;
+    }
+}
+
+function cargarDatosEdicion(s) {
+    document.getElementById('idEditarSol').value = s.id;
+    document.getElementById('tituloFormSol').innerHTML = '📝 Editar Solicitud #' + s.id + (s.estado === 'DESBLOQUEADA' ? ' 🔓 (Desbloqueada)' : '');
+    document.getElementById('tipoSolicitud').value = s.tipo;
+    document.getElementById('areaSolicitante').value = s.area;
+    document.getElementById('nombreSolicitante').value = s.solicitante;
+    document.getElementById('descripcionSol').value = s.descripcion;
+    document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
+
+    if (s.tipo === 'evento') {
+        document.getElementById('nombreEvento').value = s.nombreEvento || '';
+        document.getElementById('fechaEvento').value = s.fechaEvento || '';
+        document.getElementById('lugarEvento').value = s.lugarEvento || '';
+        document.getElementById('camposEvento').classList.remove('hidden');
+    } else {
+        document.getElementById('nombreEvento').value = '';
+        document.getElementById('fechaEvento').value = '';
+        document.getElementById('lugarEvento').value = '';
+        document.getElementById('camposEvento').classList.add('hidden');
+    }
+
+    // Cambiar el botón a modo edición
+    const btnGuardar = document.getElementById('btnGuardarSol');
+    const btnIcono = document.getElementById('btnIconoGuardar');
+    const btnTexto = document.getElementById('btnTextoGuardar');
+    
+    btnGuardar.className = 'btn-guardar-edicion';
+    btnIcono.className = 'fas fa-save';
+    btnTexto.textContent = 'Guardar Cambios';
+    
+    document.getElementById('btnCancelarSol').classList.remove('hidden');
+    mostrarSeccion('nuevaSolicitud');
+}
+
+function cancelarEdicionSol() {
+    document.getElementById('idEditarSol').value = '0';
+    document.getElementById('tituloFormSol').innerHTML = '📝 Nueva Solicitud';
+    document.getElementById('tipoSolicitud').value = 'servicio';
+    document.getElementById('areaSolicitante').value = 'Preescolar';
+    document.getElementById('nombreSolicitante').value = '';
+    document.getElementById('descripcionSol').value = '';
+    document.getElementById('fechaSolicitud').value = '';
+    document.getElementById('nombreEvento').value = '';
+    document.getElementById('fechaEvento').value = '';
+    document.getElementById('lugarEvento').value = '';
+    document.getElementById('camposEvento').classList.add('hidden');
+    
+    // Restaurar el botón según el rol
+    actualizarTextoBoton();
+    document.getElementById('btnCancelarSol').classList.add('hidden');
+}
+
+// ==================== GUARDAR SOLICITUD ====================
+function guardarSolicitud() {
+    const idEditar = parseInt(document.getElementById('idEditarSol').value);
+    const tipo = document.getElementById('tipoSolicitud').value;
+    
+    const s = {
+        id: idEditar > 0 ? idEditar : contadorId++,
+        tipo: tipo,
+        area: document.getElementById('areaSolicitante').value,
+        descripcion: document.getElementById('descripcionSol').value.trim(),
+        fechaSolicitud: document.getElementById('fechaSolicitud').value,
+        fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
+        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '',
+        lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
+        solicitante: document.getElementById('nombreSolicitante').value,
+        fechaEnvio: new Date().toLocaleString('es-MX'),
+        observaciones: []
+    };
+
+    if (!s.descripcion || !s.fechaSolicitud) { 
+        alert('⚠️ Completa la descripción y la fecha de solicitud'); 
+        return; 
+    }
+    if (tipo === 'evento' && (!s.nombreEvento || !s.fechaEvento || !s.lugarEvento)) { 
+        alert('⚠️ Completa todos los datos del evento'); 
+        return; 
+    }
+
+    if (idEditar > 0) {
+        const idx = solicitudes.findIndex(x => x.id === idEditar);
+        if (idx === -1) {
+            alert('❌ Error: No se encontró la solicitud a editar');
+            return;
+        }
+        
+        const estadoActual = solicitudes[idx].estado;
+        const estaDesbloqueada = estadoActual === 'DESBLOQUEADA';
+        
+        if (estaDesbloqueada) {
+            const estadoAnterior = solicitudes[idx].estadoAnterior || 'PENDIENTE_PROYECTOS';
+            s.estado = estadoAnterior;
+            s.estadoAnterior = undefined;
+            s.fechaDesbloqueo = undefined;
+            s.desbloqueadoPor = undefined;
+            s.observaciones = solicitudes[idx].observaciones || [];
+            alert('🔓 Solicitud desbloqueada → ahora vuelve a estado: ' + estadoAnterior);
+        } else if (usuarioActivo.rol === 'admin') {
+            s.estado = estadoActual;
+            s.observaciones = solicitudes[idx].observaciones || [];
+            alert('✅ Solicitud actualizada directamente (Mantenimiento)');
+        } else if (usuarioActivo.rol === 'proyectos') {
+            s.estado = estadoActual;
+            s.observaciones = solicitudes[idx].observaciones || [];
+            alert('✅ Solicitud actualizada directamente (Proyectos Generales)');
+        } else if (usuarioActivo.rol === 'seccion' || !usuarioActivo.rol) {
+            s.estado = 'PENDIENTE_PROYECTOS';
+            s.observaciones = solicitudes[idx].observaciones || [];
+            alert('✅ Modificación enviada → requiere revisión de Proyectos');
+        }
+        
+        solicitudes[idx] = s;
+    } else {
+        // 🔧 NUEVA LÓGICA SEGÚN EL ROL
+        if (usuarioActivo.rol === 'admin') {
+            // Mantenimiento: crea directamente
+            s.estado = 'PENDIENTE_MANTENIMIENTO';
+            alert('✅ Solicitud creada directamente por Mantenimiento');
+        } else if (usuarioActivo.rol === 'proyectos') {
+            // Proyectos Generales: se autoautoriza y envía a mantenimiento
+            s.estado = 'APROBADA';
+            s.autorizadoPor = usuarioActivo.nombre;
+            s.fechaAutorizacion = new Date().toLocaleString('es-MX');
+            alert('✅ Solicitud autorizada automáticamente por Proyectos Generales y enviada a Mantenimiento');
+        } else {
+            // Usuario de Sección: envía a Proyectos
+            s.estado = 'PENDIENTE_PROYECTOS';
+            alert('✅ Solicitud enviada a Proyectos Generales');
+        }
+        solicitudes.push(s);
+    }
+
+    guardarDatos();
+    cancelarEdicionSol();
+
+    if (usuarioActivo.rol === 'proyectos') {
+        mostrarSeccion('bandaProyectos');
+    } else if (usuarioActivo.rol === 'admin') {
+        mostrarSeccion('panelCoordinacion');
+    } else {
+        mostrarSeccion('misSolicitudes');
+    }
+}
+
+// ==================== CONCLUIR DIRECTAMENTE ====================
+function concluirDirecto(id) {
+    if (!confirm('✅ ¿Estás seguro de que quieres CONCLUIR esta solicitud directamente?\n\nNo necesita autorización de Proyectos Generales.')) return;
+    
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    solicitudes[idx].estado = 'CONCLUIDO';
+    solicitudes[idx].concluidoPor = usuarioActivo.nombre;
+    solicitudes[idx].fechaConclusion = new Date().toLocaleString('es-MX');
+    
+    guardarDatos();
+    alert('✅ Solicitud concluida directamente por Mantenimiento');
+    
+    const seccionActual = document.querySelector('main>section:not(.hidden)');
+    if (seccionActual) {
+        const idSeccion = seccionActual.id;
+        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+    }
+}
+
+// ==================== FUNCIÓN PARA ENVIAR POR WHATSAPP ====================
+function enviarWhatsApp(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    if (!numeroWhatsAppDestino) {
+        alert('⚠️ No hay número de WhatsApp configurado. Ve a Configuración y agrega un número.');
+        return;
+    }
+    
+    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n';
+    mensaje += '📌 Folio: #' + s.id + '\n';
+    mensaje += '👤 Solicitante: ' + s.solicitante + '\n';
+    mensaje += '🏫 Sección: ' + s.area + '\n';
+    mensaje += '📅 Fecha: ' + s.fechaSolicitud + '\n';
+    mensaje += '📝 Descripción: ' + s.descripcion + '\n';
+    
+    if (s.tipo === 'evento') {
+        mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n';
+        mensaje += '📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n';
+        mensaje += '📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
+    }
+    
+    mensaje += '\n📌 *Estado: ' + s.estado + '*';
+    
+    if (s.autorizadoPor) {
+        mensaje += '\n✅ Autorizado por: ' + s.autorizadoPor;
+    }
+    
+    if (s.concluidoPor) {
+        mensaje += '\n🔧 Concluido por: ' + s.concluidoPor;
+    }
+    
+    if (s.observaciones && s.observaciones.length > 0) {
+        mensaje += '\n\n📝 *Observaciones:*';
+        s.observaciones.forEach(obs => {
+            mensaje += '\n• ' + obs.autor + ' (' + obs.rol + '): ' + obs.texto;
+        });
+    }
+    
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const url = 'https://wa.me/' + numeroWhatsAppDestino + '?text=' + mensajeCodificado;
+    window.open(url, '_blank');
+}
+
+// ==================== FUNCIÓN PARA AGREGAR OBSERVACIONES ====================
+function agregarObservacion(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    if (usuarioActivo.rol !== 'proyectos' && usuarioActivo.rol !== 'admin') {
+        alert('⚠️ Solo Proyectos Generales y Mantenimiento pueden agregar observaciones.');
+        return;
+    }
+    
+    const observacion = prompt('📝 Ingresa tu observación para la solicitud #' + id + ':');
+    if (!observacion || observacion.trim() === '') return;
+    
+    if (!s.observaciones) s.observaciones = [];
+    
+    s.observaciones.push({
+        autor: usuarioActivo.nombre,
+        rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos Generales',
+        fecha: new Date().toLocaleString('es-MX'),
+        texto: observacion.trim()
+    });
+    
+    guardarDatos();
+    alert('✅ Observación agregada correctamente');
+    
+    const seccionActual = document.querySelector('main>section:not(.hidden)');
+    if (seccionActual) {
+        const idSeccion = seccionActual.id;
+        if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
+        if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
+        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+    }
+}
+
+// ==================== MIS SOLICITUDES ====================
+function cargarMisSolicitudes() {
+    const lista = document.getElementById('listaMisSolicitudes'); 
+    lista.innerHTML = '';
+    
+    const misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre);
+    if (misSolicitudes.length === 0) {
+        lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas.</p>';
+        return;
+    }
+    
+    misSolicitudes.forEach(s => {
+        let est = '';
+        let claseExtra = '';
+        let badge = '';
+        
+        if (s.estado === 'DESBLOQUEADA') {
+            est = '🔓 Desbloqueada';
+            claseExtra = 'estado-desbloqueado';
+            badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
+        } else if (s.estado === 'PENDIENTE_PROYECTOS') {
+            est = '🟡 En evaluación (Proyectos)';
+        } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
+            est = '🟡 Pendiente de Mantenimiento';
+            badge = '<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>';
+        } else if (s.estado === 'APROBADA') {
+            est = '🟢 Autorizada';
+        } else if (s.estado === 'CONCLUIDO') {
+            est = '✅ Concluida';
+        } else if (s.estado === 'RECHAZADA') {
+            est = '🔴 Rechazada';
+        }
+
+        lista.innerHTML += `
+        <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
+            <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
+            <div class="text-sm text-gray-600">Fecha solicitud: ${s.fechaSolicitud}</div>
+            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
+            <div class="text-sm mt-1">${s.descripcion}</div>
+            <div class="mt-2 font-semibold">${est} ${badge}</div>
+            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</div>` : ''}
+            <div class="mt-2 flex gap-2 flex-wrap">
+                <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+                ${s.estado !== 'RECHAZADA' ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : ''}
+                ${usuarioActivo.rol === 'admin' && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? 
+                    `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
+            </div>
+        </div>`;
+    });
+}
+
+// ==================== BANDEJA PROYECTOS ====================
+function cargarBandejaProyectos() {
+    const lista = document.getElementById('listaProyectos'); 
+    lista.innerHTML = '';
+    
+    const proyectos = solicitudes.filter(s => 
+        s.estado === 'PENDIENTE_PROYECTOS' || 
+        s.estado === 'APROBADA' || 
+        s.estado === 'CONCLUIDO' ||
+        s.estado === 'DESBLOQUEADA'
+    );
+    
+    if (proyectos.length === 0) {
+        lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes registradas.</p>';
+        return;
+    }
+    
+    proyectos.forEach(s => {
+        let etiquetaEstado = '', colorFila = '', badge = '';
+        
+        if (s.estado === 'DESBLOQUEADA') { 
+            etiquetaEstado = '🔓 Desbloqueada'; 
+            colorFila = 'bg-yellow-50'; 
+            badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
+        } else if (s.estado === 'PENDIENTE_PROYECTOS') { 
+            etiquetaEstado = '🟡 En evaluación'; 
+            colorFila = 'bg-yellow-50'; 
+        } else if (s.estado === 'APROBADA') { 
+            etiquetaEstado = '🟢 Autorizada'; 
+            colorFila = 'bg-green-50'; 
+        } else if (s.estado === 'CONCLUIDO') { 
+            etiquetaEstado = '✅ Concluida'; 
+            colorFila = 'bg-gray-100'; 
+        }
+
+        let botones = '';
+        if (s.estado === 'PENDIENTE_PROYECTOS') {
+            botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button>
+                        <button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
+        }
+        
+        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo.rol === 'proyectos') {
+            botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
+        }
+        
+        if (s.estado === 'DESBLOQUEADA' && usuarioActivo.rol === 'proyectos') {
+            botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
+        }
+        
+        if (usuarioActivo.rol === 'proyectos') {
+            botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>`;
+            botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
+        }
+        
+        if (numeroWhatsAppDestino) {
+            botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
+        }
+        
+        botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button>
+                    <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
+
+        let obsHTML = '';
+        if (s.observaciones && s.observaciones.length > 0) {
+            obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
+            s.observaciones.forEach(obs => {
+                obsHTML += `
+                <div class="observacion-item">
+                    <div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div>
+                    <div class="obs-texto">${obs.texto}</div>
+                </div>`;
+            });
+            obsHTML += `</div>`;
+        }
+
+        lista.innerHTML += `
+        <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
+            <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Fecha: ${s.fechaSolicitud}</div>
+            <div class="text-sm mt-1">${s.descripcion}</div>
+            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
+            <div class="mt-2 font-semibold">${etiquetaEstado} ${badge}</div>
+            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</div>` : ''}
+            ${obsHTML}
+            <div class="mt-3 flex flex-wrap gap-2">${botones}</div>
+        </div>`;
+    });
+}
+
+// ==================== FUNCIONES AUTORIZAR, RECHAZAR Y CONCLUIR ====================
+function autorizar(id) {
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) {
+        alert('❌ No se encontró la solicitud');
+        return;
+    }
+    
+    if (solicitudes[idx].estado === 'PENDIENTE_MANTENIMIENTO') {
+        alert('⚠️ Esta solicitud es de Mantenimiento, no necesita autorización.');
+        return;
+    }
+    
+    solicitudes[idx].autorizadoPor = usuarioActivo.nombre;
+    solicitudes[idx].fechaAutorizacion = new Date().toLocaleString('es-MX');
+    solicitudes[idx].estado = 'APROBADA';
+    
+    guardarDatos();
+    alert('✅ Solicitud autorizada por: ' + usuarioActivo.nombre);
+    cargarBandejaProyectos();
+}
+
+function rechazar(id) {
+    if(!confirm('¿Rechazar esta solicitud?')) return;
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) return;
+    
+    solicitudes[idx].estado = 'RECHAZADA';
+    solicitudes[idx].rechazadoPor = usuarioActivo.nombre;
+    solicitudes[idx].fechaRechazo = new Date().toLocaleString('es-MX');
+    
+    guardarDatos();
+    alert('🔴 Solicitud rechazada por: ' + usuarioActivo.nombre);
+    cargarBandejaProyectos();
+}
+
+function marcarConcluida(id) {
+    if(!confirm('¿El trabajo fue realizado? Se marcará como ✅ CONCLUIDA.')) return;
+    
+    const idx = solicitudes.findIndex(x => x.id === id);
+    if (idx === -1) return;
+    
+    solicitudes[idx].estado = 'CONCLUIDO';
+    solicitudes[idx].concluidoPor = usuarioActivo.nombre;
+    solicitudes[idx].fechaConclusion = new Date().toLocaleString('es-MX');
+    
+    guardarDatos();
+    alert('✅ Trabajo concluido por: ' + usuarioActivo.nombre);
+    filtrarSolicitudesCoordinacion();
+}
+
+// ==================== MANTENIMIENTO - FILTRAR ====================
+function filtrarSolicitudesCoordinacion() {
+    const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
+    const ff = document.getElementById('filtroFecha').value;
+    const lista = document.getElementById('listaCoordinacion'); 
+    lista.innerHTML = '';
+    
+    const filtradas = solicitudes.filter(s => 
+        s.estado === 'APROBADA' || 
+        s.estado === 'CONCLUIDO' || 
+        s.estado === 'DESBLOQUEADA' ||
+        s.estado === 'PENDIENTE_MANTENIMIENTO'
+    ).filter(s => {
+        if(fs && !s.solicitante.toLowerCase().includes(fs)) return false;
+        if(ff && s.fechaSolicitud !== ff) return false;
+        return true;
+    });
+    
+    if (filtradas.length === 0) {
+        lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>';
+        return;
+    }
+    
+    filtradas.forEach(s => {
+        let est = '', clase = '', badge = '';
+        if(s.estado === 'DESBLOQUEADA'){ 
+            est='🔓 Desbloqueada'; 
+            clase='bg-yellow-50';
+            badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
+        } else if(s.estado === 'PENDIENTE_MANTENIMIENTO'){ 
+            est='🟡 Pendiente de Mantenimiento'; 
+            clase='bg-yellow-50';
+            badge = '<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>';
+        } else if(s.estado === 'APROBADA'){ 
+            est='🟢 Autorizada'; 
+            clase='bg-green-50'; 
+        } else if(s.estado === 'CONCLUIDO'){ 
+            est='✅ Concluida'; 
+            clase='bg-gray-100'; 
+        }
+        
+        let btnConcluir = '';
+        if((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin'){
+            btnConcluir = `<button onclick="marcarConcluida(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>`;
+        }
+        
+        let btnDesbloquear = '';
+        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo?.rol === 'admin') {
+            btnDesbloquear = `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>`;
+        }
+        
+        let btnBloquear = '';
+        if (s.estado === 'DESBLOQUEADA' && usuarioActivo?.rol === 'admin') {
+            btnBloquear = `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
+        }
+        
+        let btnEliminar = '';
+        let btnWhatsApp = '';
+        let btnObservacion = '';
+        if (usuarioActivo?.rol === 'admin') {
+            btnEliminar = `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>`;
+            btnObservacion = `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
+        }
+        
+        if (numeroWhatsAppDestino) {
+            btnWhatsApp = `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
+        }
+        
+        let obsHTML = '';
+        if (s.observaciones && s.observaciones.length > 0) {
+            obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
+            s.observaciones.forEach(obs => {
+                obsHTML += `
+                <div class="observacion-item">
+                    <div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div>
+                    <div class="obs-texto">${obs.texto}</div>
+                </div>`;
+            });
+            obsHTML += `</div>`;
+        }
+        
+        lista.innerHTML += `
+        <div class="border rounded-lg p-4 ${clase} shadow-sm">
+            <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Fecha: ${s.fechaSolicitud}</div>
+            <div class="text-sm mt-1">${s.descripcion}</div>
+            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
+            <div class="mt-2 flex flex-wrap gap-2 items-center">
+                <span class="font-semibold text-sm">${est} ${badge}</span>
+                <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+                ${btnWhatsApp}
+                ${btnConcluir}
+                ${btnDesbloquear}
+                ${btnBloquear}
+                ${btnEliminar}
+                ${btnObservacion}
+            </div>
+            ${obsHTML}
+            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500 mt-1">Desbloqueada por: ${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</div>` : ''}
+            ${s.fechaBloqueo ? `<div class="text-xs text-gray-500 mt-1">Bloqueada por: ${s.bloqueadoPor} - ${s.fechaBloqueo || ''}</div>` : ''}
+        </div>`;
+    });
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtroSolicitante').value='';
+    document.getElementById('filtroFecha').value='';
+    filtrarSolicitudesCoordinacion();
+}
+
+// ==================== IMPRESIÓN CON OBSERVACIONES ====================
+function imprimirSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id);
+    if (!s) { alert('❌ No se encontró la solicitud'); return; }
+    
+    const tipoEtiqueta = s.tipo === 'servicio' ? 'SERVICIO DE MANTENIMIENTO' : 'EVENTO ESCOLAR';
+    
+    let estadoClase = '';
+    let estadoTexto = '';
+    if (s.estado === 'DESBLOQUEADA') {
+        estadoClase = 'badge-desbloqueada';
+        estadoTexto = 'DESBLOQUEADA';
+    } else if (s.estado === 'PENDIENTE_PROYECTOS') {
+        estadoClase = 'badge-pendiente';
+        estadoTexto = 'EN EVALUACIÓN';
+    } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
+        estadoClase = 'badge-pendiente';
+        estadoTexto = 'PENDIENTE MANTENIMIENTO';
+    } else if (s.estado === 'APROBADA') {
+        estadoClase = 'badge-aprobada';
+        estadoTexto = 'AUTORIZADA';
+    } else if (s.estado === 'CONCLUIDO') {
+        estadoClase = 'badge-concluida';
+        estadoTexto = 'CONCLUIDA';
+    } else if (s.estado === 'RECHAZADA') {
+        estadoClase = 'badge-rechazada';
+        estadoTexto = 'RECHAZADA';
+    }
+
+    const fechaActual = new Date().toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const horaActual = new Date().toLocaleTimeString('es-MX', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    const c = document.getElementById('formatoImpresion');
+    
+    let headerHTML = '';
+    if (logoDataURL) {
+        headerHTML = `
+        <div class="header-impresion">
+            <img src="${logoDataURL}" class="logo-impresion" alt="Logo del Colegio" onerror="this.style.display='none'">
+            <div class="header-text">
+                <div class="titulo-principal">${tipoEtiqueta}</div>
+                <div class="subtitulo-header">${s.area}</div>
+                <div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div>
+            </div>
+        </div>`;
+    } else {
+        headerHTML = `
+        <div class="titulo-central">${tipoEtiqueta}</div>
+        <div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
+    }
+    
+    let autorizadoPor = s.autorizadoPor || '';
+    let fechaAutorizacion = s.fechaAutorizacion || '';
+    
+    if ((s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA') && !autorizadoPor) {
+        if (s.estadoAnterior === 'APROBADA') {
+            autorizadoPor = s.autorizadoPor || '_________________________';
+        }
+    }
+    
+    if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA') && !autorizadoPor) {
+        autorizadoPor = '_________________________';
+    }
+    
+    let concluidoPor = s.concluidoPor || '';
+    let fechaConclusion = s.fechaConclusion || '';
+    
+    let html = `
+        ${headerHTML}
+        
+        <table>
+            <tr>
+                <td>Fecha de solicitud</td>
+                <td>${s.fechaSolicitud}</td>
+            </tr>
+            <tr>
+                <td>Sección que solicita</td>
+                <td>${s.area}</td>
+            </tr>
+            <tr>
+                <td>Solicitante</td>
+                <td>${s.solicitante}</td>
+            </tr>
+            <tr>
+                <td>Descripción / Detalles</td>
+                <td>${s.descripcion}</td>
+            </tr>`;
+    
+    if (s.tipo === 'evento') {
+        html += `
+            <tr>
+                <td>Nombre del evento</td>
+                <td>${s.nombreEvento || ''}</td>
+            </tr>
+            <tr>
+                <td>Fecha del evento</td>
+                <td>${s.fechaEvento || ''}</td>
+            </tr>
+            <tr>
+                <td>Lugar solicitado</td>
+                <td>${s.lugarEvento || ''}</td>
+            </tr>`;
+    }
+    
+    html += `
+            <tr>
+                <td>Estado actual</td>
+                <td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td>
+            </tr>`;
+    
+    if (autorizadoPor) {
+        html += `
+            <tr>
+                <td>Autorizado por</td>
+                <td>${autorizadoPor}</td>
+            </tr>`;
+        if (fechaAutorizacion) {
+            html += `
+            <tr>
+                <td>Fecha de autorización</td>
+                <td>${fechaAutorizacion}</td>
+            </tr>`;
+        }
+    } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
+        html += `
+            <tr>
+                <td>Autorizado por</td>
+                <td>No requiere autorización (Mantenimiento)</td>
+            </tr>`;
+    } else {
+        html += `
+            <tr>
+                <td>Autorizado por</td>
+                <td>Pendiente de autorización</td>
+            </tr>`;
+    }
+    
+    if (s.estado === 'CONCLUIDO' && concluidoPor) {
+        html += `
+            <tr>
+                <td>Concluido por</td>
+                <td>${concluidoPor}</td>
+            </tr>`;
+        if (fechaConclusion) {
+            html += `
+            <tr>
+                <td>Fecha de conclusión</td>
+                <td>${fechaConclusion}</td>
+            </tr>`;
+        }
+    }
+    
+    if (s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor) {
+        html += `<tr><td>Desbloqueada por</td><td>${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</td></tr>`;
+    }
+    if (s.fechaBloqueo) {
+        html += `<tr><td>Bloqueada por</td><td>${s.bloqueadoPor || 'N/A'} - ${s.fechaBloqueo || ''}</td></tr>`;
+    }
+    
+    if (s.observaciones && s.observaciones.length > 0) {
+        let obsText = '';
+        s.observaciones.forEach(obs => {
+            obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`;
+        });
+        html += `
+            <tr>
+                <td>Observaciones</td>
+                <td style="white-space: pre-wrap;">${obsText}</td>
+            </tr>`;
+    }
+    
+    let firmaSolicitante = s.solicitante || '';
+    
+    let firmaAutorizacion = autorizadoPor || '_________________________';
+    if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') {
+        firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente de autorización';
+    } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
+        firmaAutorizacion = 'No requiere autorización';
+    }
+    
+    let firmaMantenimiento = '';
+    if (s.estado === 'CONCLUIDO') {
+        firmaMantenimiento = concluidoPor || nombreResponsableMantenimiento;
+    } else if (s.estado === 'DESBLOQUEADA') {
+        firmaMantenimiento = 'Pendiente de Vo.Bo.';
+    } else {
+        firmaMantenimiento = 'Pendiente';
+    }
+    
+    let fechaAutorizacionMostrar = fechaAutorizacion || (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' ? fechaActual : 'Pendiente de autorización');
+    if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
+        fechaAutorizacionMostrar = 'No requiere autorización';
+    }
+    
+    let fechaConclusionMostrar = fechaConclusion || (s.estado === 'CONCLUIDO' ? fechaActual : 'Pendiente');
+    
+    html += `
+        </table>
+        
+        <div class="firmas">
+            <div class="firma-item">
+                <div class="firma-nombre">${firmaSolicitante}</div>
+                <div class="linea"></div>
+                <div class="firma-cargo">Nombre del Solicitante</div>
+                <div class="firma-fecha">${s.fechaSolicitud}</div>
+            </div>
+            
+            <div class="firma-item">
+                <div class="firma-nombre">${firmaAutorizacion}</div>
+                <div class="linea"></div>
+                <div class="firma-cargo">Autorizado por</div>
+                <div class="firma-fecha">${fechaAutorizacionMostrar}</div>
+            </div>
+            
+            <div class="firma-item">
+                <div class="firma-nombre">${firmaMantenimiento}</div>
+                <div class="linea"></div>
+                <div class="firma-cargo">Vo.Bo. Mantenimiento</div>
+                <div class="firma-fecha">${fechaConclusionMostrar}</div>
+            </div>
+        </div>
+        
+        <div class="pie-pagina">
+            <span>${fechaActual} ${horaActual}</span>
+            <span class="qr-text">SISTEMA DE GESTIÓN DE MANTENIMIENTO</span>
+            <span>v1.0</span>
+        </div>
+    `;
+    
+    c.innerHTML = html;
+    
+    c.style.display = 'block';
+    document.getElementById('formatoImpresion').style.display = 'block';
+    
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+            c.style.display = 'none';
+            document.getElementById('formatoImpresion').style.display = 'none';
+        }, 500);
+    }, 300);
+}
+
+// ==================== USUARIOS ====================
+function agregarUsuario() {
+    const user = document.getElementById('nuevoUsuario').value.trim();
+    const pass = document.getElementById('nuevoPass').value.trim();
+    const nombre = document.getElementById('nombreCompletoUsuario').value.trim();
+    const rol = document.getElementById('rolUsuario').value;
+    const editando = document.getElementById('editandoUsuario').value;
+    
+    if (!user || !pass || !nombre) {
+        alert('⚠️ Todos los campos son obligatorios');
+        return;
+    }
+    
+    if (editando) {
+        if (editando !== user) {
+            delete usuarios[editando];
+        }
+        usuarios[user] = { pass, rol, nombre };
+        document.getElementById('editandoUsuario').value = '';
+        document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
+        document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
+        alert('✅ Usuario actualizado correctamente');
+    } else {
+        if (usuarios[user]) {
+            alert('❌ Ese nombre de usuario ya existe');
+            return;
+        }
+        usuarios[user] = { pass, rol, nombre };
+        alert('✅ Usuario agregado correctamente');
+    }
+    
+    guardarDatos();
+    cargarListaUsuarios();
+    limpiarFormularioUsuario();
+}
+
+function editarUsuario(username) {
+    const user = usuarios[username];
+    if (!user) return;
+    
+    document.getElementById('nuevoUsuario').value = username;
+    document.getElementById('nuevoPass').value = user.pass;
+    document.getElementById('nombreCompletoUsuario').value = user.nombre;
+    document.getElementById('rolUsuario').value = user.rol;
+    document.getElementById('editandoUsuario').value = username;
+    document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
+    document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
+    
+    document.getElementById('adminUsuarios').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelarEdicionUsuario() {
+    limpiarFormularioUsuario();
+    document.getElementById('editandoUsuario').value = '';
+    document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
+    document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
+}
+
+function limpiarFormularioUsuario() {
+    document.getElementById('nuevoUsuario').value = '';
+    document.getElementById('nuevoPass').value = '';
+    document.getElementById('nombreCompletoUsuario').value = '';
+    document.getElementById('rolUsuario').value = 'seccion';
+}
+
+function cargarListaUsuarios() {
+    const c = document.getElementById('listaUsuarios');
+    c.innerHTML = '';
+    
+    if (Object.keys(usuarios).length === 0) {
+        c.innerHTML = '<p class="text-gray-500">No hay usuarios registrados.</p>';
+        return;
+    }
+    
+    for (const [k, v] of Object.entries(usuarios)) {
+        let rolTexto = '';
+        if (v.rol === 'admin') rolTexto = 'Mantenimiento';
+        else if (v.rol === 'proyectos') rolTexto = 'Proyectos Generales';
+        else rolTexto = 'Usuario de Sección';
+        
+        c.innerHTML += `
+        <div class="border rounded p-3 bg-white flex justify-between items-center mb-2">
+            <div>
+                <b>${v.nombre}</b><br>
+                Usuario: ${k} | Rol: ${rolTexto}
+            </div>
+            <div class="flex gap-2">
+                ${k !== 'admin' ? `
+                    <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
+                    <button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>
+                ` : '<span class="text-gray-400 text-sm">Principal</span>'}
+            </div>
+        </div>`;
+    }
+}
+
+function eliminarUsuario(u) { 
+    if (!confirm(`⚠️ ¿Estás seguro de que quieres ELIMINAR al usuario "${u}"?\n\nEsta acción NO se puede deshacer.`)) return; 
+    delete usuarios[u]; 
+    guardarDatos(); 
+    cargarListaUsuarios(); 
+    alert('🗑️ Usuario eliminado correctamente');
+}
+
+// ==================== WHATSAPP ====================
+function actualizarWhatsApp() {
+    numeroWhatsAppDestino = document.getElementById('numeroWhatsApp').value.trim();
+    guardarDatos();
+    document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
+}
+
+// ==================== RESPALDOS ====================
+function crearRespaldo() {
+    const respaldo = {
+        fecha: new Date().toLocaleString('es-MX'),
+        usuarios,
+        solicitudes,
+        inventario,
+        asignaciones,
+        programacion,
+        contadorId,
+        numeroWhatsAppDestino,
+        logoDataURL,
+        nombreResponsableMantenimiento
+    };
+    const blob = new Blob([JSON.stringify(respaldo, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Respaldo_Mantenimiento_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('✅ Respaldo descargado correctamente');
+}
+
+function restaurarRespaldo(input) {
+    const archivo = input.files[0];
+    if (!archivo) return;
+    if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
+
+    const lector = new FileReader();
+    lector.onload = function(e) {
+        try {
+            const datos = JSON.parse(e.target.result);
+            usuarios = datos.usuarios;
+            solicitudes = datos.solicitudes;
+            inventario = datos.inventario || [];
+            asignaciones = datos.asignaciones || [];
+            programacion = datos.programacion || [];
+            contadorId = datos.contadorId;
+            numeroWhatsAppDestino = datos.numeroWhatsAppDestino || '';
+            logoDataURL = datos.logoDataURL || '';
+            nombreResponsableMantenimiento = datos.nombreResponsableMantenimiento || 'Ricardo Madera';
+            guardarDatos();
+            mostrarLogo();
+            cargarNombreMantenimiento();
+            alert('✅ Información restaurada correctamente');
+            location.reload();
+        } catch (err) {
+            alert('❌ El archivo no es válido o está dañado');
+        }
+    };
+    lector.readAsText(archivo);
+}
+
+// ==================== INICIO ====================
+document.addEventListener('DOMContentLoaded', () => {
+    if (!localStorage.getItem('listaUsuarios')) {
+        guardarDatos();
+    }
+    
+    recuperarSesion();
+    const campoFecha = document.getElementById('fechaSolicitud');
+    if (campoFecha) campoFecha.valueAsDate = new Date();
+});
+</script>
+</body>
+</html>
