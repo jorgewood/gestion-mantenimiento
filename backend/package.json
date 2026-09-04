@@ -1,7 +1,7 @@
 {
   "name": "gestion-mantenimiento-backend",
   "version": "1.0.0",
-  "description": "API para Gestión de Mantenimiento - Colegio",
+  "description": "API para Gestión de Mantenimiento",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

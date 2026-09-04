@@ -27,14 +27,8 @@
     </script>
     <style>
         @media print {
-            body * {
-                visibility: hidden !important;
-            }
-            
-            #formatoImpresion, #formatoImpresion * {
-                visibility: visible !important;
-            }
-            
+            body * { visibility: hidden !important; }
+            #formatoImpresion, #formatoImpresion * { visibility: visible !important; }
             #formatoImpresion {
                 position: fixed !important;
                 top: 0 !important;
@@ -48,7 +42,6 @@
                 display: block !important;
                 overflow: hidden !important;
             }
-            
             .formato-impresion {
                 display: block !important;
                 width: 100% !important;
@@ -63,7 +56,6 @@
                 font-size: 10pt !important;
                 line-height: 1.5 !important;
             }
-            
             .formato-impresion .header-impresion {
                 display: flex !important;
                 align-items: center !important;
@@ -72,18 +64,15 @@
                 border-bottom: 3px solid #165DFF !important;
                 padding-bottom: 10px !important;
             }
-            
             .formato-impresion .logo-impresion {
                 max-height: 70px !important;
                 max-width: 130px !important;
                 object-fit: contain !important;
             }
-            
             .formato-impresion .header-text {
                 text-align: right !important;
                 line-height: 1.4 !important;
             }
-            
             .formato-impresion .header-text .titulo-principal {
                 font-size: 14pt !important;
                 font-weight: 800 !important;
@@ -91,19 +80,16 @@
                 text-transform: uppercase !important;
                 letter-spacing: 1px !important;
             }
-            
             .formato-impresion .header-text .subtitulo-header {
                 font-size: 9pt !important;
                 color: #555 !important;
                 font-weight: 500 !important;
             }
-            
             .formato-impresion .header-text .folio-header {
                 font-size: 10pt !important;
                 color: #333 !important;
                 font-weight: 700 !important;
             }
-            
             .formato-impresion .titulo-central {
                 text-align: center !important;
                 font-size: 16pt !important;
@@ -113,7 +99,6 @@
                 letter-spacing: 2px !important;
                 text-transform: uppercase !important;
             }
-            
             .formato-impresion .subtitulo-central {
                 text-align: center !important;
                 font-size: 10pt !important;
@@ -122,7 +107,6 @@
                 border-bottom: 2px solid #e5e7eb !important;
                 padding-bottom: 8px !important;
             }
-            
             .formato-impresion table {
                 width: 100% !important;
                 border-collapse: collapse !important;
@@ -130,21 +114,18 @@
                 font-size: 10pt !important;
                 border: 1px solid #d1d5db !important;
             }
-            
             .formato-impresion td {
                 border: 1px solid #d1d5db !important;
                 padding: 6px 10px !important;
                 vertical-align: top !important;
                 font-size: 10pt !important;
             }
-            
             .formato-impresion td:first-child {
                 width: 25% !important;
                 font-weight: 700 !important;
                 background: #f3f4f6 !important;
                 color: #1a1a2e !important;
             }
-            
             .formato-impresion td:last-child {
                 width: 75% !important;
                 background: white !important;
@@ -152,7 +133,6 @@
                 white-space: pre-wrap !important;
                 word-wrap: break-word !important;
             }
-            
             .formato-impresion .firmas {
                 margin-top: 20px !important;
                 display: flex !important;
@@ -160,34 +140,28 @@
                 padding-top: 15px !important;
                 border-top: 1px solid #e5e7eb !important;
             }
-            
             .formato-impresion .firma-item {
                 text-align: center !important;
                 width: 30% !important;
             }
-            
             .formato-impresion .firma-item .linea {
                 border-top: 1px solid #333 !important;
                 width: 100% !important;
                 margin: 25px 0 4px 0 !important;
             }
-            
             .formato-impresion .firma-item .firma-nombre {
                 font-weight: 700 !important;
                 font-size: 9pt !important;
                 color: #1a1a2e !important;
             }
-            
             .formato-impresion .firma-item .firma-cargo {
                 font-size: 8pt !important;
                 color: #666 !important;
             }
-            
             .formato-impresion .firma-item .firma-fecha {
                 font-size: 7.5pt !important;
                 color: #999 !important;
             }
-            
             .formato-impresion .pie-pagina {
                 margin-top: 15px !important;
                 text-align: center !important;
@@ -198,11 +172,9 @@
                 display: flex !important;
                 justify-content: space-between !important;
             }
-            
             .formato-impresion .pie-pagina span {
                 color: #9ca3af !important;
             }
-            
             .formato-impresion .badge-estado {
                 display: inline-block !important;
                 padding: 2px 14px !important;
@@ -232,18 +204,15 @@
                 background: #ede9fe !important;
                 color: #722ED1 !important;
             }
-            
             @page {
                 size: Letter !important;
                 margin: 8mm 10mm !important;
             }
-            
             .formato-impresion * {
                 page-break-inside: avoid !important;
                 page-break-after: avoid !important;
             }
         }
-        
         .formato-impresion {
             display: none;
             background: white;
@@ -257,7 +226,6 @@
             font-size: 10pt;
             line-height: 1.5;
         }
-        
         .formato-impresion .header-impresion {
             display: flex;
             align-items: center;
@@ -266,18 +234,15 @@
             border-bottom: 3px solid #165DFF;
             padding-bottom: 10px;
         }
-        
         .formato-impresion .logo-impresion {
             max-height: 70px;
             max-width: 130px;
             object-fit: contain;
         }
-        
         .formato-impresion .header-text {
             text-align: right;
             line-height: 1.4;
         }
-        
         .formato-impresion .header-text .titulo-principal {
             font-size: 14pt;
             font-weight: 800;
@@ -285,19 +250,16 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
         .formato-impresion .header-text .subtitulo-header {
             font-size: 9pt;
             color: #555;
             font-weight: 500;
         }
-        
         .formato-impresion .header-text .folio-header {
             font-size: 10pt;
             color: #333;
             font-weight: 700;
         }
-        
         .formato-impresion .titulo-central {
             text-align: center;
             font-size: 16pt;
@@ -307,7 +269,6 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-        
         .formato-impresion .subtitulo-central {
             text-align: center;
             font-size: 10pt;
@@ -316,7 +277,6 @@
             border-bottom: 2px solid #e5e7eb;
             padding-bottom: 8px;
         }
-        
         .formato-impresion table {
             width: 100%;
             border-collapse: collapse;
@@ -324,21 +284,18 @@
             font-size: 10pt;
             border: 1px solid #d1d5db;
         }
-        
         .formato-impresion td {
             border: 1px solid #d1d5db;
             padding: 6px 10px;
             vertical-align: top;
             font-size: 10pt;
         }
-        
         .formato-impresion td:first-child {
             width: 25%;
             font-weight: 700;
             background: #f3f4f6;
             color: #1a1a2e;
         }
-        
         .formato-impresion td:last-child {
             width: 75%;
             background: white;
@@ -346,7 +303,6 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
-        
         .formato-impresion .firmas {
             margin-top: 20px;
             display: flex;
@@ -354,34 +310,28 @@
             padding-top: 15px;
             border-top: 1px solid #e5e7eb;
         }
-        
         .formato-impresion .firma-item {
             text-align: center;
             width: 30%;
         }
-        
         .formato-impresion .firma-item .linea {
             border-top: 1px solid #333;
             width: 100%;
             margin: 25px 0 4px 0;
         }
-        
         .formato-impresion .firma-item .firma-nombre {
             font-weight: 700;
             font-size: 9pt;
             color: #1a1a2e;
         }
-        
         .formato-impresion .firma-item .firma-cargo {
             font-size: 8pt;
             color: #666;
         }
-        
         .formato-impresion .firma-item .firma-fecha {
             font-size: 7.5pt;
             color: #999;
         }
-        
         .formato-impresion .pie-pagina {
             margin-top: 15px;
             text-align: center;
@@ -392,11 +342,9 @@
             display: flex;
             justify-content: space-between;
         }
-        
         .formato-impresion .pie-pagina span {
             color: #9ca3af;
         }
-        
         .formato-impresion .badge-estado {
             display: inline-block;
             padding: 2px 14px;
@@ -426,12 +374,10 @@
             background: #ede9fe;
             color: #722ED1;
         }
-
         .estado-desbloqueado {
             background-color: #fef3c7 !important;
             border-left: 4px solid #f59e0b !important;
         }
-        
         .badge-desbloqueado {
             background-color: #f59e0b;
             color: white;
@@ -441,7 +387,6 @@
             font-weight: bold;
             display: inline-block;
         }
-
         .badge-pendiente-mantenimiento {
             background-color: #f59e0b;
             color: white;
@@ -451,7 +396,6 @@
             font-weight: bold;
             display: inline-block;
         }
-
         .badge-bloqueado {
             background-color: #3b82f6;
             color: white;
@@ -461,7 +405,6 @@
             font-weight: bold;
             display: inline-block;
         }
-
         .btn-eliminar {
             background-color: #dc2626;
             color: white;
@@ -476,7 +419,6 @@
             background-color: #b91c1c;
             transform: scale(1.05);
         }
-
         .btn-bloquear {
             background-color: #3b82f6;
             color: white;
@@ -491,7 +433,6 @@
             background-color: #2563eb;
             transform: scale(1.05);
         }
-
         .btn-editar-usuario {
             background-color: #f59e0b;
             color: white;
@@ -506,7 +447,6 @@
             background-color: #d97706;
             transform: scale(1.05);
         }
-
         .btn-guardar-config {
             background-color: #165DFF;
             color: white;
@@ -521,7 +461,6 @@
             background-color: #0f4bc7;
             transform: scale(1.02);
         }
-
         .btn-observacion {
             background-color: #8b5cf6;
             color: white;
@@ -536,7 +475,6 @@
             background-color: #7c3aed;
             transform: scale(1.05);
         }
-
         .btn-whatsapp {
             background-color: #25D366;
             color: white;
@@ -551,7 +489,6 @@
             background-color: #1da851;
             transform: scale(1.05);
         }
-
         .btn-concluir-directo {
             background-color: #00B42A;
             color: white;
@@ -566,12 +503,10 @@
             background-color: #008f22;
             transform: scale(1.05);
         }
-
         .estado-bloqueado {
             background-color: #dbeafe !important;
             border-left: 4px solid #3b82f6 !important;
         }
-
         .logo-preview {
             max-height: 80px;
             max-width: 150px;
@@ -581,7 +516,6 @@
             border-radius: 8px;
             background: white;
         }
-
         .observacion-item {
             background-color: #f5f3ff;
             border-left: 4px solid #8b5cf6;
@@ -602,7 +536,6 @@
             margin-top: 2px;
             color: #333;
         }
-
         .btn-guardar-mantenimiento {
             background-color: #00B42A;
             color: white;
@@ -617,7 +550,6 @@
             background-color: #008f22;
             transform: scale(1.02);
         }
-
         .btn-enviar-proyectos {
             background-color: #165DFF;
             color: white;
@@ -632,7 +564,6 @@
             background-color: #0f4bc7;
             transform: scale(1.02);
         }
-
         .btn-enviar-mantenimiento {
             background-color: #FF7D00;
             color: white;
@@ -647,7 +578,6 @@
             background-color: #e06a00;
             transform: scale(1.02);
         }
-
         .btn-guardar-edicion {
             background-color: #FF7D00;
             color: white;
@@ -664,7 +594,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
 
 <!-- 🔑 INICIO DE SESIÓN -->
 <div id="loginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -845,7 +775,6 @@
         <div id="adminConfiguracion" class="hidden">
             <h3 class="font-bold mb-3">⚙️ Configuración</h3>
             <div class="bg-white rounded shadow p-4 mb-4 space-y-4">
-                
                 <div>
                     <h4 class="font-bold mb-2 text-colegio-azul">🔑 Cambiar Credenciales de Mantenimiento</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -868,9 +797,7 @@
                     </div>
                     <p class="text-xs text-gray-500 mt-1">⚠️ Al cambiar el usuario, deberás usar el nuevo nombre para iniciar sesión.</p>
                 </div>
-                
                 <hr>
-                
                 <div>
                     <h4 class="font-bold mb-2">👤 Usuario de Mantenimiento</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -884,9 +811,7 @@
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Este nombre aparecerá como el responsable de mantenimiento en los documentos.</p>
                 </div>
-                
                 <hr>
-                
                 <div>
                     <h4 class="font-bold mb-2">🖼️ Logo del Colegio</h4>
                     <div class="flex flex-col md:flex-row gap-4 items-start">
@@ -907,9 +832,7 @@
                         <button onclick="eliminarLogo()" class="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200">🗑️ Eliminar Logo</button>
                     </div>
                 </div>
-                
                 <hr>
-                
                 <div>
                     <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
                     <div class="flex gap-2">
@@ -917,9 +840,7 @@
                         <span id="numeroActualWhatsApp" class="text-colegio-azul font-semibold self-center"></span>
                     </div>
                 </div>
-                
                 <hr>
-                
                 <div>
                     <h4 class="font-bold mb-2">💾 Respaldar / Restaurar Información</h4>
                     <button onclick="crearRespaldo()" class="bg-colegio-verde text-white px-4 py-2 rounded mr-2">⬇️ Respaldar Información</button>
@@ -938,7 +859,7 @@
 
 <script>
 // ==================== CONFIGURACIÓN DE API ====================
-const API_URL = 'https://gestion-mantenimiento-api-p76j.onrender.com/api';
+const API_URL = 'https://gestion-mantenimiento-api.onrender.com';
 
 // ==================== VARIABLES GLOBALES ====================
 let usuarioActivo = null;
@@ -957,9 +878,7 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
     try {
         const options = {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         };
         if (data) {
             options.body = JSON.stringify(data);
@@ -987,7 +906,7 @@ async function iniciarSesion() {
     }
     
     try {
-        const data = await apiRequest('/login', 'POST', { usuario: user, password: pass });
+        const data = await apiRequest('/api/login', 'POST', { usuario: user, password: pass });
         
         if (data.success) {
             usuarioActivo = { id: user, ...data };
@@ -1021,43 +940,24 @@ function cerrarSesion() {
 // ==================== CARGAR DATOS INICIALES ====================
 async function cargarDatosIniciales() {
     try {
-        // Cargar solicitudes
-        const solicitudesData = await apiRequest('/solicitudes');
+        const solicitudesData = await apiRequest('/api/solicitudes');
         solicitudes = solicitudesData;
         
-        // Cargar usuarios
-        const usuariosData = await apiRequest('/usuarios');
+        const usuariosData = await apiRequest('/api/usuarios');
         usuarios = usuariosData;
         
-        // Cargar configuración
-        const configData = await apiRequest('/configuracion');
+        const configData = await apiRequest('/api/configuracion');
         numeroWhatsAppDestino = configData.numeroWhatsApp || '';
         nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
         logoDataURL = configData.logoDataURL || '';
         
-        // Actualizar UI
         document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
         document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
         document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
         mostrarLogo();
-        
     } catch (error) {
         console.error('Error al cargar datos iniciales:', error);
-        // Si falla, intentar cargar desde localStorage como respaldo
-        cargarDatosLocal();
     }
-}
-
-function cargarDatosLocal() {
-    usuarios = JSON.parse(localStorage.getItem('listaUsuarios')) || {};
-    solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
-    inventario = JSON.parse(localStorage.getItem('inventario')) || [];
-    asignaciones = JSON.parse(localStorage.getItem('asignaciones')) || [];
-    programacion = JSON.parse(localStorage.getItem('programacion')) || [];
-    contadorId = parseInt(localStorage.getItem('contadorId')) || 1;
-    numeroWhatsAppDestino = localStorage.getItem('numeroWhatsApp') || '';
-    logoDataURL = localStorage.getItem('logoDataURL') || '';
-    nombreResponsableMantenimiento = localStorage.getItem('nombreResponsableMantenimiento') || 'Ricardo Madera';
 }
 
 // ==================== RECUPERAR SESIÓN ====================
@@ -1153,7 +1053,6 @@ async function guardarSolicitud() {
     try {
         let result;
         if (idEditar > 0) {
-            // Actualizar solicitud existente
             const solicitudExistente = solicitudes.find(x => x.id === idEditar);
             if (!solicitudExistente) {
                 alert('❌ No se encontró la solicitud');
@@ -1163,10 +1062,9 @@ async function guardarSolicitud() {
             s.estado = solicitudExistente.estado;
             s.observaciones = solicitudExistente.observaciones || [];
             
-            result = await apiRequest(`/solicitudes/${idEditar}`, 'PUT', s);
+            result = await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', s);
             alert('✅ Solicitud actualizada correctamente');
         } else {
-            // Crear nueva solicitud según el rol
             if (usuarioActivo.rol === 'admin') {
                 s.estado = 'PENDIENTE_MANTENIMIENTO';
                 alert('✅ Solicitud creada directamente por Mantenimiento');
@@ -1179,7 +1077,7 @@ async function guardarSolicitud() {
                 s.estado = 'PENDIENTE_PROYECTOS';
                 alert('✅ Solicitud enviada a Proyectos Generales');
             }
-            result = await apiRequest('/solicitudes', 'POST', s);
+            result = await apiRequest('/api/solicitudes', 'POST', s);
         }
         
         if (result && result.success) {
@@ -1377,7 +1275,7 @@ async function autorizar(id) {
     }
     
     try {
-        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
             estado: 'APROBADA',
             autorizadoPor: usuarioActivo.nombre,
             fechaAutorizacion: new Date().toLocaleString('es-MX')
@@ -1394,7 +1292,7 @@ async function autorizar(id) {
 async function rechazar(id) {
     if(!confirm('¿Rechazar esta solicitud?')) return;
     try {
-        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
             estado: 'RECHAZADA',
             rechazadoPor: usuarioActivo.nombre,
             fechaRechazo: new Date().toLocaleString('es-MX')
@@ -1411,7 +1309,7 @@ async function rechazar(id) {
 async function marcarConcluida(id) {
     if(!confirm('¿El trabajo fue realizado? Se marcará como ✅ CONCLUIDA.')) return;
     try {
-        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
             estado: 'CONCLUIDO',
             concluidoPor: usuarioActivo.nombre,
             fechaConclusion: new Date().toLocaleString('es-MX')
@@ -1433,16 +1331,10 @@ async function concluirDirecto(id) {
 async function eliminarSolicitud(id) {
     if (!confirm('⚠️ ¿Estás seguro de que quieres ELIMINAR esta solicitud?')) return;
     try {
-        await apiRequest(`/solicitudes/${id}`, 'DELETE');
+        await apiRequest(`/api/solicitudes/${id}`, 'DELETE');
         await cargarDatosIniciales();
         alert('🗑️ Solicitud eliminada correctamente');
-        const seccionActual = document.querySelector('main>section:not(.hidden)');
-        if (seccionActual) {
-            const idSeccion = seccionActual.id;
-            if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
-            if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-            if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
-        }
+        recargarVistaActual();
     } catch (error) {
         alert('❌ Error al eliminar');
         console.error(error);
@@ -1454,7 +1346,7 @@ async function desbloquearSolicitud(id) {
     if (!confirm('⚠️ ¿Estás seguro de que quieres DESBLOQUEAR esta solicitud?')) return;
     try {
         const s = solicitudes.find(x => x.id === id);
-        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
             estado: 'DESBLOQUEADA',
             estadoAnterior: s.estado,
             desbloqueadoPor: usuarioActivo.nombre,
@@ -1478,7 +1370,7 @@ async function bloquearSolicitud(id) {
     }
     if (!confirm('🔒 ¿Estás seguro de que quieres BLOQUEAR esta solicitud?')) return;
     try {
-        await apiRequest(`/solicitudes/${id}`, 'PUT', {
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
             estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS',
             estadoAnterior: undefined,
             bloqueadoPor: usuarioActivo.nombre,
@@ -1724,7 +1616,7 @@ async function agregarObservacion(id) {
     if (!observacion || observacion.trim() === '') return;
     
     try {
-        await apiRequest(`/solicitudes/${id}/observaciones`, 'POST', {
+        await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', {
             autor: usuarioActivo.nombre,
             rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos Generales',
             texto: observacion.trim()
@@ -1801,13 +1693,13 @@ async function agregarUsuario() {
     
     try {
         if (editando) {
-            await apiRequest(`/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol });
+            await apiRequest(`/api/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol });
             document.getElementById('editandoUsuario').value = '';
             document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
             document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
             alert('✅ Usuario actualizado correctamente');
         } else {
-            await apiRequest('/usuarios', 'POST', { usuario: user, password: pass, nombre, rol });
+            await apiRequest('/api/usuarios', 'POST', { usuario: user, password: pass, nombre, rol });
             alert('✅ Usuario agregado correctamente');
         }
         await cargarDatosIniciales();
@@ -1879,7 +1771,7 @@ function cargarListaUsuarios() {
 async function eliminarUsuario(u) { 
     if (!confirm(`⚠️ ¿Estás seguro de que quieres ELIMINAR al usuario "${u}"?`)) return;
     try {
-        await apiRequest(`/usuarios/${u}`, 'DELETE');
+        await apiRequest(`/api/usuarios/${u}`, 'DELETE');
         await cargarDatosIniciales();
         cargarListaUsuarios();
         alert('🗑️ Usuario eliminado correctamente');
@@ -1898,7 +1790,7 @@ async function guardarNombreMantenimiento() {
     }
     
     try {
-        await apiRequest('/configuracion', 'PUT', {
+        await apiRequest('/api/configuracion', 'PUT', {
             nombreResponsableMantenimiento: nuevoNombre
         });
         nombreResponsableMantenimiento = nuevoNombre;
@@ -1930,7 +1822,7 @@ function cargarLogo(input) {
     reader.onload = async function(e) {
         logoDataURL = e.target.result;
         try {
-            await apiRequest('/configuracion', 'PUT', { logoDataURL: logoDataURL });
+            await apiRequest('/api/configuracion', 'PUT', { logoDataURL: logoDataURL });
             mostrarLogo();
             alert('✅ Logo cargado correctamente');
         } catch (error) {
@@ -1958,7 +1850,7 @@ async function eliminarLogo() {
     if (!confirm('⚠️ ¿Estás seguro de que quieres eliminar el logo?')) return;
     logoDataURL = '';
     try {
-        await apiRequest('/configuracion', 'PUT', { logoDataURL: '' });
+        await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' });
         mostrarLogo();
         document.getElementById('inputLogo').value = '';
         alert('🗑️ Logo eliminado correctamente');
@@ -1972,7 +1864,7 @@ async function eliminarLogo() {
 async function actualizarWhatsApp() {
     numeroWhatsAppDestino = document.getElementById('numeroWhatsApp').value.trim();
     try {
-        await apiRequest('/configuracion', 'PUT', { numeroWhatsApp: numeroWhatsAppDestino });
+        await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numeroWhatsAppDestino });
         document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
         alert('✅ Número WhatsApp actualizado');
     } catch (error) {
@@ -1999,22 +1891,18 @@ async function cambiarCredencialesAdmin() {
     if (!confirm(mensaje)) return;
     
     try {
-        // Actualizar el usuario admin
         const adminActual = usuarios.admin || { nombre: nombreResponsableMantenimiento };
         
         if (nuevoUsuario && nuevoUsuario !== 'admin') {
-            // Crear nuevo usuario admin
-            await apiRequest('/usuarios', 'POST', {
+            await apiRequest('/api/usuarios', 'POST', {
                 usuario: nuevoUsuario,
                 password: nuevaPass || adminActual.pass || 'admin123',
                 nombre: adminActual.nombre || nombreResponsableMantenimiento,
                 rol: 'admin'
             });
-            // Eliminar el admin viejo
-            await apiRequest('/usuarios/admin', 'DELETE');
+            await apiRequest('/api/usuarios/admin', 'DELETE');
         } else {
-            // Solo actualizar contraseña
-            await apiRequest('/usuarios/admin', 'PUT', {
+            await apiRequest('/api/usuarios/admin', 'PUT', {
                 password: nuevaPass || adminActual.pass,
                 nombre: adminActual.nombre || nombreResponsableMantenimiento,
                 rol: 'admin'
@@ -2042,18 +1930,16 @@ async function restablecerCredencialesAdmin() {
     if (!confirm('⚠️ ¿Estás seguro de que quieres RESTABLECER las credenciales?\n\nUsuario: admin\nContraseña: admin123')) return;
     
     try {
-        // Verificar si el admin existe
         const adminActual = usuarios.admin;
         
         if (!adminActual) {
-            // Buscar usuario con rol admin y eliminarlo
             for (const [key, value] of Object.entries(usuarios)) {
                 if (value.rol === 'admin') {
-                    await apiRequest(`/usuarios/${key}`, 'DELETE');
+                    await apiRequest(`/api/usuarios/${key}`, 'DELETE');
                 }
             }
         } else {
-            await apiRequest('/usuarios/admin', 'PUT', {
+            await apiRequest('/api/usuarios/admin', 'PUT', {
                 password: 'admin123',
                 nombre: nombreResponsableMantenimiento || 'Ricardo Madera',
                 rol: 'admin'
@@ -2287,16 +2173,13 @@ async function restaurarRespaldo(input) {
     lector.onload = async function(e) {
         try {
             const datos = JSON.parse(e.target.result);
-            // Restaurar usuarios
             for (const [key, value] of Object.entries(datos.usuarios)) {
-                await apiRequest('/usuarios', 'POST', { usuario: key, ...value });
+                await apiRequest('/api/usuarios', 'POST', { usuario: key, ...value });
             }
-            // Restaurar solicitudes
             for (const solicitud of datos.solicitudes) {
-                await apiRequest('/solicitudes', 'POST', solicitud);
+                await apiRequest('/api/solicitudes', 'POST', solicitud);
             }
-            // Restaurar configuración
-            await apiRequest('/configuracion', 'PUT', {
+            await apiRequest('/api/configuracion', 'PUT', {
                 numeroWhatsApp: datos.numeroWhatsAppDestino || '',
                 nombreResponsableMantenimiento: datos.nombreResponsableMantenimiento || 'Ricardo Madera',
                 logoDataURL: datos.logoDataURL || ''

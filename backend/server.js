@@ -73,74 +73,6 @@ app.post('/api/login', (req, res) => {
     res.json({ success: true, usuario, ...userData });
 });
 
-app.get('/api/usuarios', (req, res) => {
-    const db = leerDB();
-    const usuarios = {};
-    for (const [key, value] of Object.entries(db.usuarios)) {
-        usuarios[key] = { ...value };
-        delete usuarios[key].pass;
-    }
-    res.json(usuarios);
-});
-
-app.post('/api/usuarios', (req, res) => {
-    const { usuario, password, nombre, rol } = req.body;
-    const db = leerDB();
-    
-    if (db.usuarios[usuario]) {
-        return res.status(400).json({ error: 'El usuario ya existe' });
-    }
-    
-    db.usuarios[usuario] = { pass: password, rol, nombre };
-    if (guardarDB(db)) {
-        res.json({ success: true, usuario });
-    } else {
-        res.status(500).json({ error: 'Error al guardar' });
-    }
-});
-
-app.put('/api/usuarios/:usuario', (req, res) => {
-    const { usuario } = req.params;
-    const { password, nombre, rol } = req.body;
-    const db = leerDB();
-    
-    if (!db.usuarios[usuario]) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-    
-    db.usuarios[usuario] = { 
-        pass: password || db.usuarios[usuario].pass, 
-        rol, 
-        nombre 
-    };
-    
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al guardar' });
-    }
-});
-
-app.delete('/api/usuarios/:usuario', (req, res) => {
-    const { usuario } = req.params;
-    const db = leerDB();
-    
-    if (usuario === 'admin') {
-        return res.status(400).json({ error: 'No se puede eliminar el administrador' });
-    }
-    
-    if (!db.usuarios[usuario]) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-    
-    delete db.usuarios[usuario];
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al eliminar' });
-    }
-});
-
 app.get('/api/solicitudes', (req, res) => {
     const db = leerDB();
     res.json(db.solicitudes);
@@ -151,8 +83,7 @@ app.post('/api/solicitudes', (req, res) => {
     const nuevaSolicitud = {
         ...req.body,
         id: db.contadorId++,
-        fechaCreacion: new Date().toISOString(),
-        observaciones: req.body.observaciones || []
+        fechaCreacion: new Date().toISOString()
     };
     db.solicitudes.push(nuevaSolicitud);
     if (guardarDB(db)) {
@@ -171,12 +102,7 @@ app.put('/api/solicitudes/:id', (req, res) => {
         return res.status(404).json({ error: 'Solicitud no encontrada' });
     }
     
-    db.solicitudes[index] = { 
-        ...db.solicitudes[index], 
-        ...req.body,
-        fechaActualizacion: new Date().toISOString()
-    };
-    
+    db.solicitudes[index] = { ...db.solicitudes[index], ...req.body };
     if (guardarDB(db)) {
         res.json({ success: true, solicitud: db.solicitudes[index] });
     } else {
@@ -229,6 +155,74 @@ app.post('/api/solicitudes/:id/observaciones', (req, res) => {
     }
 });
 
+app.get('/api/usuarios', (req, res) => {
+    const db = leerDB();
+    const usuarios = {};
+    for (const [key, value] of Object.entries(db.usuarios)) {
+        usuarios[key] = { ...value };
+        delete usuarios[key].pass;
+    }
+    res.json(usuarios);
+});
+
+app.post('/api/usuarios', (req, res) => {
+    const { usuario, password, nombre, rol } = req.body;
+    const db = leerDB();
+    
+    if (db.usuarios[usuario]) {
+        return res.status(400).json({ error: 'El usuario ya existe' });
+    }
+    
+    db.usuarios[usuario] = { pass: password, rol, nombre };
+    if (guardarDB(db)) {
+        res.json({ success: true, usuario });
+    } else {
+        res.status(500).json({ error: 'Error al guardar' });
+    }
+});
+
+app.put('/api/usuarios/:usuario', (req, res) => {
+    const { usuario } = req.params;
+    const { password, nombre, rol } = req.body;
+    const db = leerDB();
+    
+    if (!db.usuarios[usuario]) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    
+    db.usuarios[usuario] = { 
+        pass: password || db.usuarios[usuario].pass, 
+        rol, 
+        nombre 
+    };
+    
+    if (guardarDB(db)) {
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ error: 'Error al actualizar' });
+    }
+});
+
+app.delete('/api/usuarios/:usuario', (req, res) => {
+    const { usuario } = req.params;
+    const db = leerDB();
+    
+    if (usuario === 'admin') {
+        return res.status(400).json({ error: 'No se puede eliminar el administrador' });
+    }
+    
+    if (!db.usuarios[usuario]) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    
+    delete db.usuarios[usuario];
+    if (guardarDB(db)) {
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ error: 'Error al eliminar' });
+    }
+});
+
 app.get('/api/configuracion', (req, res) => {
     const db = leerDB();
     res.json({
@@ -263,113 +257,6 @@ app.post('/api/logo', (req, res) => {
         res.json({ success: true });
     } else {
         res.status(500).json({ error: 'Error al guardar' });
-    }
-});
-
-app.get('/api/inventario', (req, res) => {
-    const db = leerDB();
-    res.json(db.inventario || []);
-});
-
-app.post('/api/inventario', (req, res) => {
-    const db = leerDB();
-    if (!db.inventario) db.inventario = [];
-    db.inventario.push(req.body);
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al guardar' });
-    }
-});
-
-app.delete('/api/inventario/:index', (req, res) => {
-    const { index } = req.params;
-    const db = leerDB();
-    if (!db.inventario || !db.inventario[parseInt(index)]) {
-        return res.status(404).json({ error: 'Ítem no encontrado' });
-    }
-    db.inventario.splice(parseInt(index), 1);
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al eliminar' });
-    }
-});
-
-app.get('/api/asignaciones', (req, res) => {
-    const db = leerDB();
-    res.json(db.asignaciones || []);
-});
-
-app.post('/api/asignaciones', (req, res) => {
-    const db = leerDB();
-    if (!db.asignaciones) db.asignaciones = [];
-    db.asignaciones.push(req.body);
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al guardar' });
-    }
-});
-
-app.delete('/api/asignaciones/:index', (req, res) => {
-    const { index } = req.params;
-    const db = leerDB();
-    if (!db.asignaciones || !db.asignaciones[parseInt(index)]) {
-        return res.status(404).json({ error: 'Asignación no encontrada' });
-    }
-    db.asignaciones.splice(parseInt(index), 1);
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al eliminar' });
-    }
-});
-
-app.get('/api/programacion', (req, res) => {
-    const db = leerDB();
-    res.json(db.programacion || []);
-});
-
-app.post('/api/programacion', (req, res) => {
-    const db = leerDB();
-    if (!db.programacion) db.programacion = [];
-    db.programacion.push(req.body);
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al guardar' });
-    }
-});
-
-app.delete('/api/programacion/:index', (req, res) => {
-    const { index } = req.params;
-    const db = leerDB();
-    if (!db.programacion || !db.programacion[parseInt(index)]) {
-        return res.status(404).json({ error: 'Programación no encontrada' });
-    }
-    db.programacion.splice(parseInt(index), 1);
-    if (guardarDB(db)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al eliminar' });
-    }
-});
-
-app.get('/api/respaldo', (req, res) => {
-    const db = leerDB();
-    res.json(db);
-});
-
-app.post('/api/restaurar', (req, res) => {
-    const datos = req.body;
-    if (!datos.usuarios || !datos.solicitudes) {
-        return res.status(400).json({ error: 'Datos inválidos' });
-    }
-    if (guardarDB(datos)) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ error: 'Error al restaurar' });
     }
 });
 
