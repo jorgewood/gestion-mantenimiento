@@ -833,10 +833,12 @@
                     </div>
                 </div>
                 <hr>
+                <!-- ===== WHATSAPP CON BOTÓN GUARDAR (CORREGIDO) ===== -->
                 <div>
                     <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
                     <div class="flex gap-2">
-                        <input type="text" id="numeroWhatsApp" class="flex-1 border rounded px-3 py-2" oninput="actualizarWhatsApp()">
+                        <input type="text" id="numeroWhatsApp" class="flex-1 border rounded px-3 py-2" placeholder="Ej: 529991234567">
+                        <button onclick="actualizarWhatsApp()" class="bg-colegio-azul text-white px-4 py-2 rounded hover:bg-blue-700">💾 Guardar</button>
                         <span id="numeroActualWhatsApp" class="text-colegio-azul font-semibold self-center"></span>
                     </div>
                 </div>
@@ -1691,6 +1693,12 @@ async function agregarUsuario() {
         return;
     }
     
+    // Validar longitud de contraseña
+    if (pass.length < 6) {
+        alert('⚠️ La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+    
     try {
         if (editando) {
             await apiRequest(`/api/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol });
@@ -1795,14 +1803,21 @@ async function guardarNombreMantenimiento() {
         });
         nombreResponsableMantenimiento = nuevoNombre;
         
+        // Actualizar el usuario admin en la lista de usuarios
+        if (usuarios.admin) {
+            usuarios.admin.nombre = nuevoNombre;
+        }
+        
+        // Si el usuario activo es admin, actualizar sesión
         if (usuarioActivo && usuarioActivo.id === 'admin') {
             usuarioActivo.nombre = nuevoNombre;
             localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
             document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre;
         }
         
-        alert('✅ Nombre actualizado correctamente');
+        await cargarDatosIniciales();
         cargarListaUsuarios();
+        alert('✅ Nombre actualizado correctamente');
     } catch (error) {
         alert('❌ Error al guardar el nombre');
         console.error(error);
@@ -1860,20 +1875,25 @@ async function eliminarLogo() {
     }
 }
 
-// ==================== WHATSAPP CONFIG ====================
+// ==================== WHATSAPP CONFIG (CORREGIDO) ====================
 async function actualizarWhatsApp() {
-    numeroWhatsAppDestino = document.getElementById('numeroWhatsApp').value.trim();
+    const numero = document.getElementById('numeroWhatsApp').value.trim();
+    if (!numero) {
+        alert('⚠️ Ingresa un número de WhatsApp válido');
+        return;
+    }
     try {
-        await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numeroWhatsAppDestino });
-        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
-        alert('✅ Número WhatsApp actualizado');
+        await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numero });
+        numeroWhatsAppDestino = numero;
+        document.getElementById('numeroActualWhatsApp').textContent = numero;
+        alert('✅ Número WhatsApp actualizado correctamente');
     } catch (error) {
         alert('❌ Error al guardar el número');
         console.error(error);
     }
 }
 
-// ==================== CAMBIAR CREDENCIALES ADMIN ====================
+// ==================== CAMBIAR CREDENCIALES ADMIN (CORREGIDO) ====================
 async function cambiarCredencialesAdmin() {
     const nuevoUsuario = document.getElementById('nuevoUsuarioAdmin').value.trim();
     const nuevaPass = document.getElementById('nuevaPassAdmin').value.trim();
@@ -1893,33 +1913,54 @@ async function cambiarCredencialesAdmin() {
     try {
         const adminActual = usuarios.admin || { nombre: nombreResponsableMantenimiento };
         
+        // Si se cambia el nombre de usuario
         if (nuevoUsuario && nuevoUsuario !== 'admin') {
+            // Verificar que el nuevo usuario no exista
+            if (usuarios[nuevoUsuario]) {
+                alert(`❌ El usuario "${nuevoUsuario}" ya existe. Elige otro nombre.`);
+                return;
+            }
+            
+            // Crear el nuevo usuario con los datos del admin
             await apiRequest('/api/usuarios', 'POST', {
                 usuario: nuevoUsuario,
                 password: nuevaPass || adminActual.pass || 'admin123',
                 nombre: adminActual.nombre || nombreResponsableMantenimiento,
                 rol: 'admin'
             });
+            
+            // Eliminar el admin viejo
             await apiRequest('/api/usuarios/admin', 'DELETE');
-        } else {
+            
+            // Actualizar la sesión si el usuario activo es admin
+            if (usuarioActivo && usuarioActivo.id === 'admin') {
+                usuarioActivo.id = nuevoUsuario;
+                usuarioActivo.nombre = adminActual.nombre || nombreResponsableMantenimiento;
+                localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+                document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+            }
+            
+            alert(`✅ Credenciales actualizadas correctamente.\n\n📝 Nuevo usuario: ${nuevoUsuario}\n🔑 Nueva contraseña: ${nuevaPass || adminActual.pass}\n\n⚠️ Usa estas credenciales para iniciar sesión.`);
+            
+            if (confirm('🔄 ¿Quieres cerrar sesión para probar las nuevas credenciales?')) {
+                cerrarSesion();
+            }
+        } else if (nuevaPass) {
+            // Solo cambiar contraseña
             await apiRequest('/api/usuarios/admin', 'PUT', {
-                password: nuevaPass || adminActual.pass,
+                password: nuevaPass,
                 nombre: adminActual.nombre || nombreResponsableMantenimiento,
                 rol: 'admin'
             });
+            alert(`✅ Contraseña actualizada correctamente.\n\n🔑 Nueva contraseña: ${nuevaPass}`);
         }
         
         await cargarDatosIniciales();
-        alert('✅ Credenciales actualizadas correctamente');
+        cargarListaUsuarios();
         
         document.getElementById('nuevoUsuarioAdmin').value = '';
         document.getElementById('nuevaPassAdmin').value = '';
         
-        if (nuevoUsuario && nuevoUsuario !== 'admin') {
-            if (confirm('🔄 ¿Quieres cerrar sesión para probar las nuevas credenciales?')) {
-                cerrarSesion();
-            }
-        }
     } catch (error) {
         alert('❌ Error al cambiar credenciales');
         console.error(error);
