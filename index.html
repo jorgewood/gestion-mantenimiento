@@ -833,7 +833,7 @@
                     </div>
                 </div>
                 <hr>
-                <!-- ===== WHATSAPP CON BOTÓN GUARDAR (CORREGIDO) ===== -->
+                <!-- ===== WHATSAPP CON BOTÓN GUARDAR ===== -->
                 <div>
                     <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
                     <div class="flex gap-2">
@@ -1767,16 +1767,19 @@ function cargarListaUsuarios() {
                 Usuario: ${k} | Rol: ${rolTexto}
             </div>
             <div class="flex gap-2">
-                ${k !== 'admin' ? `
-                    <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
-                    <button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>
-                ` : '<span class="text-gray-400 text-sm">Principal</span>'}
+                <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
+                ${k !== 'admin' ? `<button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>` : ''}
+                ${k === 'admin' ? '<span class="text-gray-400 text-sm ml-2">(Principal)</span>' : ''}
             </div>
         </div>`;
     }
 }
 
 async function eliminarUsuario(u) { 
+    if (u === 'admin') {
+        alert('⚠️ No se puede eliminar la cuenta principal de Mantenimiento');
+        return;
+    }
     if (!confirm(`⚠️ ¿Estás seguro de que quieres ELIMINAR al usuario "${u}"?`)) return;
     try {
         await apiRequest(`/api/usuarios/${u}`, 'DELETE');
