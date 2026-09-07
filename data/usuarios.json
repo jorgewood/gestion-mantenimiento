@@ -1,0 +1,12 @@
+{
+  "admin": {
+    "pass": "admin123",
+    "nombre": "Ricardo Madera",
+    "rol": "admin"
+  },
+  "proyectos": {
+    "pass": "proyectos123",
+    "nombre": "Proyectos Generales",
+    "rol": "proyectos"
+  }
+}
