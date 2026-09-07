@@ -10,7 +10,8 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // ==================== BASE DE DATOS JSON ====================
-const DATA_DIR = path.join(__dirname, 'data');
+// La carpeta data estará en la raíz del proyecto, no dentro de backend
+const DATA_DIR = path.join(__dirname, '..', 'data');  // 👈 Sube un nivel
 if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR);
 }
@@ -205,6 +206,6 @@ app.put('/api/configuracion', (req, res) => {
 
 // ==================== INICIAR ====================
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor en http://localhost:${PORT}`);
-    console.log(`📁 Datos en: ${DATA_DIR}`);
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`📁 Datos guardados en: ${DATA_DIR}`);
 });
