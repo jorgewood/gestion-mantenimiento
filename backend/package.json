@@ -1,7 +1,7 @@
 {
-  "name": "gestion-mantenimiento",
+  "name": "gestion-mantenimiento-backend",
   "version": "1.0.0",
-  "description": "Sistema de gestión de mantenimiento y eventos",
+  "description": "Backend para sistema de gestión de mantenimiento",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
