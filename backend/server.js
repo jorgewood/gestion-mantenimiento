@@ -6,14 +6,21 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ==================== MIDDLEWARE ====================
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
+// ==================== SERVIR ARCHIVOS ESTÁTICOS ====================
+// Sirve index.html y todos los archivos desde la raíz
+app.use(express.static(path.join(__dirname, '..')));
+
+// Si el index.html está en backend/, usa esto:
+// app.use(express.static(__dirname));
+
 // ==================== BASE DE DATOS JSON ====================
-// La carpeta data estará en la raíz del proyecto, no dentro de backend
-const DATA_DIR = path.join(__dirname, '..', 'data');  // 👈 Sube un nivel
+const DATA_DIR = path.join(__dirname, '..', 'data');
 if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR);
+    fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
 function leerJSON(nombre) {
@@ -204,8 +211,15 @@ app.put('/api/configuracion', (req, res) => {
     }
 });
 
-// ==================== INICIAR ====================
+// ==================== RUTA PARA CUALQUIER OTRA PETICIÓN ====================
+// Si no es una API, devuelve index.html (para que funcione el frontend)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+// ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📁 Datos guardados en: ${DATA_DIR}`);
+    console.log(`🌐 Serviendo index.html desde: ${path.join(__dirname, '..')}`);
 });
