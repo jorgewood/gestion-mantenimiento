@@ -26,7 +26,6 @@
         }
     </script>
     <style>
-        /* ===== TODOS LOS ESTILOS ===== */
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f4f6; }
         
@@ -518,25 +517,8 @@
         <div id="adminConfiguracion" class="hidden">
             <h3 class="font-bold mb-3">⚙️ Configuración</h3>
             <div class="bg-white rounded shadow p-4 mb-4 space-y-4">
-                <div>
-                    <h4 class="font-bold mb-2 text-colegio-azul">🔑 Cambiar Credenciales de Mantenimiento</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">Nuevo Usuario</label>
-                            <input type="text" id="nuevoUsuarioAdmin" class="w-full border rounded px-3 py-2" placeholder="Ej: mantenimiento">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">Nueva Contraseña</label>
-                            <input type="text" id="nuevaPassAdmin" class="w-full border rounded px-3 py-2" placeholder="Ej: nueva123">
-                        </div>
-                    </div>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                        <button onclick="cambiarCredencialesAdmin()" class="bg-colegio-azul text-white px-4 py-2 rounded hover:bg-blue-700">🔑 Cambiar Credenciales</button>
-                        <button onclick="restablecerCredencialesAdmin()" class="bg-colegio-naranja text-white px-4 py-2 rounded hover:bg-orange-600">🔄 Restablecer a admin/admin123</button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">⚠️ Al cambiar el usuario, deberás usar el nuevo nombre para iniciar sesión.</p>
-                </div>
-                <hr>
+                
+                <!-- 👤 Usuario de Mantenimiento -->
                 <div>
                     <h4 class="font-bold mb-2">👤 Usuario de Mantenimiento</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -551,6 +533,8 @@
                     <p class="text-xs text-gray-500 mt-1">Este nombre aparecerá como el responsable de mantenimiento en los documentos.</p>
                 </div>
                 <hr>
+
+                <!-- 🖼️ Logo del Colegio -->
                 <div>
                     <h4 class="font-bold mb-2">🖼️ Logo del Colegio</h4>
                     <div class="flex flex-col md:flex-row gap-4 items-start">
@@ -572,6 +556,8 @@
                     </div>
                 </div>
                 <hr>
+
+                <!-- 📱 WhatsApp -->
                 <div>
                     <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
                     <div class="flex gap-2">
@@ -581,6 +567,8 @@
                     </div>
                 </div>
                 <hr>
+
+                <!-- 💾 Respaldos -->
                 <div>
                     <h4 class="font-bold mb-2">💾 Respaldar / Restaurar Información</h4>
                     <button onclick="crearRespaldo()" class="bg-colegio-verde text-white px-4 py-2 rounded mr-2">⬇️ Respaldar Información</button>
@@ -1622,108 +1610,6 @@ async function actualizarWhatsApp() {
         alert('✅ Número WhatsApp actualizado correctamente');
     } catch (error) {
         alert('❌ Error al guardar el número: ' + error.message);
-        console.error(error);
-    }
-}
-
-// ==================== CAMBIAR CREDENCIALES ADMIN ====================
-async function cambiarCredencialesAdmin() {
-    const nuevoUsuario = document.getElementById('nuevoUsuarioAdmin').value.trim();
-    const nuevaPass = document.getElementById('nuevaPassAdmin').value.trim();
-    
-    if (!nuevoUsuario && !nuevaPass) {
-        alert('⚠️ Debes ingresar al menos un nuevo usuario o una nueva contraseña');
-        return;
-    }
-    
-    let mensaje = '⚠️ ¿Estás seguro de que quieres cambiar las credenciales?\n\n';
-    if (nuevoUsuario) mensaje += `📝 Nuevo usuario: ${nuevoUsuario}\n`;
-    if (nuevaPass) mensaje += `🔑 Nueva contraseña: ${nuevaPass}\n`;
-    mensaje += '\n⚠️ Después del cambio, deberás iniciar sesión con las nuevas credenciales.';
-    
-    if (!confirm(mensaje)) return;
-    
-    try {
-        const adminActual = usuarios.admin || { nombre: nombreResponsableMantenimiento };
-        
-        if (nuevoUsuario && nuevoUsuario !== 'admin') {
-            if (usuarios[nuevoUsuario]) {
-                alert(`❌ El usuario "${nuevoUsuario}" ya existe. Elige otro nombre.`);
-                return;
-            }
-            
-            await apiRequest('/api/usuarios', 'POST', {
-                usuario: nuevoUsuario,
-                password: nuevaPass || adminActual.pass || 'admin123',
-                nombre: adminActual.nombre || nombreResponsableMantenimiento,
-                rol: 'admin'
-            });
-            
-            await apiRequest('/api/usuarios/admin', 'DELETE');
-            
-            if (usuarioActivo && usuarioActivo.id === 'admin') {
-                usuarioActivo.id = nuevoUsuario;
-                usuarioActivo.nombre = adminActual.nombre || nombreResponsableMantenimiento;
-                localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-                document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
-            }
-            
-            alert(`✅ Credenciales actualizadas correctamente.\n\n📝 Nuevo usuario: ${nuevoUsuario}\n🔑 Nueva contraseña: ${nuevaPass || adminActual.pass}`);
-            
-            if (confirm('🔄 ¿Quieres cerrar sesión para probar las nuevas credenciales?')) {
-                cerrarSesion();
-            }
-        } else if (nuevaPass) {
-            await apiRequest('/api/usuarios/admin', 'PUT', {
-                password: nuevaPass,
-                nombre: adminActual.nombre || nombreResponsableMantenimiento,
-                rol: 'admin'
-            });
-            alert(`✅ Contraseña actualizada correctamente.\n\n🔑 Nueva contraseña: ${nuevaPass}`);
-        }
-        
-        await cargarDatosIniciales();
-        cargarListaUsuarios();
-        
-        document.getElementById('nuevoUsuarioAdmin').value = '';
-        document.getElementById('nuevaPassAdmin').value = '';
-        
-    } catch (error) {
-        alert('❌ Error al cambiar credenciales: ' + error.message);
-        console.error(error);
-    }
-}
-
-async function restablecerCredencialesAdmin() {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres RESTABLECER las credenciales?\n\nUsuario: admin\nContraseña: admin123')) return;
-    
-    try {
-        const adminActual = usuarios.admin;
-        
-        if (!adminActual) {
-            for (const [key, value] of Object.entries(usuarios)) {
-                if (value.rol === 'admin') {
-                    await apiRequest(`/api/usuarios/${key}`, 'DELETE');
-                }
-            }
-        } else {
-            await apiRequest('/api/usuarios/admin', 'PUT', {
-                password: 'admin123',
-                nombre: nombreResponsableMantenimiento || 'Ricardo Madera',
-                rol: 'admin'
-            });
-        }
-        
-        await cargarDatosIniciales();
-        alert('✅ Credenciales restablecidas correctamente.\n\n📝 Usuario: admin\n🔑 Contraseña: admin123');
-        
-        if (usuarioActivo && usuarioActivo.id !== 'admin') {
-            if (confirm('🔄 Las credenciales han cambiado. ¿Quieres cerrar sesión?')) {
-                cerrarSesion();
-            }
-        }
-    } catch (error) {
-        alert('❌ Error al restablecer credenciales: ' + error.message);
         console.error(error);
     }
 }
