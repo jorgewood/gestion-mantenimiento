@@ -10,17 +10,9 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // ==================== 📁 RUTA DE DATOS ====================
-// En Render, el disco persistente está montado en /data
-let DATA_DIR;
-if (process.env.RENDER) {
-    DATA_DIR = '/data';  // Disco persistente en Render
-} else {
-    DATA_DIR = path.join(__dirname, '..', 'data');  // Local
-}
-
+const DATA_DIR = path.join(__dirname, '..', 'data');
 console.log(`📁 Carpeta de datos: ${DATA_DIR}`);
 
-// Crear la carpeta si no existe
 if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
     console.log('📁 Carpeta data creada');
@@ -222,7 +214,7 @@ app.put('/api/configuracion', (req, res) => {
     }
 });
 
-// ==================== CREAR RESPALDO ====================
+// ==================== RESPALDOS ====================
 app.get('/api/respaldo', (req, res) => {
     try {
         const datos = {
@@ -239,7 +231,6 @@ app.get('/api/respaldo', (req, res) => {
     }
 });
 
-// ==================== RESTAURAR RESPALDO (CORREGIDO) ====================
 app.post('/api/restaurar', (req, res) => {
     try {
         const datos = req.body;
@@ -248,76 +239,37 @@ app.post('/api/restaurar', (req, res) => {
         console.log('📋 Usuarios:', Object.keys(datos.usuarios || {}).length);
         console.log('📋 Solicitudes:', (datos.solicitudes || []).length);
         
-        // VALIDACIÓN 1: Verificar que los datos existen
         if (!datos) {
-            return res.status(400).json({ 
-                success: false,
-                error: 'No se recibieron datos para restaurar'
-            });
+            return res.status(400).json({ success: false, error: 'No se recibieron datos' });
         }
-        
-        // VALIDACIÓN 2: Verificar usuarios
         if (!datos.usuarios || typeof datos.usuarios !== 'object') {
-            return res.status(400).json({ 
-                success: false,
-                error: 'El archivo no contiene usuarios válidos. Se esperaba un objeto con usuarios.'
-            });
+            return res.status(400).json({ success: false, error: 'Usuarios no válidos' });
         }
-        
-        // VALIDACIÓN 3: Verificar solicitudes
         if (!datos.solicitudes || !Array.isArray(datos.solicitudes)) {
-            return res.status(400).json({ 
-                success: false,
-                error: 'El archivo no contiene solicitudes válidas. Se esperaba un arreglo de solicitudes.'
-            });
+            return res.status(400).json({ success: false, error: 'Solicitudes no válidas' });
         }
-        
-        // VALIDACIÓN 4: Verificar que haya al menos un usuario
         if (Object.keys(datos.usuarios).length === 0) {
-            return res.status(400).json({ 
-                success: false,
-                error: 'El archivo no contiene ningún usuario. El respaldo debe tener al menos el usuario admin.'
-            });
+            return res.status(400).json({ success: false, error: 'No hay usuarios' });
         }
         
-        // ==================== GUARDAR DATOS ====================
-        
-        // 1. Guardar usuarios
         guardarJSON('usuarios.json', datos.usuarios);
-        console.log('✅ Usuarios restaurados:', Object.keys(datos.usuarios).length);
-        
-        // 2. Guardar solicitudes
         guardarJSON('solicitudes.json', datos.solicitudes);
-        console.log('✅ Solicitudes restauradas:', datos.solicitudes.length);
         
-        // 3. Guardar configuración
         const config = leerJSON('configuracion.json');
-        if (datos.numeroWhatsAppDestino !== undefined) {
-            config.numeroWhatsApp = datos.numeroWhatsAppDestino || '';
-        }
-        if (datos.nombreResponsableMantenimiento) {
-            config.nombreResponsableMantenimiento = datos.nombreResponsableMantenimiento;
-        }
-        if (datos.logoDataURL) {
-            config.logoDataURL = datos.logoDataURL || '';
-        }
+        if (datos.numeroWhatsAppDestino !== undefined) config.numeroWhatsApp = datos.numeroWhatsAppDestino || '';
+        if (datos.nombreResponsableMantenimiento) config.nombreResponsableMantenimiento = datos.nombreResponsableMantenimiento;
+        if (datos.logoDataURL) config.logoDataURL = datos.logoDataURL || '';
         guardarJSON('configuracion.json', config);
-        console.log('✅ Configuración restaurada');
         
-        // ==================== RESPUESTA EXITOSA ====================
         res.json({ 
             success: true, 
             mensaje: '✅ Datos restaurados correctamente',
             usuarios: Object.keys(datos.usuarios).length,
             solicitudes: datos.solicitudes.length
         });
-        
     } catch (error) {
         console.error('❌ Error al restaurar:', error);
-        res.status(500).json({ 
-            success: false,
-            error: 'Error al restaurar los datos: ' + error.message 
-        });
+        res.status(500).json({ success: false, error: 'Error al restaurar: ' + error.message });
     }
 });
 
@@ -336,13 +288,4 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📁 Datos guardados en: ${DATA_DIR}`);
     console.log(`🌐 Sirviendo index.html desde: ${RUTA_RAIZ}`);
-    
-    // Verificar que la carpeta data existe y es escribible
-    try {
-        fs.writeFileSync(path.join(DATA_DIR, 'test.txt'), 'test');
-        fs.unlinkSync(path.join(DATA_DIR, 'test.txt'));
-        console.log('✅ Carpeta data es escribible');
-    } catch (e) {
-        console.error('❌ ERROR: No se puede escribir en la carpeta data:', e.message);
-    }
 });
