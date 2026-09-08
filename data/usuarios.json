@@ -1,12 +1,37 @@
 {
   "admin": {
     "pass": "admin123",
-    "nombre": "Ricardo Madera",
+    "nombre": "Ricardo Madera Estrella",
     "rol": "admin"
   },
   "proyectos": {
-    "pass": "proyectos123",
-    "nombre": "Proyectos Generales",
+    "pass": "proy123",
+    "nombre": "Jiovanna Herrera Rodríguez",
     "rol": "proyectos"
+  },
+  "preescolar": {
+    "pass": "pree123",
+    "nombre": "Ana Karina Moguel Ortega",
+    "rol": "seccion"
+  },
+  "primaria": {
+    "pass": "pri123",
+    "nombre": "Ma. Alejandra Ruíz E. Jaime",
+    "rol": "seccion"
+  },
+  "secundaria": {
+    "pass": "sec123",
+    "nombre": "Cecilia Flores Bargas",
+    "rol": "seccion"
+  },
+  "preparatoria": {
+    "pass": "pre123",
+    "nombre": "Dayana Rodríguez",
+    "rol": "seccion"
+  },
+  "buenanueva": {
+    "pass": "bnu123",
+    "nombre": "Paty Tamayo",
+    "rol": "seccion"
   }
 }
