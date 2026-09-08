@@ -336,7 +336,7 @@
 <body>
 
 <!-- Indicador de estado -->
-<div id="storageStatus" class="storage-status">✅ Datos guardados</div>
+<div id="storageStatus" class="storage-status">✅ Datos sincronizados</div>
 
 <!-- 🔑 INICIO DE SESIÓN -->
 <div id="loginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -597,6 +597,54 @@ let numeroWhatsAppDestino = '';
 let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
 
+// ==================== RESPALDO AUTOMÁTICO EN LOCALSTORAGE ====================
+function guardarRespaldoLocal() {
+    try {
+        const backupData = {
+            fecha: new Date().toLocaleString('es-MX'),
+            usuarios: usuarios,
+            solicitudes: solicitudes,
+            numeroWhatsAppDestino: numeroWhatsAppDestino,
+            logoDataURL: logoDataURL,
+            nombreResponsableMantenimiento: nombreResponsableMantenimiento,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('app_backup_auto', JSON.stringify(backupData));
+        mostrarEstado('💾 Datos guardados localmente', 'saving');
+        setTimeout(() => mostrarEstado('✅ Datos sincronizados', 'online'), 1500);
+        return true;
+    } catch (e) {
+        console.error('❌ Error al guardar respaldo local:', e);
+        return false;
+    }
+}
+
+function cargarRespaldoLocal() {
+    try {
+        const data = localStorage.getItem('app_backup_auto');
+        if (!data) return null;
+        const parsed = JSON.parse(data);
+        if (parsed.usuarios && parsed.solicitudes) {
+            console.log('📦 Respaldo local encontrado:', new Date(parsed.timestamp).toLocaleString());
+            return parsed;
+        }
+        return null;
+    } catch (e) {
+        console.error('❌ Error al cargar respaldo local:', e);
+        return null;
+    }
+}
+
+function mostrarEstado(mensaje, tipo) {
+    const status = document.getElementById('storageStatus');
+    status.textContent = mensaje;
+    status.className = 'storage-status ' + (tipo || 'online');
+    status.style.display = 'block';
+    if (tipo === 'online') {
+        setTimeout(() => { status.style.display = 'none'; }, 3000);
+    }
+}
+
 // ==================== FUNCIONES DE API ====================
 async function apiRequest(endpoint, method = 'GET', data = null) {
     try {
@@ -617,6 +665,136 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
     } catch (error) {
         console.error(`❌ Error en ${method} ${endpoint}:`, error);
         throw error;
+    }
+}
+
+// ==================== SINCRONIZACIÓN AUTOMÁTICA ====================
+async function sincronizarDatos() {
+    try {
+        mostrarEstado('🔄 Sincronizando...', 'saving');
+        
+        // Obtener datos del servidor
+        const solicitudesData = await apiRequest('/api/solicitudes');
+        const usuariosData = await apiRequest('/api/usuarios');
+        const configData = await apiRequest('/api/configuracion');
+        
+        // Cargar respaldo local
+        const respaldoLocal = cargarRespaldoLocal();
+        
+        // CONTAR datos para comparar
+        const serverCount = Object.keys(usuariosData || {}).length + (solicitudesData || []).length;
+        const localCount = respaldoLocal ? Object.keys(respaldoLocal.usuarios || {}).length + (respaldoLocal.solicitudes || []).length : 0;
+        
+        console.log(`📊 Servidor: ${serverCount} items, Local: ${localCount} items`);
+        
+        // === ESTRATEGIA DE SINCRONIZACIÓN ===
+        
+        // Caso 1: El servidor tiene datos y el local también - usar el que tenga MÁS datos
+        if (serverCount > 0 && localCount > 0) {
+            if (localCount > serverCount) {
+                console.log('🔄 Respaldo local tiene MÁS datos. Restaurando en servidor...');
+                await restaurarEnServidor(respaldoLocal);
+                // Actualizar variables locales con los datos del servidor (que ahora son los del local)
+                const nuevosDatos = await cargarDatosDelServidor();
+                return nuevosDatos;
+            } else {
+                console.log('🔄 Servidor tiene MÁS datos. Usando datos del servidor.');
+                // Usar datos del servidor
+                solicitudes = solicitudesData;
+                usuarios = usuariosData;
+                numeroWhatsAppDestino = configData.numeroWhatsApp || '';
+                nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
+                logoDataURL = configData.logoDataURL || '';
+                guardarRespaldoLocal();
+                return true;
+            }
+        }
+        
+        // Caso 2: Solo el servidor tiene datos
+        if (serverCount > 0) {
+            console.log('🔄 Usando datos del servidor');
+            solicitudes = solicitudesData;
+            usuarios = usuariosData;
+            numeroWhatsAppDestino = configData.numeroWhatsApp || '';
+            nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
+            logoDataURL = configData.logoDataURL || '';
+            guardarRespaldoLocal();
+            return true;
+        }
+        
+        // Caso 3: Solo el local tiene datos
+        if (localCount > 0) {
+            console.log('🔄 Respaldo local tiene datos. Restaurando en servidor...');
+            await restaurarEnServidor(respaldoLocal);
+            // Actualizar variables locales
+            solicitudes = respaldoLocal.solicitudes || [];
+            usuarios = respaldoLocal.usuarios || {};
+            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
+            nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera';
+            logoDataURL = respaldoLocal.logoDataURL || '';
+            guardarRespaldoLocal();
+            return true;
+        }
+        
+        // Caso 4: Ambos están vacíos - usar datos por defecto
+        console.log('📦 No hay datos. Usando configuración por defecto.');
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Error al sincronizar:', error);
+        // Si falla la conexión, intentar cargar desde local
+        const respaldoLocal = cargarRespaldoLocal();
+        if (respaldoLocal) {
+            console.log('📦 Usando datos del respaldo local (offline)');
+            usuarios = respaldoLocal.usuarios || {};
+            solicitudes = respaldoLocal.solicitudes || [];
+            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
+            nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera';
+            logoDataURL = respaldoLocal.logoDataURL || '';
+            mostrarEstado('⚠️ Modo offline - usando datos locales', 'error');
+            return true;
+        }
+        mostrarEstado('❌ Error al sincronizar', 'error');
+        return false;
+    }
+}
+
+async function restaurarEnServidor(datos) {
+    try {
+        const response = await fetch(`${API_URL}/api/restaurar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ Datos restaurados en servidor');
+            mostrarEstado('✅ Datos sincronizados', 'online');
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error('❌ Error al restaurar en servidor:', e);
+        return false;
+    }
+}
+
+async function cargarDatosDelServidor() {
+    try {
+        const solicitudesData = await apiRequest('/api/solicitudes');
+        const usuariosData = await apiRequest('/api/usuarios');
+        const configData = await apiRequest('/api/configuracion');
+        
+        solicitudes = solicitudesData;
+        usuarios = usuariosData;
+        numeroWhatsAppDestino = configData.numeroWhatsApp || '';
+        nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
+        logoDataURL = configData.logoDataURL || '';
+        guardarRespaldoLocal();
+        return true;
+    } catch (e) {
+        console.error('❌ Error al cargar datos del servidor:', e);
+        return false;
     }
 }
 
@@ -664,26 +842,12 @@ function cerrarSesion() {
 
 // ==================== CARGAR DATOS INICIALES ====================
 async function cargarDatosIniciales() {
-    try {
-        const solicitudesData = await apiRequest('/api/solicitudes');
-        solicitudes = solicitudesData;
-        
-        const usuariosData = await apiRequest('/api/usuarios');
-        usuarios = usuariosData;
-        
-        const configData = await apiRequest('/api/configuracion');
-        numeroWhatsAppDestino = configData.numeroWhatsApp || '';
-        nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
-        logoDataURL = configData.logoDataURL || '';
-        
-        document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
-        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
-        document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
-        mostrarLogo();
-    } catch (error) {
-        console.error('Error al cargar datos iniciales:', error);
-        alert('⚠️ Error al cargar datos. Verifica tu conexión.');
-    }
+    await sincronizarDatos();
+    
+    document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
+    document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
+    document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
+    mostrarLogo();
 }
 
 // ==================== RECUPERAR SESIÓN ====================
@@ -805,6 +969,7 @@ async function guardarSolicitud() {
         }
         
         await cargarDatosIniciales();
+        guardarRespaldoLocal();
         cancelarEdicionSol();
         
         if (usuarioActivo.rol === 'proyectos') {
@@ -1642,7 +1807,6 @@ async function restaurarRespaldo(input) {
         try {
             const datos = JSON.parse(e.target.result);
             
-            // Validar estructura
             if (!datos.usuarios || typeof datos.usuarios !== 'object') {
                 alert('❌ El archivo no contiene usuarios válidos');
                 return;
@@ -1653,7 +1817,6 @@ async function restaurarRespaldo(input) {
                 return;
             }
             
-            // Enviar al servidor
             const response = await fetch(`${API_URL}/api/restaurar`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
