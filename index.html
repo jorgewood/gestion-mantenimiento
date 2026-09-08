@@ -587,7 +587,6 @@
 
 <script>
 // ==================== CONFIGURACIÓN DE API ====================
-// ⚠️ CAMBIA ESTA URL POR LA DE TU SERVIDOR EN RENDER
 const API_URL = 'https://gestion-mantenimiento.onrender.com';
 
 // ==================== VARIABLES GLOBALES ====================
@@ -1614,6 +1613,74 @@ async function actualizarWhatsApp() {
     }
 }
 
+// ==================== RESPALDOS ====================
+async function crearRespaldo() {
+    try {
+        const response = await fetch(`${API_URL}/api/respaldo`);
+        const datos = await response.json();
+        const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Respaldo_Mantenimiento_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ Respaldo descargado correctamente');
+    } catch (error) {
+        alert('❌ Error al crear respaldo: ' + error.message);
+        console.error(error);
+    }
+}
+
+async function restaurarRespaldo(input) {
+    const archivo = input.files[0];
+    if (!archivo) return;
+    if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
+
+    const lector = new FileReader();
+    lector.onload = async function(e) {
+        try {
+            const datos = JSON.parse(e.target.result);
+            
+            // Validar estructura
+            if (!datos.usuarios || typeof datos.usuarios !== 'object') {
+                alert('❌ El archivo no contiene usuarios válidos');
+                return;
+            }
+            
+            if (!datos.solicitudes || !Array.isArray(datos.solicitudes)) {
+                alert('❌ El archivo no contiene solicitudes válidas');
+                return;
+            }
+            
+            // Enviar al servidor
+            const response = await fetch(`${API_URL}/api/restaurar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`✅ Datos restaurados correctamente\n👤 Usuarios: ${result.usuarios}\n📋 Solicitudes: ${result.solicitudes}`);
+                location.reload();
+            } else {
+                alert('❌ ' + result.error);
+            }
+        } catch (err) {
+            alert('❌ El archivo no es válido o está dañado: ' + err.message);
+            console.error(err);
+        }
+    };
+    lector.readAsText(archivo);
+}
+
+// ==================== MOSTRAR CAMPOS DE EVENTO ====================
+function mostrarCamposEvento() {
+    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
+}
+
 // ==================== IMPRESIÓN ====================
 function imprimirSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
@@ -1787,66 +1854,6 @@ function imprimirSolicitud(id) {
             document.getElementById('formatoImpresion').style.display = 'none';
         }, 500);
     }, 300);
-}
-
-// ==================== RESPALDOS ====================
-async function crearRespaldo() {
-    try {
-        const datos = {
-            fecha: new Date().toLocaleString('es-MX'),
-            usuarios,
-            solicitudes,
-            numeroWhatsAppDestino,
-            logoDataURL,
-            nombreResponsableMantenimiento
-        };
-        const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Respaldo_Mantenimiento_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        alert('✅ Respaldo descargado correctamente');
-    } catch (error) {
-        alert('❌ Error al crear respaldo');
-        console.error(error);
-    }
-}
-
-async function restaurarRespaldo(input) {
-    const archivo = input.files[0];
-    if (!archivo) return;
-    if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
-
-    const lector = new FileReader();
-    lector.onload = async function(e) {
-        try {
-            const datos = JSON.parse(e.target.result);
-            for (const [key, value] of Object.entries(datos.usuarios)) {
-                await apiRequest('/api/usuarios', 'POST', { usuario: key, ...value });
-            }
-            for (const solicitud of datos.solicitudes) {
-                await apiRequest('/api/solicitudes', 'POST', solicitud);
-            }
-            await apiRequest('/api/configuracion', 'PUT', {
-                numeroWhatsApp: datos.numeroWhatsAppDestino || '',
-                nombreResponsableMantenimiento: datos.nombreResponsableMantenimiento || 'Ricardo Madera',
-                logoDataURL: datos.logoDataURL || ''
-            });
-            await cargarDatosIniciales();
-            alert('✅ Información restaurada correctamente');
-            location.reload();
-        } catch (err) {
-            alert('❌ El archivo no es válido o está dañado');
-        }
-    };
-    lector.readAsText(archivo);
-}
-
-// ==================== MOSTRAR CAMPOS DE EVENTO ====================
-function mostrarCamposEvento() {
-    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
 }
 
 // ==================== INICIO ====================
