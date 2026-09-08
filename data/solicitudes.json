@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "tipo": "evento",
+    "area": "Preparatoria",
+    "descripcion": "- Abrir el aula Santa Teresa a las 11:00 hrs y cerralo a las 14:00 hrs.\n- Abrir la reja blanca del estacionamiento.\n- 2 lugares de estacionamiento.\n- Acceso a 2 vehículos para bajar equipo.\n- Activar los contactos eléctricos.",
+    "fechaSolicitud": "2026-09-02",
+    "fechaEvento": "2026-09-09",
+    "nombreEvento": "Pasaporte Marista",
+    "lugarEvento": "Aula Santa Teresa",
+    "solicitante": "Dayana Rodríguez",
+    "fechaEnvio": "7/9/2026, 5:21:36 p.m.",
+    "observaciones": [],
+    "estado": "APROBADA",
+    "id": 1788823298011,
+    "autorizadoPor": "Jiovanna Herrera Rodríguez",
+    "fechaAutorizacion": "7/9/2026, 5:24:34 p.m."
+  },
+  {
+    "tipo": "evento",
+    "area": "Administrativa",
+    "descripcion": "- Aula\n- Micrófono\n- 1 mesa rectangular con mantel fuera del aula.\n- 5 mesas redondas con mantel.\n- 50 sillas\n- Acceso por entrada principal reja blanca de prepa.\n- Entran papás de mesa directiva y representantes al estacionamiento.",
+    "fechaSolicitud": "2026-09-04",
+    "fechaEvento": "2026-09-07",
+    "nombreEvento": "Junta Mesa Directiva",
+    "lugarEvento": "Aula Santa Teresa",
+    "solicitante": "Jiovanna Herrera Rodríguez",
+    "fechaEnvio": "7/9/2026, 5:30:17 p.m.",
+    "observaciones": [],
+    "estado": "CONCLUIDO",
+    "autorizadoPor": "Jiovanna Herrera Rodríguez",
+    "fechaAutorizacion": "7/9/2026, 5:30:17 p.m.",
+    "id": 1788823811544,
+    "concluidoPor": "Ricardo Madera Estrella",
+    "fechaConclusion": "7/9/2026, 5:39:09 p.m."
+  }
+]
