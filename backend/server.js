@@ -9,20 +9,28 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// ==================== 📁 SERVIR ARCHIVOS ESTÁTICOS ====================
-// La carpeta backend está dentro de la raíz, subimos un nivel para servir index.html
-const RUTA_RAIZ = path.join(__dirname, '..');
-console.log(`📁 Ruta raíz del proyecto: ${RUTA_RAIZ}`);
-
-// Servir archivos estáticos desde la raíz
-app.use(express.static(RUTA_RAIZ));
-
-// ==================== BASE DE DATOS JSON ====================
-const DATA_DIR = path.join(RUTA_RAIZ, 'data');
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+// ==================== 📁 RUTA DE DATOS ====================
+// En Render, el disco persistente está montado en /data
+let DATA_DIR;
+if (process.env.RENDER) {
+    DATA_DIR = '/data';  // Disco persistente en Render
+} else {
+    DATA_DIR = path.join(__dirname, '..', 'data');  // Local
 }
 
+console.log(`📁 Carpeta de datos: ${DATA_DIR}`);
+
+// Crear la carpeta si no existe
+if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    console.log('📁 Carpeta data creada');
+}
+
+// ==================== 📁 SERVIR ARCHIVOS ESTÁTICOS ====================
+const RUTA_RAIZ = path.join(__dirname, '..');
+app.use(express.static(RUTA_RAIZ));
+
+// ==================== FUNCIONES JSON ====================
 function leerJSON(nombre) {
     const ruta = path.join(DATA_DIR, nombre);
     if (!fs.existsSync(ruta)) {
@@ -42,6 +50,7 @@ function leerJSON(nombre) {
             };
         }
         fs.writeFileSync(ruta, JSON.stringify(datosPorDefecto, null, 2));
+        console.log(`📄 Archivo ${nombre} creado con datos por defecto`);
         return datosPorDefecto;
     }
     try {
@@ -53,7 +62,9 @@ function leerJSON(nombre) {
 }
 
 function guardarJSON(nombre, datos) {
-    fs.writeFileSync(path.join(DATA_DIR, nombre), JSON.stringify(datos, null, 2));
+    const ruta = path.join(DATA_DIR, nombre);
+    fs.writeFileSync(ruta, JSON.stringify(datos, null, 2));
+    console.log(`💾 Datos guardados en ${ruta}`);
 }
 
 // ==================== API RUTAS ====================
@@ -211,11 +222,80 @@ app.put('/api/configuracion', (req, res) => {
     }
 });
 
+// ==================== CREAR RESPALDO ====================
+app.get('/api/respaldo', (req, res) => {
+    try {
+        const datos = {
+            fecha: new Date().toLocaleString('es-MX'),
+            usuarios: leerJSON('usuarios.json'),
+            solicitudes: leerJSON('solicitudes.json'),
+            numeroWhatsAppDestino: leerJSON('configuracion.json').numeroWhatsApp || '',
+            logoDataURL: leerJSON('configuracion.json').logoDataURL || '',
+            nombreResponsableMantenimiento: leerJSON('configuracion.json').nombreResponsableMantenimiento || 'Ricardo Madera'
+        };
+        res.json(datos);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear respaldo' });
+    }
+});
+
+// ==================== RESTAURAR RESPALDO ====================
+app.post('/api/restaurar', (req, res) => {
+    try {
+        const datos = req.body;
+        
+        // Validar que los datos tengan la estructura correcta
+        if (!datos.usuarios || typeof datos.usuarios !== 'object') {
+            return res.status(400).json({ 
+                error: 'El archivo no contiene usuarios válidos'
+            });
+        }
+        
+        if (!datos.solicitudes || !Array.isArray(datos.solicitudes)) {
+            return res.status(400).json({ 
+                error: 'El archivo no contiene solicitudes válidas'
+            });
+        }
+        
+        // Guardar usuarios
+        guardarJSON('usuarios.json', datos.usuarios);
+        console.log('✅ Usuarios restaurados:', Object.keys(datos.usuarios).length);
+        
+        // Guardar solicitudes
+        guardarJSON('solicitudes.json', datos.solicitudes);
+        console.log('✅ Solicitudes restauradas:', datos.solicitudes.length);
+        
+        // Guardar configuración
+        const config = leerJSON('configuracion.json');
+        if (datos.numeroWhatsAppDestino !== undefined) {
+            config.numeroWhatsApp = datos.numeroWhatsAppDestino || '';
+        }
+        if (datos.nombreResponsableMantenimiento) {
+            config.nombreResponsableMantenimiento = datos.nombreResponsableMantenimiento;
+        }
+        if (datos.logoDataURL) {
+            config.logoDataURL = datos.logoDataURL || '';
+        }
+        guardarJSON('configuracion.json', config);
+        console.log('✅ Configuración restaurada');
+        
+        res.json({ 
+            success: true, 
+            mensaje: '✅ Datos restaurados correctamente',
+            usuarios: Object.keys(datos.usuarios).length,
+            solicitudes: datos.solicitudes.length
+        });
+    } catch (error) {
+        console.error('Error al restaurar:', error);
+        res.status(500).json({ 
+            error: 'Error al restaurar los datos: ' + error.message 
+        });
+    }
+});
+
 // ==================== 🔄 RUTA PARA EL FRONTEND ====================
-// Si no es una API, devuelve index.html
 app.get('*', (req, res) => {
     const indexPath = path.join(RUTA_RAIZ, 'index.html');
-    console.log(`📄 Sirviendo: ${indexPath}`);
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
@@ -228,5 +308,13 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📁 Datos guardados en: ${DATA_DIR}`);
     console.log(`🌐 Sirviendo index.html desde: ${RUTA_RAIZ}`);
-    console.log(`📄 Archivo index.html existe: ${fs.existsSync(path.join(RUTA_RAIZ, 'index.html'))}`);
+    
+    // Verificar que la carpeta data existe y es escribible
+    try {
+        fs.writeFileSync(path.join(DATA_DIR, 'test.txt'), 'test');
+        fs.unlinkSync(path.join(DATA_DIR, 'test.txt'));
+        console.log('✅ Carpeta data es escribible');
+    } catch (e) {
+        console.error('❌ ERROR: No se puede escribir en la carpeta data:', e.message);
+    }
 });
