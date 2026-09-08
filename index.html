@@ -1676,11 +1676,6 @@ async function restaurarRespaldo(input) {
     lector.readAsText(archivo);
 }
 
-// ==================== MOSTRAR CAMPOS DE EVENTO ====================
-function mostrarCamposEvento() {
-    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
-}
-
 // ==================== IMPRESIÓN ====================
 function imprimirSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
@@ -1854,6 +1849,11 @@ function imprimirSolicitud(id) {
             document.getElementById('formatoImpresion').style.display = 'none';
         }, 500);
     }, 300);
+}
+
+// ==================== MOSTRAR CAMPOS DE EVENTO ====================
+function mostrarCamposEvento() {
+    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
 }
 
 // ==================== INICIO ====================
