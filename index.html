@@ -511,9 +511,9 @@
                     <div><label class="font-semibold">Nombre completo</label><input type="text" id="nombreCompletoUsuario" class="w-full border rounded px-3 py-2"></div>
                     <div><label class="font-semibold">Rol</label>
                         <select id="rolUsuario" class="w-full border rounded px-3 py-2">
-                            <option value="seccion">Usuario de Sección</option>
-                            <option value="proyectos">Proyectos Generales</option>
-                            <option value="admin">Mantenimiento</option>
+                            <option value="seccion">Operador</option>
+                            <option value="proyectos">Supervisor</option>
+                            <option value="admin">Administrador</option>
                         </select>
                     </div>
                 </div>
@@ -1914,9 +1914,9 @@ function cargarListaUsuarios() {
     
     for (const [k, v] of Object.entries(usuarios)) {
         let rolTexto = '';
-        if (v.rol === 'admin') rolTexto = 'Mantenimiento';
-        else if (v.rol === 'proyectos') rolTexto = 'Proyectos Generales';
-        else rolTexto = 'Usuario de Sección';
+        if (v.rol === 'admin') rolTexto = 'Administrador';
+        else if (v.rol === 'proyectos') rolTexto = 'Supervisor';
+        else rolTexto = 'Operador';
         
         c.innerHTML += `
         <div class="border rounded p-3 bg-white flex justify-between items-center mb-2">
