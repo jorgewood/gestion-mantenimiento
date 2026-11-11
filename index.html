@@ -391,6 +391,9 @@
         <button id="btnOrdenes" onclick="mostrarSeccion('panelOrdenes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
             <i class="fas fa-clipboard-list"></i> Órdenes de Trabajo
         </button>
+        <button id="btnIncidencias" onclick="mostrarSeccion('panelIncidencias')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-exclamation-triangle"></i> Incidencias
+        </button>
     </div>
 </nav>
 
@@ -612,7 +615,76 @@
         <div id="listaOrdenes" class="space-y-3"></div>
     </section>
 
+    <!-- 🚨 PANEL DE INCIDENCIAS -->
+    <section id="panelIncidencias" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">🚨 Permisos e Incidencias</h2>
+        <div class="bg-white rounded shadow p-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                <div>
+                    <label class="font-semibold">Empleado</label>
+                    <select id="incidenciaEmpleado" class="w-full border rounded px-3 py-2"></select>
+                </div>
+                <div>
+                    <label class="font-semibold">Tipo</label>
+                    <select id="incidenciaTipo" class="w-full border rounded px-3 py-2">
+                        <option value="Vacaciones">Vacaciones</option>
+                        <option value="Incapacidad">Incapacidad</option>
+                        <option value="Permiso por horas">Permiso por horas</option>
+                        <option value="Permiso por días">Permiso por días</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-semibold">Fecha</label>
+                    <input type="date" id="incidenciaFecha" class="w-full border rounded px-3 py-2">
+                </div>
+                <div>
+                    <label class="font-semibold">Horas/Días</label>
+                    <input type="text" id="incidenciaHoras" class="w-full border rounded px-3 py-2" placeholder="Ej: 3 horas / 2 días">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="font-semibold">Motivo / Observaciones</label>
+                <textarea id="incidenciaMotivo" rows="2" class="w-full border rounded px-3 py-2"></textarea>
+            </div>
+            <button onclick="guardarIncidencia()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Incidencia</button>
+        </div>
+        <div id="listaIncidencias" class="space-y-3"></div>
+    </section>
+
 </main>
+
+<!-- MODAL PARA CAPTURAR ORDEN DE TRABAJO -->
+<div id="modalCapturaOrden" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+        <h3 class="text-xl font-bold mb-4 text-colegio-azul">✅ Capturar Orden de Trabajo</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block font-semibold mb-1">Fecha en que se atendió</label>
+                <input type="date" id="capturaFecha" class="w-full border rounded-lg px-3 py-2">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold mb-1">Hora de inicio</label>
+                    <input type="time" id="capturaHoraInicio" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Hora de finalización</label>
+                    <input type="time" id="capturaHoraFin" class="w-full border rounded-lg px-3 py-2">
+                </div>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Nombre de quien recibe de conformidad</label>
+                <input type="text" id="capturaRecibidoPor" class="w-full border rounded-lg px-3 py-2" placeholder="Ej: Prof. Juan Pérez">
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+            <button onclick="cerrarModalCaptura()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancelar</button>
+            <button onclick="guardarCapturaOrden()" class="bg-colegio-verde text-white px-4 py-2 rounded-lg font-semibold">Guardar y Concluir</button>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="capturaOrdenId" value="">
+<input type="hidden" id="capturaSolicitudId" value="">
 
 <!-- ===== CONTENEDOR DE IMPRESIÓN ===== -->
 <div id="formatoImpresion" class="formato-impresion"></div>
@@ -844,6 +916,7 @@ async function iniciarSesion() {
                 document.getElementById('btnCoordinacion').classList.remove('hidden');
                 document.getElementById('btnEmpleados').classList.remove('hidden');
                 document.getElementById('btnOrdenes').classList.remove('hidden');
+                document.getElementById('btnIncidencias').classList.remove('hidden');
             }
             
             await cargarDatosIniciales();
@@ -889,6 +962,7 @@ async function recuperarSesion() {
             document.getElementById('btnCoordinacion').classList.remove('hidden');
             document.getElementById('btnEmpleados').classList.remove('hidden');
             document.getElementById('btnOrdenes').classList.remove('hidden');
+            document.getElementById('btnIncidencias').classList.remove('hidden');
         }
         
         await cargarDatosIniciales();
@@ -898,43 +972,67 @@ async function recuperarSesion() {
     }
 }
 
-// ==================== AUTO-REFRESCO (TIEMPO REAL) ====================
+// ==================== AUTO-REFRESCO Y NOTIFICACIONES ====================
 let intervaloRefresco = null;
+
+function pedirPermisoNotificaciones() {
+    if (!("Notification" in window)) return;
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+}
+
+function lanzarNotificacion(titulo, cuerpo) {
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+        new Notification(titulo, { body: cuerpo, icon: "/favicon.ico" });
+    }
+}
 
 function iniciarAutoRefresco() {
     if (intervaloRefresco) clearInterval(intervaloRefresco);
+    pedirPermisoNotificaciones(); // Pedimos permiso al iniciar
     
     intervaloRefresco = setInterval(async () => {
-        // Solo refrescamos si el usuario ya inició sesión
         if (!usuarioActivo) return; 
         
-        // Si el usuario está escribiendo en el formulario, no lo interrumpimos
         const seccionActiva = document.querySelector('main>section:not(.hidden)');
         if (seccionActiva && seccionActiva.id === 'nuevaSolicitud') return;
 
         try {
-            // Traemos los datos en silencio
             const solicitudesData = await apiRequest('/api/solicitudes');
             
-            // Verificamos si hay cambios (comparando longitudes o IDs)
-            const huboCambios = JSON.stringify(solicitudes) !== JSON.stringify(solicitudesData);
+            // Verificamos si hay cambios
+            if (solicitudes.length > 0 && solicitudesData.length > solicitudes.length) {
+                // ¡HAY UNA NUEVA SOLICITUD!
+                const nueva = solicitudesData[0]; // La más reciente
+                
+                // Si el usuario es admin o proyectos, le avisamos
+                if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
+                    lanzarNotificacion(
+                        '📥 Nueva Solicitud Recibida', 
+                        `${nueva.solicitante} (${nueva.area}): ${nueva.descripcion.substring(0, 50)}...`
+                    );
+                }
+            }
             
+            const huboCambios = JSON.stringify(solicitudes) !== JSON.stringify(solicitudesData);
             if (huboCambios) {
                 solicitudes = solicitudesData;
-                console.log('🔄 Datos actualizados en vivo');
                 
-                // Actualizamos la pantalla actual dependiendo de dónde esté el usuario
+                // Actualizamos la pantalla actual
                 if (seccionActiva) {
                     if (seccionActiva.id === 'misSolicitudes') cargarMisSolicitudes();
                     if (seccionActiva.id === 'bandaProyectos') cargarBandejaProyectos();
                     if (seccionActiva.id === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
                     if (seccionActiva.id === 'panelOrdenes') cargarOrdenes();
+                    if (seccionActiva.id === 'panelIncidencias') cargarIncidencias();
                 }
             }
         } catch (error) {
             console.log('Error en auto-refresco silencioso');
         }
-    }, 15000); // 15000 milisegundos = 15 segundos
+    }, 15000); 
 }
 
 // ==================== ACTUALIZAR TEXTO DEL BOTÓN ====================
@@ -1072,6 +1170,7 @@ function mostrarSeccion(id) {
     // NUEVAS SECCIONES
     if (id === 'panelEmpleados') cargarEmpleados();
     if (id === 'panelOrdenes') cargarOrdenes();
+    if (id === 'panelIncidencias') cargarIncidencias();
 }
 
 function subPanelAdmin(panel) {
@@ -2332,35 +2431,101 @@ async function imprimirOrdenTrabajo(ordenId) {
         alert('❌ Error al generar el formato: ' + error.message);
     }
 }
+
+function capturarOrden(ordenId, solicitudId) {
+    document.getElementById('capturaOrdenId').value = ordenId;
+    document.getElementById('capturaSolicitudId').value = solicitudId;
+    document.getElementById('capturaFecha').valueAsDate = new Date();
+    document.getElementById('capturaHoraInicio').value = '';
+    document.getElementById('capturaHoraFin').value = '';
+    document.getElementById('capturaRecibidoPor').value = '';
     
-async function capturarOrden(ordenId, solicitudId) {
-    const fechaAtencion = prompt("📅 Ingresa la FECHA en que se atendió (DD/MM/AAAA):");
-    if (!fechaAtencion) return;
-    
-    const horaInicio = prompt("⏰ Ingresa la HORA DE INICIO:");
-    if (!horaInicio) return;
-    
-    const horaFin = prompt("⏰ Ingresa la HORA DE FINALIZACIÓN:");
-    if (!horaFin) return;
-    
-    const recibidoPor = prompt("✍️ Nombre de quien recibió de conformidad:");
-    if (!recibidoPor) return;
+    document.getElementById('modalCapturaOrden').classList.remove('hidden');
+    document.getElementById('modalCapturaOrden').classList.add('flex');
+}
+
+function cerrarModalCaptura() {
+    document.getElementById('modalCapturaOrden').classList.add('hidden');
+    document.getElementById('modalCapturaOrden').classList.remove('flex');
+}
+
+async function guardarCapturaOrden() {
+    const ordenId = document.getElementById('capturaOrdenId').value;
+    const solicitudId = document.getElementById('capturaSolicitudId').value;
+    const fecha = document.getElementById('capturaFecha').value;
+    const horaInicio = document.getElementById('capturaHoraInicio').value;
+    const horaFin = document.getElementById('capturaHoraFin').value;
+    const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
+
+    if (!fecha || !horaInicio || !horaFin || !recibidoPor) {
+        alert('⚠️ Por favor, llena todos los campos.');
+        return;
+    }
 
     try {
         await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', {
-            fechaAtencion: fechaAtencion,
+            fechaAtencion: fecha,
             horaInicio: horaInicio,
             horaFin: horaFin,
             recibidoPor: recibidoPor,
             solicitud_id: solicitudId
         });
         
-        alert('✅ Orden de trabajo concluida y solicitud finalizada correctamente.');
+        alert('✅ Orden concluida y solicitud finalizada.');
+        cerrarModalCaptura();
         cargarOrdenes();
-        // Refrescamos las solicitudes en memoria por si el usuario va a la otra pestaña
         await cargarDatosIniciales(); 
     } catch (error) {
-        alert('❌ Error al capturar la orden: ' + error.message);
+        alert('❌ Error al guardar: ' + error.message);
+    }
+}
+
+// ==================== MÓDULO DE INCIDENCIAS ====================
+async function cargarIncidencias() {
+    const lista = document.getElementById('listaIncidencias');
+    const selectEmp = document.getElementById('incidenciaEmpleado');
+    
+    try {
+        const empleados = await apiRequest('/api/empleados');
+        selectEmp.innerHTML = '<option value="">Selecciona...</option>' + 
+            empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+
+        const incidencias = await apiRequest('/api/incidencias');
+        if (incidencias.length === 0) {
+            lista.innerHTML = '<p class="text-gray-500">No hay incidencias registradas.</p>';
+            return;
+        }
+        
+        lista.innerHTML = incidencias.map(i => `
+            <div class="border rounded p-3 bg-white shadow-sm flex justify-between">
+                <div>
+                    <b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${i.fecha})</span><br>
+                    <span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        lista.innerHTML = '<p class="text-red-500">Error al cargar incidencias.</p>';
+    }
+}
+
+async function guardarIncidencia() {
+    const empleado_id = document.getElementById('incidenciaEmpleado').value;
+    const tipo = document.getElementById('incidenciaTipo').value;
+    const fecha = document.getElementById('incidenciaFecha').value;
+    const horas = document.getElementById('incidenciaHoras').value;
+    const motivo = document.getElementById('incidenciaMotivo').value.trim();
+
+    if (!empleado_id || !fecha) { alert('⚠️ Selecciona empleado y fecha'); return; }
+
+    try {
+        await apiRequest('/api/incidencias', 'POST', { empleado_id, tipo, fecha, horas, motivo });
+        alert('✅ Incidencia registrada');
+        document.getElementById('incidenciaMotivo').value = '';
+        document.getElementById('incidenciaHoras').value = '';
+        cargarIncidencias();
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
     }
 }
 
