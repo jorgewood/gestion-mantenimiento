@@ -511,6 +511,7 @@
                     <div><label class="font-semibold">Nombre completo</label><input type="text" id="nombreCompletoUsuario" class="w-full border rounded px-3 py-2"></div>
                     <div><label class="font-semibold">Rol</label>
                         <select id="rolUsuario" class="w-full border rounded px-3 py-2">
+                            <!-- CORRECCIÓN 1: Textos de roles cambiados -->
                             <option value="seccion">Operador</option>
                             <option value="proyectos">Supervisor</option>
                             <option value="admin">Administrador</option>
@@ -1482,13 +1483,23 @@ async function concluirDirecto(id) {
     await marcarConcluida(id);
 }
 
+// ==================== CORRECCIÓN 2: ELIMINAR SOLICITUD ====================
 async function eliminarSolicitud(id) {
     if (!confirm('⚠️ ¿Estás seguro de que quieres ELIMINAR esta solicitud?')) return;
     try {
+        // 1. Lo borramos en el servidor (Worker)
         await apiRequest(`/api/solicitudes/${id}`, 'DELETE');
-        await cargarDatosIniciales();
-        alert('🗑️ Solicitud eliminada correctamente');
+        
+        // 2. Lo borramos de la memoria local (el array de JS)
+        solicitudes = solicitudes.filter(s => s.id !== id);
+        
+        // 3. Actualizamos el respaldo local
+        guardarRespaldoLocal();
+        
+        // 4. Recargamos la vista actual para que desaparezca de la pantalla de inmediato
         recargarVistaActual();
+        
+        alert('🗑️ Solicitud eliminada correctamente');
     } catch (error) {
         alert('❌ Error al eliminar: ' + error.message);
         console.error(error);
@@ -1913,6 +1924,7 @@ function cargarListaUsuarios() {
     }
     
     for (const [k, v] of Object.entries(usuarios)) {
+        // CORRECCIÓN 1 (PARTE 2): Textos de roles en la lista cambiados
         let rolTexto = '';
         if (v.rol === 'admin') rolTexto = 'Administrador';
         else if (v.rol === 'proyectos') rolTexto = 'Supervisor';
