@@ -1151,8 +1151,8 @@ function cargarBandejaProyectos() {
             botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
         }
 
-        // NUEVO BOTÓN GENERAR ORDEN
-        if (s.estado === 'APROBADA') {
+        // BOTÓN GENERAR ORDEN (SOLO ADMINISTRADOR)
+        if (s.estado === 'APROBADA' && usuarioActivo.rol === 'admin') {
             botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
         }
         
@@ -1479,6 +1479,12 @@ function filtrarSolicitudesCoordinacion() {
             btnWhatsApp = `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
         }
         
+        // BOTÓN GENERAR ORDEN EN PANEL MANTENIMIENTO (SOLO ADMINISTRADOR)
+        let btnGenerarOrden = '';
+        if (s.estado === 'APROBADA' && usuarioActivo?.rol === 'admin') {
+            btnGenerarOrden = `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>`;
+        }
+
         let obsHTML = '';
         if (s.observaciones && s.observaciones.length > 0) {
             obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
@@ -1502,6 +1508,7 @@ function filtrarSolicitudesCoordinacion() {
                 <span class="font-semibold text-sm">${est} ${badge}</span>
                 <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
                 ${btnWhatsApp}
+                ${btnGenerarOrden}
                 ${btnConcluir}
                 ${btnDesbloquear}
                 ${btnBloquear}
