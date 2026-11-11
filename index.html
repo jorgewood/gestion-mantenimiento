@@ -2632,8 +2632,8 @@ async function guardarIncidencia() {
     const datos = { empleado_id, tipo, fecha, motivo };
     
     if (tipo === 'Permiso por horas') {
-        datos.hora_inicio = document.getElementById('incidenciaHoraLlegada').value;
-        datos.hora_fin = document.getElementById('incidenciaHoraSalida').value;
+        datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
+        datos.hora_salida = document.getElementById('incidenciaHoraSalida').value;
     } else if (tipo === 'Permiso por días' || tipo === 'Vacaciones') {
         datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
         datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
@@ -2651,6 +2651,131 @@ async function guardarIncidencia() {
     } catch (error) {
         alert('❌ Error: ' + error.message);
     }
+}
+
+// ==================== SECCIONES ====================
+async function cargarSecciones() {
+    try {
+        const secciones = await apiRequest('/api/secciones');
+        const select = document.getElementById('areaSolicitante');
+        select.innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
+    } catch (error) { console.error(error); }
+}
+
+async function cargarListaSecciones() {
+    const lista = document.getElementById('listaSecciones');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const secciones = await apiRequest('/api/secciones');
+        lista.innerHTML = secciones.map(s => `
+            <div class="border rounded p-3 bg-white flex justify-between items-center">
+                <span>${s.nombre}</span>
+                <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+            </div>
+        `).join('');
+    } catch (error) { lista.innerHTML = 'Error'; }
+}
+
+async function guardarSeccion() {
+    const nombre = document.getElementById('nuevaSeccionNombre').value.trim();
+    if (!nombre) return;
+    try {
+        await apiRequest('/api/secciones', 'POST', { nombre });
+        document.getElementById('nuevaSeccionNombre').value = '';
+        cargarListaSecciones();
+        cargarSecciones();
+    } catch (e) { alert(e.message); }
+}
+
+async function eliminarSeccion(id) {
+    if (!confirm('¿Eliminar sección?')) return;
+    try {
+        await apiRequest(`/api/secciones/${id}`, 'DELETE');
+        cargarListaSecciones();
+        cargarSecciones();
+    } catch (e) { alert(e.message); }
+}
+
+// ==================== PROVEEDORES ====================
+async function cargarProveedores() {
+    try {
+        const proveedores = await apiRequest('/api/proveedores');
+        const select = document.getElementById('compraProveedor');
+        select.innerHTML = proveedores.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+    } catch (error) { console.error(error); }
+}
+
+async function cargarListaProveedores() {
+    const lista = document.getElementById('listaProveedores');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const proveedores = await apiRequest('/api/proveedores');
+        lista.innerHTML = proveedores.map(p => `
+            <div class="border rounded p-3 bg-white flex justify-between items-center">
+                <span>${p.nombre}</span>
+                <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+            </div>
+        `).join('');
+    } catch (error) { lista.innerHTML = 'Error'; }
+}
+
+async function guardarProveedor() {
+    const nombre = document.getElementById('nuevoProveedorNombre').value.trim();
+    if (!nombre) return;
+    try {
+        await apiRequest('/api/proveedores', 'POST', { nombre });
+        document.getElementById('nuevoProveedorNombre').value = '';
+        cargarListaProveedores();
+        cargarProveedores();
+    } catch (e) { alert(e.message); }
+}
+
+async function eliminarProveedor(id) {
+    if (!confirm('¿Eliminar proveedor?')) return;
+    try {
+        await apiRequest(`/api/proveedores/${id}`, 'DELETE');
+        cargarListaProveedores();
+        cargarProveedores();
+    } catch (e) { alert(e.message); }
+}
+
+// ==================== INCIDENCIAS DINÁMICAS ====================
+function cambiarCamposIncidencia() {
+    const tipo = document.getElementById('incidenciaTipo').value;
+    document.getElementById('camposFechas').classList.add('hidden');
+    document.getElementById('camposHoras').classList.add('hidden');
+
+    if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
+        document.getElementById('camposFechas').classList.remove('hidden');
+    } else if (tipo === 'Permiso por horas') {
+        document.getElementById('camposHoras').classList.remove('hidden');
+    }
+}
+
+async function guardarIncidencia() {
+    const empleado_id = document.getElementById('incidenciaEmpleado').value;
+    const tipo = document.getElementById('incidenciaTipo').value;
+    const fecha = document.getElementById('incidenciaFecha').value;
+    const motivo = document.getElementById('incidenciaMotivo').value.trim();
+
+    if (!empleado_id || !fecha) { alert('Selecciona empleado y fecha'); return; }
+
+    const datos = { empleado_id, tipo, fecha, motivo };
+    
+    if (tipo === 'Permiso por horas') {
+        datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
+        datos.hora_salida = document.getElementById('incidenciaHoraSalida').value;
+    } else {
+        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
+        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
+    }
+
+    try {
+        await apiRequest('/api/incidencias', 'POST', datos);
+        alert('✅ Incidencia registrada');
+        document.getElementById('incidenciaMotivo').value = '';
+        cargarIncidencias();
+    } catch (error) { alert('Error: ' + error.message); }
 }
 
 // ==================== ÓRDENES DE COMPRA (SIN PRECIOS) ====================
