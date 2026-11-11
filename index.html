@@ -397,6 +397,12 @@
         <button id="btnCompras" onclick="mostrarSeccion('panelCompras')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
             <i class="fas fa-shopping-cart"></i> Órdenes de Compra
         </button>
+        <button id="btnSecciones" onclick="mostrarSeccion('panelSecciones')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-building"></i> Secciones
+        </button>
+        <button id="btnProveedores" onclick="mostrarSeccion('panelProveedores')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-truck"></i> Proveedores
+        </button>
     </div>
 </nav>
 
@@ -631,25 +637,20 @@
                     </select>
                 </div>
                 <div>
-                    <label class="font-semibold">Fecha</label>
+                    <label class="font-semibold">Fecha de Registro</label>
                     <input type="date" id="incidenciaFecha" class="w-full border rounded px-3 py-2">
                 </div>
             </div>
 
             <!-- CAMPOS DINÁMICOS -->
+            <div id="camposFechas" class="hidden grid grid-cols-2 gap-3 mb-3">
+                <div><label class="font-semibold">Fecha de Inicio</label><input type="date" id="incidenciaFechaInicio" class="w-full border rounded px-3 py-2"></div>
+                <div><label class="font-semibold">Fecha de Término</label><input type="date" id="incidenciaFechaFin" class="w-full border rounded px-3 py-2"></div>
+            </div>
+
             <div id="camposHoras" class="hidden grid grid-cols-2 gap-3 mb-3">
-                <div><label class="font-semibold">Hora de inicio</label><input type="time" id="incidenciaHoraInicio" class="w-full border rounded px-3 py-2"></div>
-                <div><label class="font-semibold">Hora de fin</label><input type="time" id="incidenciaHoraFin" class="w-full border rounded px-3 py-2"></div>
-            </div>
-
-            <div id="camposDias" class="hidden mb-3">
-                <label class="font-semibold">Número de días</label>
-                <input type="number" id="incidenciaDias" class="w-full border rounded px-3 py-2" min="1">
-            </div>
-
-            <div id="camposIncapacidad" class="hidden mb-3">
-                <label class="font-semibold">Diagnóstico / Detalles</label>
-                <textarea id="incidenciaDiagnostico" rows="2" class="w-full border rounded px-3 py-2"></textarea>
+                <div><label class="font-semibold">Hora de llegada</label><input type="time" id="incidenciaHoraLlegada" class="w-full border rounded px-3 py-2"></div>
+                <div><label class="font-semibold">Hora de salida</label><input type="time" id="incidenciaHoraSalida" class="w-full border rounded px-3 py-2"></div>
             </div>
 
             <div class="mb-3">
@@ -667,13 +668,19 @@
         <div class="bg-white rounded shadow p-4 mb-4">
             <h3 class="font-bold mb-3">Nueva Orden de Compra</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                <div><label class="font-semibold">Proveedor</label><input type="text" id="compraProveedor" class="w-full border rounded px-3 py-2"></div>
-                <div><label class="font-semibold">Artículo / Descripción</label><input type="text" id="compraArticulo" class="w-full border rounded px-3 py-2"></div>
-                <div><label class="font-semibold">Cantidad</label><input type="number" id="compraCantidad" class="w-full border rounded px-3 py-2" min="1" step="0.01" oninput="calcularTotalCompra()"></div>
-                <div><label class="font-semibold">Precio Unitario</label><input type="number" id="compraPrecio" class="w-full border rounded px-3 py-2" min="0" step="0.01" oninput="calcularTotalCompra()"></div>
-                <div><label class="font-semibold">Total</label><input type="text" id="compraTotal" class="w-full border rounded px-3 py-2 bg-gray-100" readonly></div>
+                <div>
+                    <label class="font-semibold">Proveedor</label>
+                    <select id="compraProveedor" class="w-full border rounded px-3 py-2"></select>
+                </div>
                 <div><label class="font-semibold">Solicitado por</label><input type="text" id="compraSolicitadoPor" class="w-full border rounded px-3 py-2" value="Mantenimiento"></div>
             </div>
+            
+            <div class="mb-3">
+                <label class="font-semibold block mb-2">Artículos</label>
+                <div id="listaArticulosCompra" class="space-y-2 mb-2"></div>
+                <button onclick="agregarArticuloCompra()" class="bg-gray-200 text-sm px-3 py-1 rounded">+ Agregar Artículo</button>
+            </div>
+            
             <div class="mb-3">
                 <label class="font-semibold">Observaciones</label>
                 <textarea id="compraObservaciones" rows="2" class="w-full border rounded px-3 py-2"></textarea>
@@ -681,6 +688,30 @@
             <button onclick="guardarOrdenCompra()" class="bg-colegio-azul text-white px-4 py-2 rounded">Generar Orden de Compra</button>
         </div>
         <div id="listaCompras" class="space-y-3"></div>
+    </section>
+
+    <!-- 🏢 PANEL DE SECCIONES -->
+    <section id="panelSecciones" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">🏢 Gestión de Secciones</h2>
+        <div class="bg-white rounded shadow p-4 mb-4">
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="nuevaSeccionNombre" class="flex-1 border rounded px-3 py-2" placeholder="Nombre de la nueva sección">
+                <button onclick="guardarSeccion()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar</button>
+            </div>
+        </div>
+        <div id="listaSecciones" class="space-y-2"></div>
+    </section>
+
+    <!-- 🚚 PANEL DE PROVEEDORES -->
+    <section id="panelProveedores" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">🚚 Gestión de Proveedores</h2>
+        <div class="bg-white rounded shadow p-4 mb-4">
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="nuevoProveedorNombre" class="flex-1 border rounded px-3 py-2" placeholder="Nombre del proveedor">
+                <button onclick="guardarProveedor()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar</button>
+            </div>
+        </div>
+        <div id="listaProveedores" class="space-y-2"></div>
     </section>
 
 </main>
@@ -950,6 +981,8 @@ async function iniciarSesion() {
                 document.getElementById('btnOrdenes').classList.remove('hidden');
                 document.getElementById('btnIncidencias').classList.remove('hidden');
                 document.getElementById('btnCompras').classList.remove('hidden');
+                document.getElementById('btnSecciones').classList.remove('hidden');
+                document.getElementById('btnProveedores').classList.remove('hidden');
             }
             
             await cargarDatosIniciales();
@@ -998,6 +1031,8 @@ async function recuperarSesion() {
             document.getElementById('btnOrdenes').classList.remove('hidden');
             document.getElementById('btnIncidencias').classList.remove('hidden');
             document.getElementById('btnCompras').classList.remove('hidden');
+            document.getElementById('btnSecciones').classList.remove('hidden');
+            document.getElementById('btnProveedores').classList.remove('hidden');
         }
         
         await cargarDatosIniciales();
@@ -1208,7 +1243,9 @@ function mostrarSeccion(id) {
     if (id === 'panelEmpleados') cargarEmpleados();
     if (id === 'panelOrdenes') cargarOrdenes();
     if (id === 'panelIncidencias') cargarIncidencias();
-    if (id === 'panelCompras') cargarCompras();
+    if (id === 'panelCompras') { cargarCompras(); cargarProveedores(); }
+    if (id === 'panelSecciones') cargarListaSecciones();
+    if (id === 'panelProveedores') cargarListaProveedores();
 }
 
 function subPanelAdmin(panel) {
@@ -2637,6 +2674,235 @@ async function cargarCompras() {
     } catch (error) {
         lista.innerHTML = '<p class="text-red-500">Error al cargar compras.</p>';
     }
+}
+
+// ==================== SECCIONES ====================
+async function cargarSecciones() {
+    try {
+        const secciones = await apiRequest('/api/secciones');
+        const select = document.getElementById('areaSolicitante');
+        select.innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
+    } catch (error) { console.error(error); }
+}
+
+async function cargarListaSecciones() {
+    const lista = document.getElementById('listaSecciones');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const secciones = await apiRequest('/api/secciones');
+        lista.innerHTML = secciones.map(s => `
+            <div class="border rounded p-3 bg-white flex justify-between items-center">
+                <span>${s.nombre}</span>
+                <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+            </div>
+        `).join('');
+    } catch (error) { lista.innerHTML = 'Error'; }
+}
+
+async function guardarSeccion() {
+    const nombre = document.getElementById('nuevaSeccionNombre').value.trim();
+    if (!nombre) return;
+    try {
+        await apiRequest('/api/secciones', 'POST', { nombre });
+        document.getElementById('nuevaSeccionNombre').value = '';
+        cargarListaSecciones();
+        cargarSecciones();
+    } catch (e) { alert(e.message); }
+}
+
+async function eliminarSeccion(id) {
+    if (!confirm('¿Eliminar sección?')) return;
+    try {
+        await apiRequest(`/api/secciones/${id}`, 'DELETE');
+        cargarListaSecciones();
+        cargarSecciones();
+    } catch (e) { alert(e.message); }
+}
+
+// ==================== PROVEEDORES ====================
+async function cargarProveedores() {
+    try {
+        const proveedores = await apiRequest('/api/proveedores');
+        const select = document.getElementById('compraProveedor');
+        select.innerHTML = proveedores.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+    } catch (error) { console.error(error); }
+}
+
+async function cargarListaProveedores() {
+    const lista = document.getElementById('listaProveedores');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const proveedores = await apiRequest('/api/proveedores');
+        lista.innerHTML = proveedores.map(p => `
+            <div class="border rounded p-3 bg-white flex justify-between items-center">
+                <span>${p.nombre}</span>
+                <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+            </div>
+        `).join('');
+    } catch (error) { lista.innerHTML = 'Error'; }
+}
+
+async function guardarProveedor() {
+    const nombre = document.getElementById('nuevoProveedorNombre').value.trim();
+    if (!nombre) return;
+    try {
+        await apiRequest('/api/proveedores', 'POST', { nombre });
+        document.getElementById('nuevoProveedorNombre').value = '';
+        cargarListaProveedores();
+        cargarProveedores();
+    } catch (e) { alert(e.message); }
+}
+
+async function eliminarProveedor(id) {
+    if (!confirm('¿Eliminar proveedor?')) return;
+    try {
+        await apiRequest(`/api/proveedores/${id}`, 'DELETE');
+        cargarListaProveedores();
+        cargarProveedores();
+    } catch (e) { alert(e.message); }
+}
+
+// ==================== INCIDENCIAS DINÁMICAS ====================
+function cambiarCamposIncidencia() {
+    const tipo = document.getElementById('incidenciaTipo').value;
+    document.getElementById('camposFechas').classList.add('hidden');
+    document.getElementById('camposHoras').classList.add('hidden');
+
+    if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
+        document.getElementById('camposFechas').classList.remove('hidden');
+    } else if (tipo === 'Permiso por horas') {
+        document.getElementById('camposHoras').classList.remove('hidden');
+    }
+}
+
+async function guardarIncidencia() {
+    const empleado_id = document.getElementById('incidenciaEmpleado').value;
+    const tipo = document.getElementById('incidenciaTipo').value;
+    const fecha = document.getElementById('incidenciaFecha').value;
+    const motivo = document.getElementById('incidenciaMotivo').value.trim();
+
+    if (!empleado_id || !fecha) { alert('Selecciona empleado y fecha'); return; }
+
+    const datos = { empleado_id, tipo, fecha, motivo };
+    
+    if (tipo === 'Permiso por horas') {
+        datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
+        datos.hora_salida = document.getElementById('incidenciaHoraSalida').value;
+    } else {
+        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
+        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
+    }
+
+    try {
+        await apiRequest('/api/incidencias', 'POST', datos);
+        alert('✅ Incidencia registrada');
+        document.getElementById('incidenciaMotivo').value = '';
+        cargarIncidencias();
+    } catch (error) { alert('Error: ' + error.message); }
+}
+
+// ==================== ÓRDENES DE COMPRA (ACTUALIZADO) ====================
+function agregarArticuloCompra() {
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 items-center mb-2 articulo-row';
+    div.innerHTML = `
+        <input type="text" placeholder="Artículo" class="flex-1 border rounded px-3 py-2 articulo-nombre">
+        <input type="number" placeholder="Cant." class="w-20 border rounded px-3 py-2 articulo-cantidad" min="1">
+        <input type="number" placeholder="Precio" class="w-24 border rounded px-3 py-2 articulo-precio" min="0" step="0.01">
+        <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">X</button>
+    `;
+    document.getElementById('listaArticulosCompra').appendChild(div);
+}
+
+async function guardarOrdenCompra() {
+    const proveedor_id = document.getElementById('compraProveedor').value;
+    const solicitado_por = document.getElementById('compraSolicitadoPor').value;
+    const observaciones = document.getElementById('compraObservaciones').value;
+    
+    const rows = document.querySelectorAll('.articulo-row');
+    const articulos = [];
+    
+    rows.forEach(row => {
+        const articulo = row.querySelector('.articulo-nombre').value.trim();
+        const cantidad = parseFloat(row.querySelector('.articulo-cantidad').value) || 0;
+        const precio = parseFloat(row.querySelector('.articulo-precio').value) || 0;
+        if (articulo && cantidad > 0) {
+            articulos.push({ articulo, cantidad, precio });
+        }
+    });
+
+    if (!proveedor_id || articulos.length === 0) {
+        alert('Selecciona un proveedor y agrega al menos un artículo.'); return;
+    }
+
+    try {
+        await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos });
+        alert('✅ Orden de compra generada');
+        cargarCompras();
+        document.getElementById('listaArticulosCompra').innerHTML = '';
+        document.getElementById('compraObservaciones').value = '';
+    } catch (error) { alert('Error: ' + error.message); }
+}
+
+async function cargarCompras() {
+    const lista = document.getElementById('listaCompras');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const compras = await apiRequest('/api/compras');
+        if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes de compra.</p>'; return; }
+        lista.innerHTML = compras.map(c => `
+            <div class="border rounded p-4 bg-white shadow-sm">
+                <div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div>
+                <div class="text-sm font-semibold text-colegio-verde">Total: $${c.total.toFixed(2)}</div>
+                <div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div>
+                <div class="mt-2 flex gap-2">
+                    <button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+                    <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) { lista.innerHTML = 'Error'; }
+}
+
+async function eliminarCompra(id) {
+    if (!confirm('¿Eliminar esta orden de compra?')) return;
+    try {
+        await apiRequest(`/api/compras/${id}`, 'DELETE');
+        cargarCompras();
+    } catch (error) { alert(error.message); }
+}
+
+async function imprimirOrdenCompra(id) {
+    // Lógica de impresión con logo
+    const compras = await apiRequest('/api/compras');
+    const c = compras.find(x => x.id === id);
+    if (!c) return;
+
+    let html = `
+        <div class="header-impresion">
+            ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
+            <div class="header-text">
+                <div class="titulo-principal">ORDEN DE COMPRA</div>
+                <div class="folio-header">Folio: ${c.folio}</div>
+            </div>
+        </div>
+        <table>
+            <tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr>
+            <tr><td>Fecha</td><td>${c.fecha}</td></tr>
+            <tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr>
+            <tr><td>Observaciones</td><td>${c.observaciones}</td></tr>
+        </table>
+        <table style="margin-top: 15px;">
+            <thead><tr><th>Artículo</th><th>Cantidad</th><th>Precio</th><th>Total</th></tr></thead>
+            <tbody id="tabla-detalles"></tbody>
+        </table>
+        <h3 style="text-align: right; margin-top: 20px;">TOTAL: $${c.total.toFixed(2)}</h3>
+    `;
+
+    const formato = document.getElementById('formatoImpresion');
+    formato.innerHTML = html;
+    formato.style.display = 'block';
+    setTimeout(() => { window.print(); setTimeout(() => { formato.style.display = 'none'; }, 500); }, 300);
 }
 
 // ==================== INICIO ====================
