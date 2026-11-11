@@ -384,6 +384,13 @@
         <button id="btnCoordinacion" onclick="mostrarSeccion('panelCoordinacion')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
             <i class="fas fa-cogs"></i> Mantenimiento
         </button>
+        <!-- NUEVOS BOTONES -->
+        <button id="btnEmpleados" onclick="mostrarSeccion('panelEmpleados')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-users"></i> Empleados
+        </button>
+        <button id="btnOrdenes" onclick="mostrarSeccion('panelOrdenes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
+            <i class="fas fa-clipboard-list"></i> Órdenes de Trabajo
+        </button>
     </div>
 </nav>
 
@@ -580,6 +587,31 @@
         </div>
     </section>
 
+    <!-- 👤 PANEL DE EMPLEADOS -->
+    <section id="panelEmpleados" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">👤 Empleados de Mantenimiento</h2>
+        <div class="bg-white rounded shadow p-4 mb-4">
+            <input type="hidden" id="idEditarEmpleado" value="">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                <div><label class="font-semibold">Nombre completo</label><input type="text" id="nombreEmpleado" class="w-full border rounded px-3 py-2"></div>
+                <div><label class="font-semibold">Puesto</label><input type="text" id="puestoEmpleado" class="w-full border rounded px-3 py-2"></div>
+                <div class="flex items-center mt-6">
+                    <input type="checkbox" id="activoEmpleado" checked class="mr-2 h-5 w-5">
+                    <label class="font-semibold">Activo (disponible para órdenes)</label>
+                </div>
+            </div>
+            <button onclick="guardarEmpleado()" id="btnGuardarEmpleado" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Empleado</button>
+            <button onclick="cancelarEdicionEmpleado()" id="btnCancelarEmpleado" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
+        </div>
+        <div id="listaEmpleados" class="space-y-2"></div>
+    </section>
+
+    <!-- 📋 PANEL DE ÓRDENES DE TRABAJO -->
+    <section id="panelOrdenes" class="hidden">
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Órdenes de Trabajo</h2>
+        <div id="listaOrdenes" class="space-y-3"></div>
+    </section>
+
 </main>
 
 <!-- ===== CONTENEDOR DE IMPRESIÓN ===== -->
@@ -673,33 +705,25 @@ async function sincronizarDatos() {
     try {
         mostrarEstado('🔄 Sincronizando...', 'saving');
         
-        // Obtener datos del servidor
         const solicitudesData = await apiRequest('/api/solicitudes');
         const usuariosData = await apiRequest('/api/usuarios');
         const configData = await apiRequest('/api/configuracion');
         
-        // Cargar respaldo local
         const respaldoLocal = cargarRespaldoLocal();
         
-        // CONTAR datos para comparar
         const serverCount = Object.keys(usuariosData || {}).length + (solicitudesData || []).length;
         const localCount = respaldoLocal ? Object.keys(respaldoLocal.usuarios || {}).length + (respaldoLocal.solicitudes || []).length : 0;
         
         console.log(`📊 Servidor: ${serverCount} items, Local: ${localCount} items`);
         
-        // === ESTRATEGIA DE SINCRONIZACIÓN ===
-        
-        // Caso 1: El servidor tiene datos y el local también - usar el que tenga MÁS datos
         if (serverCount > 0 && localCount > 0) {
             if (localCount > serverCount) {
                 console.log('🔄 Respaldo local tiene MÁS datos. Restaurando en servidor...');
                 await restaurarEnServidor(respaldoLocal);
-                // Actualizar variables locales con los datos del servidor (que ahora son los del local)
                 const nuevosDatos = await cargarDatosDelServidor();
                 return nuevosDatos;
             } else {
                 console.log('🔄 Servidor tiene MÁS datos. Usando datos del servidor.');
-                // Usar datos del servidor
                 solicitudes = solicitudesData;
                 usuarios = usuariosData;
                 numeroWhatsAppDestino = configData.numeroWhatsApp || '';
@@ -710,7 +734,6 @@ async function sincronizarDatos() {
             }
         }
         
-        // Caso 2: Solo el servidor tiene datos
         if (serverCount > 0) {
             console.log('🔄 Usando datos del servidor');
             solicitudes = solicitudesData;
@@ -722,11 +745,9 @@ async function sincronizarDatos() {
             return true;
         }
         
-        // Caso 3: Solo el local tiene datos
         if (localCount > 0) {
             console.log('🔄 Respaldo local tiene datos. Restaurando en servidor...');
             await restaurarEnServidor(respaldoLocal);
-            // Actualizar variables locales
             solicitudes = respaldoLocal.solicitudes || [];
             usuarios = respaldoLocal.usuarios || {};
             numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
@@ -736,13 +757,11 @@ async function sincronizarDatos() {
             return true;
         }
         
-        // Caso 4: Ambos están vacíos - usar datos por defecto
         console.log('📦 No hay datos. Usando configuración por defecto.');
         return true;
         
     } catch (error) {
         console.error('❌ Error al sincronizar:', error);
-        // Si falla la conexión, intentar cargar desde local
         const respaldoLocal = cargarRespaldoLocal();
         if (respaldoLocal) {
             console.log('📦 Usando datos del respaldo local (offline)');
@@ -821,7 +840,11 @@ async function iniciarSesion() {
             document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
             
             if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
-            if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
+            if (usuarioActivo.rol === 'admin') {
+                document.getElementById('btnCoordinacion').classList.remove('hidden');
+                document.getElementById('btnEmpleados').classList.remove('hidden');
+                document.getElementById('btnOrdenes').classList.remove('hidden');
+            }
             
             await cargarDatosIniciales();
             actualizarTextoBoton();
@@ -861,7 +884,11 @@ async function recuperarSesion() {
         document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
         
         if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
-        if (usuarioActivo.rol === 'admin') document.getElementById('btnCoordinacion').classList.remove('hidden');
+        if (usuarioActivo.rol === 'admin') {
+            document.getElementById('btnCoordinacion').classList.remove('hidden');
+            document.getElementById('btnEmpleados').classList.remove('hidden');
+            document.getElementById('btnOrdenes').classList.remove('hidden');
+        }
         
         await cargarDatosIniciales();
         actualizarTextoBoton();
@@ -1001,6 +1028,9 @@ function mostrarSeccion(id) {
         cargarNombreMantenimiento();
         mostrarLogo();
     }
+    // NUEVAS SECCIONES
+    if (id === 'panelEmpleados') cargarEmpleados();
+    if (id === 'panelOrdenes') cargarOrdenes();
 }
 
 function subPanelAdmin(panel) {
@@ -1119,6 +1149,11 @@ function cargarBandejaProyectos() {
         
         if (numeroWhatsAppDestino) {
             botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
+        }
+
+        // NUEVO BOTÓN GENERAR ORDEN
+        if (s.estado === 'APROBADA') {
+            botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
         }
         
         botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button>
@@ -2017,6 +2052,129 @@ function imprimirSolicitud(id) {
 // ==================== MOSTRAR CAMPOS DE EVENTO ====================
 function mostrarCamposEvento() {
     document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
+}
+
+// ==================== MÓDULO DE EMPLEADOS ====================
+async function cargarEmpleados() {
+    const lista = document.getElementById('listaEmpleados');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const empleados = await apiRequest('/api/empleados');
+        if (empleados.length === 0) {
+            lista.innerHTML = '<p class="text-gray-500">No hay empleados registrados.</p>';
+            return;
+        }
+        lista.innerHTML = empleados.map(e => `
+            <div class="border rounded p-3 bg-white flex justify-between items-center ${e.activo ? '' : 'opacity-50'}">
+                <div>
+                    <b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'} 
+                    ${e.activo ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>' : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
+                </div>
+                <div class="flex gap-2">
+                    <button onclick='editarEmpleado(${JSON.stringify(e)})' class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">✏️ Editar</button>
+                    <button onclick="eliminarEmpleado(${e.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        lista.innerHTML = '<p class="text-red-500">Error al cargar empleados.</p>';
+    }
+}
+
+async function guardarEmpleado() {
+    const id = document.getElementById('idEditarEmpleado').value;
+    const nombre = document.getElementById('nombreEmpleado').value.trim();
+    const puesto = document.getElementById('puestoEmpleado').value.trim();
+    const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
+
+    if (!nombre) { alert('⚠️ El nombre es obligatorio'); return; }
+
+    try {
+        if (id) {
+            await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo });
+            alert('✅ Empleado actualizado');
+        } else {
+            await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo });
+            alert('✅ Empleado agregado');
+        }
+        cancelarEdicionEmpleado();
+        cargarEmpleados();
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
+    }
+}
+
+function editarEmpleado(emp) {
+    document.getElementById('idEditarEmpleado').value = emp.id;
+    document.getElementById('nombreEmpleado').value = emp.nombre;
+    document.getElementById('puestoEmpleado').value = emp.puesto || '';
+    document.getElementById('activoEmpleado').checked = emp.activo === 1;
+    document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar Empleado';
+    document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
+}
+
+function cancelarEdicionEmpleado() {
+    document.getElementById('idEditarEmpleado').value = '';
+    document.getElementById('nombreEmpleado').value = '';
+    document.getElementById('puestoEmpleado').value = '';
+    document.getElementById('activoEmpleado').checked = true;
+    document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado';
+    document.getElementById('btnCancelarEmpleado').classList.add('hidden');
+}
+
+async function eliminarEmpleado(id) {
+    if (!confirm('⚠️ ¿Eliminar este empleado?')) return;
+    try {
+        await apiRequest(`/api/empleados/${id}`, 'DELETE');
+        cargarEmpleados();
+    } catch (error) {
+        alert('❌ Error al eliminar: ' + error.message);
+    }
+}
+
+// ==================== MÓDULO DE ÓRDENES ====================
+async function cargarOrdenes() {
+    const lista = document.getElementById('listaOrdenes');
+    lista.innerHTML = 'Cargando...';
+    try {
+        const ordenes = await apiRequest('/api/ordenes');
+        if (ordenes.length === 0) {
+            lista.innerHTML = '<p class="text-gray-500">No hay órdenes de trabajo generadas.</p>';
+            return;
+        }
+        lista.innerHTML = ordenes.map(o => `
+            <div class="border rounded p-4 bg-white shadow-sm">
+                <div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
+                <div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div>
+                <div class="text-sm mt-1">${o.descripcion} (${o.area})</div>
+                <div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div>
+            </div>
+        `).join('');
+    } catch (error) {
+        lista.innerHTML = '<p class="text-red-500">Error al cargar órdenes.</p>';
+    }
+}
+
+async function abrirModalOrden(solicitudId) {
+    try {
+        const empleados = await apiRequest('/api/empleados');
+        const activos = empleados.filter(e => e.activo === 1);
+        
+        if (activos.length === 0) {
+            alert('⚠️ No hay empleados activos. Por favor, agrega uno en el módulo de Empleados.');
+            return;
+        }
+
+        const empleadoId = prompt(`Selecciona el ID del empleado para la orden:\n\n${activos.map(e => `ID: ${e.id} - ${e.nombre}`).join('\n')}`);
+        
+        if (!empleadoId) return;
+
+        await apiRequest('/api/ordenes', 'POST', { solicitud_id: solicitudId, empleado_id: parseInt(empleadoId) });
+        alert('✅ Orden de trabajo generada correctamente.');
+        mostrarSeccion('panelOrdenes');
+    } catch (error) {
+        alert('❌ Error al generar orden: ' + error.message);
+    }
 }
 
 // ==================== INICIO ====================
