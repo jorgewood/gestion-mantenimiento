@@ -2245,7 +2245,7 @@ async function eliminarOrden(id) {
     }
 }
 
-// ==================== IMPRESIÓN Y CAPTURA DE ORDEN DE TRABAJO ====================
+// ==================== IMPRESIÓN DE ORDEN DE TRABAJO ====================
 async function imprimirOrdenTrabajo(ordenId) {
     try {
         const ordenes = await apiRequest('/api/ordenes');
@@ -2271,6 +2271,23 @@ async function imprimirOrdenTrabajo(ordenId) {
             <div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
         }
 
+        // Lógica para rellenar los campos si ya está concluida
+        let fechaAtencion = '_________________________________';
+        let horaInicio = '_________________________________';
+        let horaFin = '_________________________________';
+        let recibidoPor = '_________________________________';
+        let tituloSeccion = 'PARA LLENAR AL MOMENTO DE ATENDER EL SERVICIO';
+        let colorBorde = '#999';
+
+        if (o.estado === 'CONCLUIDO') {
+            fechaAtencion = `<b>${o.fechaAtencion || ''}</b>`;
+            horaInicio = `<b>${o.horaInicio || ''}</b>`;
+            horaFin = `<b>${o.horaFin || ''}</b>`;
+            recibidoPor = `<b>${o.recibidoPor || ''}</b>`;
+            tituloSeccion = 'DATOS DE ATENCIÓN Y CONFORMIDAD';
+            colorBorde = '#00B42A'; // Borde verde para indicar que ya está lleno
+        }
+
         let html = `
             ${headerHTML}
             <table>
@@ -2282,16 +2299,16 @@ async function imprimirOrdenTrabajo(ordenId) {
                 <tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr>
             </table>
 
-            <div style="margin-top: 20px; border: 2px dashed #999; padding: 15px; border-radius: 8px;">
-                <h4 style="text-align: center; margin-top: 0; color: #555;">PARA LLENAR AL MOMENTO DE ATENDER EL SERVICIO</h4>
+            <div style="margin-top: 20px; border: 2px dashed ${colorBorde}; padding: 15px; border-radius: 8px;">
+                <h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4>
                 <table style="border: none;">
                     <tr>
-                        <td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br><br>_________________________________</td>
-                        <td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br><br>_________________________________</td>
+                        <td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td>
+                        <td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td>
                     </tr>
                     <tr>
-                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br><br>_________________________________</td>
-                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad (quien recibe):</b><br><br><br>_________________________________</td>
+                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br>${horaFin}</td>
+                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad (quien recibe):</b><br><br>${recibidoPor}</td>
                     </tr>
                 </table>
             </div>
@@ -2315,7 +2332,7 @@ async function imprimirOrdenTrabajo(ordenId) {
         alert('❌ Error al generar el formato: ' + error.message);
     }
 }
-
+    
 async function capturarOrden(ordenId, solicitudId) {
     const fechaAtencion = prompt("📅 Ingresa la FECHA en que se atendió (DD/MM/AAAA):");
     if (!fechaAtencion) return;
