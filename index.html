@@ -2632,11 +2632,14 @@ async function guardarIncidencia() {
     const datos = { empleado_id, tipo, fecha, motivo };
     
     if (tipo === 'Permiso por horas') {
-        datos.hora_inicio = document.getElementById('incidenciaHoraInicio').value;
-        datos.hora_fin = document.getElementById('incidenciaHoraFin').value;
+        datos.hora_inicio = document.getElementById('incidenciaHoraLlegada').value;
+        datos.hora_fin = document.getElementById('incidenciaHoraSalida').value;
     } else if (tipo === 'Permiso por días' || tipo === 'Vacaciones') {
-        datos.dias = document.getElementById('incidenciaDias').value;
+        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
+        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
     } else if (tipo === 'Incapacidad') {
+        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
+        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
         datos.diagnostico = document.getElementById('incidenciaDiagnostico').value;
     }
 
