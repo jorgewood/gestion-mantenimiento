@@ -2155,6 +2155,13 @@ async function cargarOrdenes() {
                 <div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div>
                 <div class="text-sm mt-1">${o.descripcion} (${o.area})</div>
                 <div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div>
+                
+                <div class="mt-3 flex gap-2">
+                    <button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir Formato</button>
+                    ${o.estado !== 'CONCLUIDO' ? 
+                        `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` 
+                        : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
+                </div>
             </div>
         `).join('');
     } catch (error) {
@@ -2181,6 +2188,108 @@ async function abrirModalOrden(solicitudId) {
         mostrarSeccion('panelOrdenes');
     } catch (error) {
         alert('❌ Error al generar orden: ' + error.message);
+    }
+}
+
+// ==================== IMPRESIÓN Y CAPTURA DE ORDEN DE TRABAJO ====================
+async function imprimirOrdenTrabajo(ordenId) {
+    try {
+        const ordenes = await apiRequest('/api/ordenes');
+        const o = ordenes.find(x => x.id === ordenId);
+        if (!o) { alert('❌ No se encontró la orden'); return; }
+
+        const fechaActual = new Date().toLocaleDateString('es-MX');
+        
+        let headerHTML = '';
+        if (logoDataURL) {
+            headerHTML = `
+            <div class="header-impresion">
+                <img src="${logoDataURL}" class="logo-impresion" alt="Logo" onerror="this.style.display='none'">
+                <div class="header-text">
+                    <div class="titulo-principal">ORDEN DE TRABAJO</div>
+                    <div class="subtitulo-header">${o.area}</div>
+                    <div class="folio-header">Orden: #${String(o.id).padStart(4, '0')}</div>
+                </div>
+            </div>`;
+        } else {
+            headerHTML = `
+            <div class="titulo-central">ORDEN DE TRABAJO</div>
+            <div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
+        }
+
+        let html = `
+            ${headerHTML}
+            <table>
+                <tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr>
+                <tr><td>Fecha de solicitud</td><td>${o.fecha_creacion.split(',')[0]}</td></tr>
+                <tr><td>Nombre de quien solicita</td><td>${o.solicitante}</td></tr>
+                <tr><td>Sección</td><td>${o.area}</td></tr>
+                <tr><td>Descripción del servicio</td><td>${o.descripcion}</td></tr>
+                <tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr>
+            </table>
+
+            <div style="margin-top: 20px; border: 2px dashed #999; padding: 15px; border-radius: 8px;">
+                <h4 style="text-align: center; margin-top: 0; color: #555;">PARA LLENAR AL MOMENTO DE ATENDER EL SERVICIO</h4>
+                <table style="border: none;">
+                    <tr>
+                        <td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br><br>_________________________________</td>
+                        <td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br><br>_________________________________</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br><br>_________________________________</td>
+                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad (quien recibe):</b><br><br><br>_________________________________</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="pie-pagina">
+                <span>${fechaActual}</span>
+                <span>SISTEMA DE GESTIÓN DE MANTENIMIENTO</span>
+                <span>v1.0</span>
+            </div>
+        `;
+
+        const c = document.getElementById('formatoImpresion');
+        c.innerHTML = html;
+        c.style.display = 'block';
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => { c.style.display = 'none'; }, 500);
+        }, 300);
+
+    } catch (error) {
+        alert('❌ Error al generar el formato: ' + error.message);
+    }
+}
+
+async function capturarOrden(ordenId, solicitudId) {
+    const fechaAtencion = prompt("📅 Ingresa la FECHA en que se atendió (DD/MM/AAAA):");
+    if (!fechaAtencion) return;
+    
+    const horaInicio = prompt("⏰ Ingresa la HORA DE INICIO:");
+    if (!horaInicio) return;
+    
+    const horaFin = prompt("⏰ Ingresa la HORA DE FINALIZACIÓN:");
+    if (!horaFin) return;
+    
+    const recibidoPor = prompt("✍️ Nombre de quien recibió de conformidad:");
+    if (!recibidoPor) return;
+
+    try {
+        await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', {
+            fechaAtencion: fechaAtencion,
+            horaInicio: horaInicio,
+            horaFin: horaFin,
+            recibidoPor: recibidoPor,
+            solicitud_id: solicitudId
+        });
+        
+        alert('✅ Orden de trabajo concluida y solicitud finalizada correctamente.');
+        cargarOrdenes();
+        // Refrescamos las solicitudes en memoria por si el usuario va a la otra pestaña
+        await cargarDatosIniciales(); 
+    } catch (error) {
+        alert('❌ Error al capturar la orden: ' + error.message);
     }
 }
 
