@@ -8,21 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        colegio: {
-                            azul: '#165DFF',
-                            verde: '#00B42A',
-                            naranja: '#FF7D00',
-                            rojo: '#F53F3F',
-                            gris: '#86909C',
-                            morado: '#722ED1',
-                            rosa: '#EB2F96'
-                        }
-                    }
-                }
-            }
+            theme: { extend: { colors: { colegio: { azul: '#165DFF', verde: '#00B42A', naranja: '#FF7D00', rojo: '#F53F3F', gris: '#86909C', morado: '#722ED1', rosa: '#EB2F96' } } } }
         }
     </script>
     <style>
@@ -64,149 +50,37 @@
         
         .logo-preview { max-height: 80px; max-width: 150px; object-fit: contain; border: 1px solid #ddd; padding: 5px; border-radius: 8px; background: white; }
         
-        .storage-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            z-index: 9999;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 12px;
-            background: #10B981;
-            color: white;
-        }
+        .storage-status { position: fixed; bottom: 20px; right: 20px; padding: 8px 16px; border-radius: 8px; font-weight: bold; z-index: 9999; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 12px; background: #10B981; color: white; }
         .storage-status.saving { background: #f59e0b; animation: pulse 0.5s ease-in-out; }
         .storage-status.error { background: #EF4444; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        /* Estilos de impresión */
         @media print {
             body * { visibility: hidden !important; }
             #formatoImpresion, #formatoImpresion * { visibility: visible !important; }
-            #formatoImpresion {
-                position: fixed !important;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                margin: 0; padding: 0;
-                background: white !important;
-                z-index: 9999 !important;
-                display: block !important;
-                overflow: hidden !important;
-            }
-            .formato-impresion {
-                display: block !important;
-                width: 100% !important;
-                max-width: 210mm !important;
-                min-height: 100% !important;
-                padding: 12mm 15mm !important;
-                margin: 0 auto !important;
-                border: none !important;
-                box-sizing: border-box !important;
-                background: white !important;
-                font-family: 'Segoe UI', Arial, sans-serif !important;
-                font-size: 10pt !important;
-                line-height: 1.5 !important;
-            }
-            .formato-impresion .header-impresion {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: space-between !important;
-                margin-bottom: 15px !important;
-                border-bottom: 3px solid #165DFF !important;
-                padding-bottom: 10px !important;
-            }
+            #formatoImpresion { position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; z-index: 9999 !important; display: block !important; overflow: hidden !important; }
+            .formato-impresion { display: block !important; width: 100% !important; max-width: 210mm !important; min-height: 100% !important; padding: 12mm 15mm !important; margin: 0 auto !important; border: none !important; box-sizing: border-box !important; background: white !important; font-family: 'Segoe UI', Arial, sans-serif !important; font-size: 10pt !important; line-height: 1.5 !important; }
+            .formato-impresion .header-impresion { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 15px !important; border-bottom: 3px solid #165DFF !important; padding-bottom: 10px !important; }
             .formato-impresion .logo-impresion { max-height: 70px !important; max-width: 130px !important; object-fit: contain !important; }
             .formato-impresion .header-text { text-align: right !important; line-height: 1.4 !important; }
-            .formato-impresion .header-text .titulo-principal {
-                font-size: 14pt !important;
-                font-weight: 800 !important;
-                color: #165DFF !important;
-                text-transform: uppercase !important;
-                letter-spacing: 1px !important;
-            }
+            .formato-impresion .header-text .titulo-principal { font-size: 14pt !important; font-weight: 800 !important; color: #165DFF !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
             .formato-impresion .header-text .subtitulo-header { font-size: 9pt !important; color: #555 !important; font-weight: 500 !important; }
             .formato-impresion .header-text .folio-header { font-size: 10pt !important; color: #333 !important; font-weight: 700 !important; }
-            .formato-impresion .titulo-central {
-                text-align: center !important;
-                font-size: 16pt !important;
-                font-weight: 800 !important;
-                color: #1a1a2e !important;
-                margin: 5px 0 3px 0 !important;
-                letter-spacing: 2px !important;
-                text-transform: uppercase !important;
-            }
-            .formato-impresion .subtitulo-central {
-                text-align: center !important;
-                font-size: 10pt !important;
-                color: #666 !important;
-                margin-bottom: 12px !important;
-                border-bottom: 2px solid #e5e7eb !important;
-                padding-bottom: 8px !important;
-            }
-            .formato-impresion table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-                margin-top: 8px !important;
-                font-size: 10pt !important;
-                border: 1px solid #d1d5db !important;
-            }
-            .formato-impresion td {
-                border: 1px solid #d1d5db !important;
-                padding: 6px 10px !important;
-                vertical-align: top !important;
-                font-size: 10pt !important;
-            }
-            .formato-impresion td:first-child {
-                width: 25% !important;
-                font-weight: 700 !important;
-                background: #f3f4f6 !important;
-                color: #1a1a2e !important;
-            }
-            .formato-impresion td:last-child {
-                width: 75% !important;
-                background: white !important;
-                color: #333 !important;
-                white-space: pre-wrap !important;
-                word-wrap: break-word !important;
-            }
-            .formato-impresion .firmas {
-                margin-top: 20px !important;
-                display: flex !important;
-                justify-content: space-between !important;
-                padding-top: 15px !important;
-                border-top: 1px solid #e5e7eb !important;
-            }
+            .formato-impresion .titulo-central { text-align: center !important; font-size: 16pt !important; font-weight: 800 !important; color: #1a1a2e !important; margin: 5px 0 3px 0 !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
+            .formato-impresion .subtitulo-central { text-align: center !important; font-size: 10pt !important; color: #666 !important; margin-bottom: 12px !important; border-bottom: 2px solid #e5e7eb !important; padding-bottom: 8px !important; }
+            .formato-impresion table { width: 100% !important; border-collapse: collapse !important; margin-top: 8px !important; font-size: 10pt !important; border: 1px solid #d1d5db !important; }
+            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 6px 10px !important; vertical-align: top !important; font-size: 10pt !important; }
+            .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; color: #1a1a2e !important; }
+            .formato-impresion td:last-child { width: 75% !important; background: white !important; color: #333 !important; white-space: pre-wrap !important; word-wrap: break-word !important; }
+            .formato-impresion .firmas { margin-top: 20px !important; display: flex !important; justify-content: space-between !important; padding-top: 15px !important; border-top: 1px solid #e5e7eb !important; }
             .formato-impresion .firma-item { text-align: center !important; width: 30% !important; }
-            .formato-impresion .firma-item .linea {
-                border-top: 1px solid #333 !important;
-                width: 100% !important;
-                margin: 25px 0 4px 0 !important;
-            }
+            .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 25px 0 4px 0 !important; }
             .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 9pt !important; color: #1a1a2e !important; }
             .formato-impresion .firma-item .firma-cargo { font-size: 8pt !important; color: #666 !important; }
             .formato-impresion .firma-item .firma-fecha { font-size: 7.5pt !important; color: #999 !important; }
-            .formato-impresion .pie-pagina {
-                margin-top: 15px !important;
-                text-align: center !important;
-                font-size: 7.5pt !important;
-                color: #9ca3af !important;
-                border-top: 1px solid #e5e7eb !important;
-                padding-top: 8px !important;
-                display: flex !important;
-                justify-content: space-between !important;
-            }
+            .formato-impresion .pie-pagina { margin-top: 15px !important; text-align: center !important; font-size: 7.5pt !important; color: #9ca3af !important; border-top: 1px solid #e5e7eb !important; padding-top: 8px !important; display: flex !important; justify-content: space-between !important; }
             .formato-impresion .pie-pagina span { color: #9ca3af !important; }
-            .formato-impresion .badge-estado {
-                display: inline-block !important;
-                padding: 2px 14px !important;
-                border-radius: 20px !important;
-                font-size: 8.5pt !important;
-                font-weight: 700 !important;
-                text-transform: uppercase !important;
-                letter-spacing: 0.5px !important;
-            }
+            .formato-impresion .badge-estado { display: inline-block !important; padding: 2px 14px !important; border-radius: 20px !important; font-size: 8.5pt !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
             .formato-impresion .badge-aprobada { background: #dcfce7 !important; color: #00B42A !important; }
             .formato-impresion .badge-pendiente { background: #fef3c7 !important; color: #FF7D00 !important; }
             .formato-impresion .badge-concluida { background: #dbeafe !important; color: #165DFF !important; }
@@ -215,117 +89,28 @@
             @page { size: Letter !important; margin: 8mm 10mm !important; }
             .formato-impresion * { page-break-inside: avoid !important; page-break-after: avoid !important; }
         }
-        .formato-impresion {
-            display: none;
-            background: white;
-            padding: 25px 30px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            max-width: 210mm;
-            margin: 20px auto;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            font-size: 10pt;
-            line-height: 1.5;
-        }
-        .formato-impresion .header-impresion {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            border-bottom: 3px solid #165DFF;
-            padding-bottom: 10px;
-        }
+        .formato-impresion { display: none; background: white; padding: 25px 30px; border: 1px solid #e5e7eb; border-radius: 12px; max-width: 210mm; margin: 20px auto; font-family: 'Segoe UI', Arial, sans-serif; box-shadow: 0 4px 20px rgba(0,0,0,0.08); font-size: 10pt; line-height: 1.5; }
+        .formato-impresion .header-impresion { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 3px solid #165DFF; padding-bottom: 10px; }
         .formato-impresion .logo-impresion { max-height: 70px; max-width: 130px; object-fit: contain; }
         .formato-impresion .header-text { text-align: right; line-height: 1.4; }
-        .formato-impresion .header-text .titulo-principal {
-            font-size: 14pt;
-            font-weight: 800;
-            color: #165DFF;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .formato-impresion .header-text .titulo-principal { font-size: 14pt; font-weight: 800; color: #165DFF; text-transform: uppercase; letter-spacing: 1px; }
         .formato-impresion .header-text .subtitulo-header { font-size: 9pt; color: #555; font-weight: 500; }
         .formato-impresion .header-text .folio-header { font-size: 10pt; color: #333; font-weight: 700; }
-        .formato-impresion .titulo-central {
-            text-align: center;
-            font-size: 16pt;
-            font-weight: 800;
-            color: #1a1a2e;
-            margin: 5px 0 3px 0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .formato-impresion .subtitulo-central {
-            text-align: center;
-            font-size: 10pt;
-            color: #666;
-            margin-bottom: 12px;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 8px;
-        }
-        .formato-impresion table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 10pt;
-            border: 1px solid #d1d5db;
-        }
-        .formato-impresion td {
-            border: 1px solid #d1d5db;
-            padding: 6px 10px;
-            vertical-align: top;
-            font-size: 10pt;
-        }
-        .formato-impresion td:first-child {
-            width: 25%;
-            font-weight: 700;
-            background: #f3f4f6;
-            color: #1a1a2e;
-        }
-        .formato-impresion td:last-child {
-            width: 75%;
-            background: white;
-            color: #333;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .formato-impresion .firmas {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            padding-top: 15px;
-            border-top: 1px solid #e5e7eb;
-        }
+        .formato-impresion .titulo-central { text-align: center; font-size: 16pt; font-weight: 800; color: #1a1a2e; margin: 5px 0 3px 0; letter-spacing: 2px; text-transform: uppercase; }
+        .formato-impresion .subtitulo-central { text-align: center; font-size: 10pt; color: #666; margin-bottom: 12px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
+        .formato-impresion table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10pt; border: 1px solid #d1d5db; }
+        .formato-impresion td { border: 1px solid #d1d5db; padding: 6px 10px; vertical-align: top; font-size: 10pt; }
+        .formato-impresion td:first-child { width: 25%; font-weight: 700; background: #f3f4f6; color: #1a1a2e; }
+        .formato-impresion td:last-child { width: 75%; background: white; color: #333; white-space: pre-wrap; word-wrap: break-word; }
+        .formato-impresion .firmas { margin-top: 20px; display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         .formato-impresion .firma-item { text-align: center; width: 30%; }
-        .formato-impresion .firma-item .linea {
-            border-top: 1px solid #333;
-            width: 100%;
-            margin: 25px 0 4px 0;
-        }
+        .formato-impresion .firma-item .linea { border-top: 1px solid #333; width: 100%; margin: 25px 0 4px 0; }
         .formato-impresion .firma-item .firma-nombre { font-weight: 700; font-size: 9pt; color: #1a1a2e; }
         .formato-impresion .firma-item .firma-cargo { font-size: 8pt; color: #666; }
         .formato-impresion .firma-item .firma-fecha { font-size: 7.5pt; color: #999; }
-        .formato-impresion .pie-pagina {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 7.5pt;
-            color: #9ca3af;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
+        .formato-impresion .pie-pagina { margin-top: 15px; text-align: center; font-size: 7.5pt; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 8px; display: flex; justify-content: space-between; }
         .formato-impresion .pie-pagina span { color: #9ca3af; }
-        .formato-impresion .badge-estado {
-            display: inline-block;
-            padding: 2px 14px;
-            border-radius: 20px;
-            font-size: 8.5pt;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .formato-impresion .badge-estado { display: inline-block; padding: 2px 14px; border-radius: 20px; font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .formato-impresion .badge-aprobada { background: #dcfce7; color: #00B42A; }
         .formato-impresion .badge-pendiente { background: #fef3c7; color: #FF7D00; }
         .formato-impresion .badge-concluida { background: #dbeafe; color: #165DFF; }
@@ -335,10 +120,8 @@
 </head>
 <body>
 
-<!-- Indicador de estado -->
 <div id="storageStatus" class="storage-status">✅ Datos sincronizados</div>
 
-<!-- 🔑 INICIO DE SESIÓN -->
 <div id="loginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
         <h2 class="text-2xl font-bold text-center mb-6 text-colegio-azul">🔐 Inicio de Sesión</h2>
@@ -356,10 +139,9 @@
     </div>
 </div>
 
-<!-- 📱 BARRA SUPERIOR -->
 <header id="barraSuperior" class="hidden bg-colegio-azul text-white py-3 px-6 shadow">
     <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-xl font-bold">🏫 Gestión de Mantenimiento y Eventos</h1>
+        <h1 class="text-xl font-bold">🏫 Gestión de Mantenimiento</h1>
         <div class="flex items-center gap-4">
             <span id="nombreUsuarioActivo"></span>
             <button onclick="cerrarSesion()" class="bg-white/20 px-3 py-1 rounded hover:bg-white/30">
@@ -369,46 +151,70 @@
     </div>
 </header>
 
-<!-- 🧭 MENÚ DE NAVEGACIÓN -->
 <nav id="menuNavegacion" class="hidden bg-white shadow-sm border-b mb-6">
-    <div class="container mx-auto px-4 py-2 flex flex-wrap gap-2">
-        <button onclick="nuevaSolicitud()" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white">
-            <i class="fas fa-plus-circle"></i> Nueva Solicitud
-        </button>
-        <button onclick="mostrarSeccion('misSolicitudes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white">
-            <i class="fas fa-list"></i> Mis Solicitudes
-        </button>
+    <div class="container mx-auto px-4 py-2 flex flex-wrap gap-2 items-center">
+        
+        <!-- MENÚ DE SOLICITUDES -->
+        <div id="navSolicitudes" class="relative inline-block text-left hidden">
+            <button onclick="toggleMenu('subMenuSolicitudes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white flex items-center gap-2">
+                <i class="fas fa-list"></i> Solicitudes <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div id="subMenuSolicitudes" class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden z-50">
+                <button onclick="nuevaSolicitud()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-plus-circle text-colegio-azul"></i> Nueva Solicitud
+                </button>
+                <button onclick="mostrarSeccion('misSolicitudes')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-user text-colegio-azul"></i> Mis Solicitudes
+                </button>
+            </div>
+        </div>
+
         <button id="btnProyectos" onclick="mostrarSeccion('bandaProyectos')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
             <i class="fas fa-clipboard-check"></i> Proyectos Generales
         </button>
-        <button id="btnCoordinacion" onclick="mostrarSeccion('panelCoordinacion')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-cogs"></i> Mantenimiento
-        </button>
-        <button id="btnEmpleados" onclick="mostrarSeccion('panelEmpleados')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-users"></i> Empleados
-        </button>
-        <button id="btnOrdenes" onclick="mostrarSeccion('panelOrdenes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-clipboard-list"></i> Órdenes de Trabajo
-        </button>
-        <button id="btnIncidencias" onclick="mostrarSeccion('panelIncidencias')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-exclamation-triangle"></i> Incidencias
-        </button>
-        <button id="btnCompras" onclick="mostrarSeccion('panelCompras')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-shopping-cart"></i> Órdenes de Compra
-        </button>
-        <button id="btnSecciones" onclick="mostrarSeccion('panelSecciones')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-building"></i> Secciones
-        </button>
-        <button id="btnProveedores" onclick="mostrarSeccion('panelProveedores')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white hidden">
-            <i class="fas fa-truck"></i> Proveedores
-        </button>
+
+        <!-- BOTÓN DE MANTENIMIENTO (AL FINAL DE TODO) -->
+        <div id="navMantenimiento" class="relative inline-block text-left hidden ml-auto">
+            <button onclick="toggleMenu('subMenuMantenimiento')" class="px-4 py-2 rounded bg-colegio-verde text-white hover:bg-green-700 flex items-center gap-2">
+                <i class="fas fa-cogs"></i> Mantenimiento <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div id="subMenuMantenimiento" class="absolute right-0 mt-2 w-56 bg-white border rounded shadow-lg hidden z-50">
+                <button onclick="mostrarSeccion('panelCoordinacion')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-clipboard-list text-colegio-verde"></i> Bandeja de Solicitudes
+                </button>
+                <button onclick="mostrarSeccion('panelEmpleados')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-users text-colegio-verde"></i> Empleados
+                </button>
+                <button onclick="mostrarSeccion('panelOrdenes')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-tools text-colegio-verde"></i> Órdenes de Trabajo
+                </button>
+                <button onclick="mostrarSeccion('panelIncidencias')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-exclamation-triangle text-colegio-verde"></i> Incidencias
+                </button>
+                <button onclick="mostrarSeccion('panelCompras')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-shopping-cart text-colegio-verde"></i> Órdenes de Compra
+                </button>
+                <button onclick="mostrarSeccion('panelSecciones')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-building text-colegio-verde"></i> Secciones
+                </button>
+                <button onclick="mostrarSeccion('panelProveedores')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-truck text-colegio-verde"></i> Proveedores
+                </button>
+                <div class="border-t my-1"></div>
+                <button onclick="subPanelAdmin('configuracion')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-sliders-h text-gray-500"></i> Configuración
+                </button>
+                <button onclick="subPanelAdmin('usuarios')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    <i class="fas fa-user-shield text-gray-500"></i> Gestión de Usuarios
+                </button>
+            </div>
+        </div>
+
     </div>
 </nav>
 
-<!-- 📄 CONTENIDO PRINCIPAL -->
 <main class="container mx-auto px-4 pb-10">
 
-    <!-- ✅ NUEVA / EDITAR SOLICITUD -->
     <section id="nuevaSolicitud" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul" id="tituloFormSol">📝 Nueva Solicitud</h2>
         <div class="bg-white rounded-lg shadow p-6 space-y-4">
@@ -438,18 +244,9 @@
             </div>
             <div id="camposEvento" class="hidden border p-4 rounded bg-gray-50 space-y-3">
                 <h4 class="font-bold text-colegio-naranja">📅 Datos del Evento</h4>
-                <div>
-                    <label class="block font-semibold mb-1">Nombre del evento</label>
-                    <input type="text" id="nombreEvento" class="w-full border rounded-lg px-3 py-2">
-                </div>
-                <div>
-                    <label class="block font-semibold mb-1">Fecha en que se requiere / Fecha del evento</label>
-                    <input type="date" id="fechaEvento" class="w-full border rounded-lg px-3 py-2">
-                </div>
-                <div>
-                    <label class="block font-semibold mb-1">Lugar solicitado</label>
-                    <input type="text" id="lugarEvento" class="w-full border rounded-lg px-3 py-2">
-                </div>
+                <div><label class="block font-semibold mb-1">Nombre del evento</label><input type="text" id="nombreEvento" class="w-full border rounded-lg px-3 py-2"></div>
+                <div><label class="block font-semibold mb-1">Fecha en que se requiere / Fecha del evento</label><input type="date" id="fechaEvento" class="w-full border rounded-lg px-3 py-2"></div>
+                <div><label class="block font-semibold mb-1">Lugar solicitado</label><input type="text" id="lugarEvento" class="w-full border rounded-lg px-3 py-2"></div>
             </div>
             <div class="flex gap-2">
                 <button onclick="guardarSolicitud()" id="btnGuardarSol" class="btn-enviar-proyectos">
@@ -461,44 +258,31 @@
         </div>
     </section>
 
-    <!-- 📋 MIS SOLICITUDES -->
     <section id="misSolicitudes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Mis Solicitudes</h2>
         <div id="listaMisSolicitudes" class="space-y-3"></div>
     </section>
 
-    <!-- ⚖️ BANDEJA DE PROYECTOS GENERALES -->
     <section id="bandaProyectos" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-naranja">⚖️ Bandeja de Proyectos Generales</h2>
         <p class="mb-4 text-gray-600">Solicitudes pendientes, autorizadas y concluidas:</p>
         <div id="listaProyectos" class="space-y-3"></div>
     </section>
 
-    <!-- 🔧 MANTENIMIENTO -->
     <section id="panelCoordinacion" class="hidden">
-        <h2 class="text-xl font-bold mb-4 text-colegio-verde">🔧 Mantenimiento</h2>
-        <div class="flex flex-wrap gap-2 mb-6">
-            <button onclick="subPanelAdmin('solicitudes')" class="px-3 py-2 rounded bg-colegio-verde text-white text-sm">📋 Solicitudes</button>
-            <button onclick="subPanelAdmin('usuarios')" class="px-3 py-2 rounded bg-gray-200 text-sm">👤 Usuarios</button>
-            <button onclick="subPanelAdmin('configuracion')" class="px-3 py-2 rounded bg-gray-200 text-sm">⚙️ Configuración</button>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-colegio-verde">🔧 Bandeja de Mantenimiento</h2>
         </div>
 
         <div id="adminSolicitudes">
             <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
                 <h3 class="font-bold">🔍 Filtrar Solicitudes</h3>
                 <div class="flex flex-wrap gap-3">
-                    <div>
-                        <label class="block text-sm font-semibold">Por solicitante</label>
-                        <input type="text" id="filtroSolicitante" placeholder="Nombre" class="border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold">Por fecha</label>
-                        <input type="date" id="filtroFecha" class="border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()">
-                    </div>
+                    <div><label class="block text-sm font-semibold">Por solicitante</label><input type="text" id="filtroSolicitante" placeholder="Nombre" class="border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
+                    <div><label class="block text-sm font-semibold">Por fecha</label><input type="date" id="filtroFecha" class="border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()"></div>
                     <button onclick="limpiarFiltros()" class="bg-gray-200 px-3 py-1 rounded self-end">Limpiar</button>
                 </div>
             </div>
-            <h3 class="font-bold mb-2">✅ Solicitudes</h3>
             <div id="listaCoordinacion" class="space-y-3"></div>
         </div>
 
@@ -507,19 +291,36 @@
             <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div><label class="font-semibold">Usuario (login)</label><input type="text" id="nuevoUsuario" class="w-full border rounded px-3 py-2"></div>
-                    <div><label class="font-semibold">Contraseña</label><input type="text" id="nuevoPass" class="w-full border rounded px-3 py-2"></div>
+                    <div><label class="font-semibold">Contraseña</label><input type="text" id="nuevoPass" class="w-full border rounded px-3 py-2" placeholder="Dejar en blanco para no cambiar"></div>
                     <div><label class="font-semibold">Nombre completo</label><input type="text" id="nombreCompletoUsuario" class="w-full border rounded px-3 py-2"></div>
-                    <div><label class="font-semibold">Rol</label>
+                    <div><label class="font-semibold">Rol Base</label>
                         <select id="rolUsuario" class="w-full border rounded px-3 py-2">
-                            <!-- CORRECCIÓN 1: Textos de roles cambiados -->
                             <option value="seccion">Operador</option>
                             <option value="proyectos">Supervisor</option>
                             <option value="admin">Administrador</option>
                         </select>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="agregarUsuario()" id="btnAgregarUsuario" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Usuario</button>
+                
+                <!-- PERMISOS GRANULARES -->
+                <div class="border p-3 rounded bg-gray-50 mt-2">
+                    <label class="font-bold text-sm block mb-2 text-colegio-azul"><i class="fas fa-shield-alt"></i> Permisos de Visibilidad (Opciones en el menú)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                        <label class="flex items-center gap-2"><input type="checkbox" value="solicitudes" class="permiso-checkbox" checked> Solicitudes</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="proyectos" class="permiso-checkbox"> Proyectos Grales</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="mantenimiento" class="permiso-checkbox"> Mantenimiento</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="empleados" class="permiso-checkbox"> Empleados</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="ordenes" class="permiso-checkbox"> Órdenes</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="incidencias" class="permiso-checkbox"> Incidencias</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="compras" class="permiso-checkbox"> Compras</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="secciones" class="permiso-checkbox"> Secciones</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="proveedores" class="permiso-checkbox"> Proveedores</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="configuracion" class="permiso-checkbox"> Configuración</label>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-3">
+                    <button onclick="agregarUsuario()" id="btnAgregarUsuario" class="bg-colegio-azul text-white px-4 py-2 rounded font-semibold">💾 Guardar Usuario</button>
                     <button onclick="cancelarEdicionUsuario()" id="btnCancelarEditarUsuario" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar Edición</button>
                 </div>
                 <input type="hidden" id="editandoUsuario" value="">
@@ -530,70 +331,51 @@
         <div id="adminConfiguracion" class="hidden">
             <h3 class="font-bold mb-3">⚙️ Configuración</h3>
             <div class="bg-white rounded shadow p-4 mb-4 space-y-4">
-                
-                <!-- 👤 Usuario de Mantenimiento -->
                 <div>
                     <h4 class="font-bold mb-2">👤 Usuario de Mantenimiento</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">Nombre del responsable</label>
-                            <input type="text" id="nombreMantenimiento" class="w-full border rounded px-3 py-2" placeholder="Ej: Ricardo Madera">
-                        </div>
-                        <div class="flex items-end">
-                            <button onclick="guardarNombreMantenimiento()" class="btn-guardar-config w-full md:w-auto">💾 Guardar Nombre</button>
-                        </div>
+                        <div><label class="block text-sm font-semibold mb-1">Nombre del responsable</label><input type="text" id="nombreMantenimiento" class="w-full border rounded px-3 py-2" placeholder="Ej: Ricardo Madera"></div>
+                        <div class="flex items-end"><button onclick="guardarNombreMantenimiento()" class="btn-guardar-config w-full md:w-auto">💾 Guardar Nombre</button></div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">Este nombre aparecerá como el responsable de mantenimiento en los documentos.</p>
                 </div>
                 <hr>
-
-                <!-- 🖼️ Logo del Colegio -->
                 <div>
                     <h4 class="font-bold mb-2">🖼️ Logo del Colegio</h4>
                     <div class="flex flex-col md:flex-row gap-4 items-start">
                         <div class="flex-1">
                             <label class="block text-sm font-semibold mb-1">Seleccionar imagen</label>
                             <input type="file" id="inputLogo" accept="image/*" class="w-full border rounded px-3 py-2" onchange="cargarLogo(this)">
-                            <p class="text-xs text-gray-500 mt-1">Formatos: PNG, JPG, SVG, GIF. Tamaño recomendado: 120x60px</p>
                         </div>
                         <div class="flex-1">
                             <label class="block text-sm font-semibold mb-1">Vista previa</label>
                             <div id="previewLogoContainer" class="border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center min-h-[100px] bg-gray-50">
-                                <img id="previewLogo" class="logo-preview" style="display:none;" alt="Vista previa del logo">
+                                <img id="previewLogo" class="logo-preview" style="display:none;" alt="Vista previa">
                                 <span id="sinLogoText" class="text-gray-400 text-sm">Sin logo configurado</span>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-2 flex gap-2">
-                        <button onclick="eliminarLogo()" class="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200">🗑️ Eliminar Logo</button>
-                    </div>
+                    <div class="mt-2 flex gap-2"><button onclick="eliminarLogo()" class="bg-red-100 text-red-600 px-4 py-2 rounded">🗑️ Eliminar Logo</button></div>
                 </div>
                 <hr>
-
-                <!-- 📱 WhatsApp -->
                 <div>
-                    <label class="block font-semibold mb-1">📱 Número WhatsApp (con código país, ej: 52999...)</label>
+                    <label class="block font-semibold mb-1">📱 Número WhatsApp</label>
                     <div class="flex gap-2">
                         <input type="text" id="numeroWhatsApp" class="flex-1 border rounded px-3 py-2" placeholder="Ej: 529991234567">
-                        <button onclick="actualizarWhatsApp()" class="bg-colegio-azul text-white px-4 py-2 rounded hover:bg-blue-700">💾 Guardar</button>
+                        <button onclick="actualizarWhatsApp()" class="bg-colegio-azul text-white px-4 py-2 rounded">💾 Guardar</button>
                         <span id="numeroActualWhatsApp" class="text-colegio-azul font-semibold self-center"></span>
                     </div>
                 </div>
                 <hr>
-
-                <!-- 💾 Respaldos -->
                 <div>
-                    <h4 class="font-bold mb-2">💾 Respaldar / Restaurar Información</h4>
-                    <button onclick="crearRespaldo()" class="bg-colegio-verde text-white px-4 py-2 rounded mr-2">⬇️ Respaldar Información</button>
-                    <button onclick="document.getElementById('archivoRespaldo').click()" class="bg-colegio-naranja text-white px-4 py-2 rounded">⬆️ Restaurar desde Archivo</button>
+                    <h4 class="font-bold mb-2">💾 Respaldar / Restaurar</h4>
+                    <button onclick="crearRespaldo()" class="bg-colegio-verde text-white px-4 py-2 rounded mr-2">⬇️ Respaldar</button>
+                    <button onclick="document.getElementById('archivoRespaldo').click()" class="bg-colegio-naranja text-white px-4 py-2 rounded">⬆️ Restaurar</button>
                     <input type="file" id="archivoRespaldo" accept=".json" class="hidden" onchange="restaurarRespaldo(this)">
-                    <p class="text-sm text-gray-500 mt-2">• Respaldar: descarga un archivo con toda la información<br>• Restaurar: selecciona un archivo de respaldo para recuperar los datos</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 👤 PANEL DE EMPLEADOS -->
     <section id="panelEmpleados" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">👤 Empleados de Mantenimiento</h2>
         <div class="bg-white rounded shadow p-4 mb-4">
@@ -601,10 +383,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                 <div><label class="font-semibold">Nombre completo</label><input type="text" id="nombreEmpleado" class="w-full border rounded px-3 py-2"></div>
                 <div><label class="font-semibold">Puesto</label><input type="text" id="puestoEmpleado" class="w-full border rounded px-3 py-2"></div>
-                <div class="flex items-center mt-6">
-                    <input type="checkbox" id="activoEmpleado" checked class="mr-2 h-5 w-5">
-                    <label class="font-semibold">Activo (disponible para órdenes)</label>
-                </div>
+                <div class="flex items-center mt-6"><input type="checkbox" id="activoEmpleado" checked class="mr-2 h-5 w-5"><label class="font-semibold">Activo</label></div>
             </div>
             <button onclick="guardarEmpleado()" id="btnGuardarEmpleado" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Empleado</button>
             <button onclick="cancelarEdicionEmpleado()" id="btnCancelarEmpleado" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
@@ -612,23 +391,17 @@
         <div id="listaEmpleados" class="space-y-2"></div>
     </section>
 
-    <!-- 📋 PANEL DE ÓRDENES DE TRABAJO -->
     <section id="panelOrdenes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Órdenes de Trabajo</h2>
         <div id="listaOrdenes" class="space-y-3"></div>
     </section>
 
-    <!-- 🚨 PANEL DE INCIDENCIAS -->
     <section id="panelIncidencias" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">🚨 Permisos e Incidencias</h2>
         <div class="bg-white rounded shadow p-4 mb-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                <div>
-                    <label class="font-semibold">Empleado</label>
-                    <select id="incidenciaEmpleado" class="w-full border rounded px-3 py-2"></select>
-                </div>
-                <div>
-                    <label class="font-semibold">Tipo</label>
+                <div><label class="font-semibold">Empleado</label><select id="incidenciaEmpleado" class="w-full border rounded px-3 py-2"></select></div>
+                <div><label class="font-semibold">Tipo</label>
                     <select id="incidenciaTipo" class="w-full border rounded px-3 py-2" onchange="cambiarCamposIncidencia()">
                         <option value="Vacaciones">Vacaciones</option>
                         <option value="Incapacidad">Incapacidad</option>
@@ -636,61 +409,41 @@
                         <option value="Permiso por días">Permiso por días</option>
                     </select>
                 </div>
-                <div>
-                    <label class="font-semibold">Fecha de Registro</label>
-                    <input type="date" id="incidenciaFecha" class="w-full border rounded px-3 py-2">
-                </div>
+                <div><label class="font-semibold">Fecha de Registro</label><input type="date" id="incidenciaFecha" class="w-full border rounded px-3 py-2"></div>
             </div>
-
-            <!-- CAMPOS DINÁMICOS -->
             <div id="camposFechas" class="hidden grid grid-cols-2 gap-3 mb-3">
                 <div><label class="font-semibold">Fecha de Inicio</label><input type="date" id="incidenciaFechaInicio" class="w-full border rounded px-3 py-2"></div>
                 <div><label class="font-semibold">Fecha de Término</label><input type="date" id="incidenciaFechaFin" class="w-full border rounded px-3 py-2"></div>
             </div>
-
             <div id="camposHoras" class="hidden grid grid-cols-2 gap-3 mb-3">
                 <div><label class="font-semibold">Hora de llegada</label><input type="time" id="incidenciaHoraLlegada" class="w-full border rounded px-3 py-2"></div>
                 <div><label class="font-semibold">Hora de salida</label><input type="time" id="incidenciaHoraSalida" class="w-full border rounded px-3 py-2"></div>
             </div>
-
-            <div class="mb-3">
-                <label class="font-semibold">Motivo / Observaciones (Opcional)</label>
-                <textarea id="incidenciaMotivo" rows="2" class="w-full border rounded px-3 py-2"></textarea>
-            </div>
+            <div class="mb-3"><label class="font-semibold">Motivo / Observaciones</label><textarea id="incidenciaMotivo" rows="2" class="w-full border rounded px-3 py-2"></textarea></div>
             <button onclick="guardarIncidencia()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Incidencia</button>
         </div>
         <div id="listaIncidencias" class="space-y-3"></div>
     </section>
 
-    <!-- 🛒 PANEL DE ÓRDENES DE COMPRA -->
     <section id="panelCompras" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">🛒 Órdenes de Compra</h2>
         <div class="bg-white rounded shadow p-4 mb-4">
             <h3 class="font-bold mb-3">Nueva Orden de Compra</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                <div>
-                    <label class="font-semibold">Proveedor</label>
-                    <select id="compraProveedor" class="w-full border rounded px-3 py-2"></select>
-                </div>
+                <div><label class="font-semibold">Proveedor</label><select id="compraProveedor" class="w-full border rounded px-3 py-2"></select></div>
                 <div><label class="font-semibold">Solicitado por</label><input type="text" id="compraSolicitadoPor" class="w-full border rounded px-3 py-2" value="Mantenimiento"></div>
             </div>
-            
             <div class="mb-3">
                 <label class="font-semibold block mb-2">Artículos</label>
                 <div id="listaArticulosCompra" class="space-y-2 mb-2"></div>
                 <button onclick="agregarArticuloCompra()" class="bg-gray-200 text-sm px-3 py-1 rounded">+ Agregar Artículo</button>
             </div>
-            
-            <div class="mb-3">
-                <label class="font-semibold">Observaciones</label>
-                <textarea id="compraObservaciones" rows="2" class="w-full border rounded px-3 py-2"></textarea>
-            </div>
+            <div class="mb-3"><label class="font-semibold">Observaciones</label><textarea id="compraObservaciones" rows="2" class="w-full border rounded px-3 py-2"></textarea></div>
             <button onclick="guardarOrdenCompra()" class="bg-colegio-azul text-white px-4 py-2 rounded">Generar Orden de Compra</button>
         </div>
         <div id="listaCompras" class="space-y-3"></div>
     </section>
 
-    <!-- 🏢 PANEL DE SECCIONES -->
     <section id="panelSecciones" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">🏢 Gestión de Secciones</h2>
         <div class="bg-white rounded shadow p-4 mb-4">
@@ -702,7 +455,6 @@
         <div id="listaSecciones" class="space-y-2"></div>
     </section>
 
-    <!-- 🚚 PANEL DE PROVEEDORES -->
     <section id="panelProveedores" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">🚚 Gestión de Proveedores</h2>
         <div class="bg-white rounded shadow p-4 mb-4">
@@ -716,15 +468,11 @@
 
 </main>
 
-<!-- MODAL PARA GENERAR ORDEN DE TRABAJO -->
 <div id="modalGenerarOrden" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
         <h3 class="text-xl font-bold mb-4 text-colegio-azul">📋 Asignar Empleado</h3>
         <div class="space-y-4">
-            <div>
-                <label class="block font-semibold mb-1">Selecciona al empleado responsable</label>
-                <select id="selectEmpleadoOrden" class="w-full border rounded-lg px-3 py-2"></select>
-            </div>
+            <div><label class="block font-semibold mb-1">Selecciona al empleado responsable</label><select id="selectEmpleadoOrden" class="w-full border rounded-lg px-3 py-2"></select></div>
         </div>
         <div class="flex justify-end gap-2 mt-6">
             <button onclick="cerrarModalGenerarOrden()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancelar</button>
@@ -734,29 +482,16 @@
 </div>
 <input type="hidden" id="solicitudIdParaOrden" value="">
 
-<!-- MODAL PARA CAPTURAR ORDEN DE TRABAJO -->
 <div id="modalCapturaOrden" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
         <h3 class="text-xl font-bold mb-4 text-colegio-azul">✅ Capturar Orden de Trabajo</h3>
         <div class="space-y-4">
-            <div>
-                <label class="block font-semibold mb-1">Fecha en que se atendió</label>
-                <input type="date" id="capturaFecha" class="w-full border rounded-lg px-3 py-2">
-            </div>
+            <div><label class="block font-semibold mb-1">Fecha en que se atendió</label><input type="date" id="capturaFecha" class="w-full border rounded-lg px-3 py-2"></div>
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-semibold mb-1">Hora de inicio</label>
-                    <input type="time" id="capturaHoraInicio" class="w-full border rounded-lg px-3 py-2">
-                </div>
-                <div>
-                    <label class="block font-semibold mb-1">Hora de finalización</label>
-                    <input type="time" id="capturaHoraFin" class="w-full border rounded-lg px-3 py-2">
-                </div>
+                <div><label class="block font-semibold mb-1">Hora de inicio</label><input type="time" id="capturaHoraInicio" class="w-full border rounded-lg px-3 py-2"></div>
+                <div><label class="block font-semibold mb-1">Hora de finalización</label><input type="time" id="capturaHoraFin" class="w-full border rounded-lg px-3 py-2"></div>
             </div>
-            <div>
-                <label class="block font-semibold mb-1">Nombre de quien recibe de conformidad</label>
-                <input type="text" id="capturaRecibidoPor" class="w-full border rounded-lg px-3 py-2" placeholder="Ej: Prof. Juan Pérez">
-            </div>
+            <div><label class="block font-semibold mb-1">Nombre de quien recibe</label><input type="text" id="capturaRecibidoPor" class="w-full border rounded-lg px-3 py-2" placeholder="Ej: Prof. Juan Pérez"></div>
         </div>
         <div class="flex justify-end gap-2 mt-6">
             <button onclick="cerrarModalCaptura()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancelar</button>
@@ -767,7 +502,6 @@
 <input type="hidden" id="capturaOrdenId" value="">
 <input type="hidden" id="capturaSolicitudId" value="">
 
-<!-- ===== CONTENEDOR DE IMPRESIÓN ===== -->
 <div id="formatoImpresion" class="formato-impresion"></div>
 
 <script>
@@ -782,26 +516,30 @@ let numeroWhatsAppDestino = '';
 let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
 
-// ==================== RESPALDO AUTOMÁTICO EN LOCALSTORAGE ====================
+// ==================== MENÚS DESPLEGABLES ====================
+function toggleMenu(id) {
+    document.querySelectorAll('nav .absolute').forEach(el => {
+        if(el.id !== id) el.classList.add('hidden');
+    });
+    document.getElementById(id).classList.toggle('hidden');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.relative')) {
+        document.querySelectorAll('nav .absolute').forEach(el => el.classList.add('hidden'));
+    }
+});
+
+// ==================== RESPALDO AUTOMÁTICO ====================
 function guardarRespaldoLocal() {
     try {
         const backupData = {
-            fecha: new Date().toLocaleString('es-MX'),
-            usuarios: usuarios,
-            solicitudes: solicitudes,
-            numeroWhatsAppDestino: numeroWhatsAppDestino,
-            logoDataURL: logoDataURL,
-            nombreResponsableMantenimiento: nombreResponsableMantenimiento,
-            timestamp: Date.now()
+            fecha: new Date().toLocaleString('es-MX'), usuarios: usuarios, solicitudes: solicitudes, numeroWhatsAppDestino: numeroWhatsAppDestino, logoDataURL: logoDataURL, nombreResponsableMantenimiento: nombreResponsableMantenimiento, timestamp: Date.now()
         };
         localStorage.setItem('app_backup_auto', JSON.stringify(backupData));
         mostrarEstado('💾 Datos guardados localmente', 'saving');
         setTimeout(() => mostrarEstado('✅ Datos sincronizados', 'online'), 1500);
         return true;
-    } catch (e) {
-        console.error('❌ Error al guardar respaldo local:', e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 function cargarRespaldoLocal() {
@@ -809,15 +547,9 @@ function cargarRespaldoLocal() {
         const data = localStorage.getItem('app_backup_auto');
         if (!data) return null;
         const parsed = JSON.parse(data);
-        if (parsed.usuarios && parsed.solicitudes) {
-            console.log('📦 Respaldo local encontrado:', new Date(parsed.timestamp).toLocaleString());
-            return parsed;
-        }
+        if (parsed.usuarios && parsed.solicitudes) return parsed;
         return null;
-    } catch (e) {
-        console.error('❌ Error al cargar respaldo local:', e);
-        return null;
-    }
+    } catch (e) { return null; }
 }
 
 function mostrarEstado(mensaje, tipo) {
@@ -825,134 +557,29 @@ function mostrarEstado(mensaje, tipo) {
     status.textContent = mensaje;
     status.className = 'storage-status ' + (tipo || 'online');
     status.style.display = 'block';
-    if (tipo === 'online') {
-        setTimeout(() => { status.style.display = 'none'; }, 3000);
-    }
+    if (tipo === 'online') setTimeout(() => { status.style.display = 'none'; }, 3000);
 }
 
-// ==================== FUNCIONES DE API ====================
+// ==================== API ====================
 async function apiRequest(endpoint, method = 'GET', data = null) {
     try {
-        const options = {
-            method: method,
-            headers: { 'Content-Type': 'application/json' }
-        };
-        if (data) {
-            options.body = JSON.stringify(data);
-        }
+        const options = { method: method, headers: { 'Content-Type': 'application/json' } };
+        if (data) options.body = JSON.stringify(data);
         const response = await fetch(`${API_URL}${endpoint}`, options);
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Error en la petición');
         }
-        const result = await response.json();
-        return result;
+        return await response.json();
     } catch (error) {
         console.error(`❌ Error en ${method} ${endpoint}:`, error);
         throw error;
     }
 }
 
-// ==================== SINCRONIZACIÓN AUTOMÁTICA ====================
 async function sincronizarDatos() {
     try {
         mostrarEstado('🔄 Sincronizando...', 'saving');
-        
-        const solicitudesData = await apiRequest('/api/solicitudes');
-        const usuariosData = await apiRequest('/api/usuarios');
-        const configData = await apiRequest('/api/configuracion');
-        
-        const respaldoLocal = cargarRespaldoLocal();
-        
-        const serverCount = Object.keys(usuariosData || {}).length + (solicitudesData || []).length;
-        const localCount = respaldoLocal ? Object.keys(respaldoLocal.usuarios || {}).length + (respaldoLocal.solicitudes || []).length : 0;
-        
-        console.log(`📊 Servidor: ${serverCount} items, Local: ${localCount} items`);
-        
-        if (serverCount > 0 && localCount > 0) {
-            if (localCount > serverCount) {
-                console.log('🔄 Respaldo local tiene MÁS datos. Restaurando en servidor...');
-                await restaurarEnServidor(respaldoLocal);
-                const nuevosDatos = await cargarDatosDelServidor();
-                return nuevosDatos;
-            } else {
-                console.log('🔄 Servidor tiene MÁS datos. Usando datos del servidor.');
-                solicitudes = solicitudesData;
-                usuarios = usuariosData;
-                numeroWhatsAppDestino = configData.numeroWhatsApp || '';
-                nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
-                logoDataURL = configData.logoDataURL || '';
-                guardarRespaldoLocal();
-                return true;
-            }
-        }
-        
-        if (serverCount > 0) {
-            console.log('🔄 Usando datos del servidor');
-            solicitudes = solicitudesData;
-            usuarios = usuariosData;
-            numeroWhatsAppDestino = configData.numeroWhatsApp || '';
-            nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
-            logoDataURL = configData.logoDataURL || '';
-            guardarRespaldoLocal();
-            return true;
-        }
-        
-        if (localCount > 0) {
-            console.log('🔄 Respaldo local tiene datos. Restaurando en servidor...');
-            await restaurarEnServidor(respaldoLocal);
-            solicitudes = respaldoLocal.solicitudes || [];
-            usuarios = respaldoLocal.usuarios || {};
-            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
-            nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera';
-            logoDataURL = respaldoLocal.logoDataURL || '';
-            guardarRespaldoLocal();
-            return true;
-        }
-        
-        console.log('📦 No hay datos. Usando configuración por defecto.');
-        return true;
-        
-    } catch (error) {
-        console.error('❌ Error al sincronizar:', error);
-        const respaldoLocal = cargarRespaldoLocal();
-        if (respaldoLocal) {
-            console.log('📦 Usando datos del respaldo local (offline)');
-            usuarios = respaldoLocal.usuarios || {};
-            solicitudes = respaldoLocal.solicitudes || [];
-            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
-            nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera';
-            logoDataURL = respaldoLocal.logoDataURL || '';
-            mostrarEstado('⚠️ Modo offline - usando datos locales', 'error');
-            return true;
-        }
-        mostrarEstado('❌ Error al sincronizar', 'error');
-        return false;
-    }
-}
-
-async function restaurarEnServidor(datos) {
-    try {
-        const response = await fetch(`${API_URL}/api/restaurar`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
-        const result = await response.json();
-        if (result.success) {
-            console.log('✅ Datos restaurados en servidor');
-            mostrarEstado('✅ Datos sincronizados', 'online');
-            return true;
-        }
-        return false;
-    } catch (e) {
-        console.error('❌ Error al restaurar en servidor:', e);
-        return false;
-    }
-}
-
-async function cargarDatosDelServidor() {
-    try {
         const solicitudesData = await apiRequest('/api/solicitudes');
         const usuariosData = await apiRequest('/api/usuarios');
         const configData = await apiRequest('/api/configuracion');
@@ -964,55 +591,47 @@ async function cargarDatosDelServidor() {
         logoDataURL = configData.logoDataURL || '';
         guardarRespaldoLocal();
         return true;
-    } catch (e) {
-        console.error('❌ Error al cargar datos del servidor:', e);
+    } catch (error) {
+        console.error('❌ Error al sincronizar:', error);
+        const respaldoLocal = cargarRespaldoLocal();
+        if (respaldoLocal) {
+            usuarios = respaldoLocal.usuarios || {}; solicitudes = respaldoLocal.solicitudes || [];
+            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
+            nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera';
+            logoDataURL = respaldoLocal.logoDataURL || '';
+            mostrarEstado('⚠️ Modo offline', 'error');
+            return true;
+        }
+        mostrarEstado('❌ Error al sincronizar', 'error');
         return false;
     }
 }
 
-// ==================== INICIO DE SESIÓN ====================
+// ==================== LOGIN Y PERMISOS ====================
 async function iniciarSesion() {
     const user = document.getElementById('usuarioLogin').value.trim();
     const pass = document.getElementById('passLogin').value;
-    
-    if (!user || !pass) {
-        alert('⚠️ Ingresa usuario y contraseña');
-        return;
-    }
+    if (!user || !pass) { alert('⚠️ Ingresa usuario y contraseña'); return; }
     
     try {
         const data = await apiRequest('/api/login', 'POST', { usuario: user, password: pass });
         
         if (data.success) {
-            usuarioActivo = { id: user, nombre: data.nombre, rol: data.rol };
+            // Guardamos usuario, rol y el array de permisos
+            usuarioActivo = { id: user, nombre: data.nombre, rol: data.rol, permisos: data.permisos || [] };
             localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
             
-            document.getElementById('loginModal').classList.add('hidden');
-            document.getElementById('barraSuperior').classList.remove('hidden');
-            document.getElementById('menuNavegacion').classList.remove('hidden');
-            document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
-            
-            if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
-            if (usuarioActivo.rol === 'admin') {
-                document.getElementById('btnCoordinacion').classList.remove('hidden');
-                document.getElementById('btnEmpleados').classList.remove('hidden');
-                document.getElementById('btnOrdenes').classList.remove('hidden');
-                document.getElementById('btnIncidencias').classList.remove('hidden');
-                document.getElementById('btnCompras').classList.remove('hidden');
-                document.getElementById('btnSecciones').classList.remove('hidden');
-                document.getElementById('btnProveedores').classList.remove('hidden');
-            }
-            
+            aplicarPermisosUI();
             await cargarDatosIniciales();
-            await cargarSecciones(); // <--- CARGAR SECCIONES
+            await cargarSecciones();
             actualizarTextoBoton();
             nuevaSolicitud();
-            iniciarAutoRefresco(); // <--- INICIA EL MODO EN VIVO
+            iniciarAutoRefresco();
         } else {
             alert('❌ Usuario o contraseña incorrectos');
         }
     } catch (error) {
-        alert('❌ Error al conectar con el servidor. Verifica tu conexión.');
+        alert('❌ Error al conectar con el servidor.');
         console.error(error);
     }
 }
@@ -1022,94 +641,88 @@ function cerrarSesion() {
     location.reload();
 }
 
-// ==================== CARGAR DATOS INICIALES ====================
+function aplicarPermisosUI() {
+    document.getElementById('loginModal').classList.add('hidden');
+    document.getElementById('barraSuperior').classList.remove('hidden');
+    document.getElementById('menuNavegacion').classList.remove('hidden');
+    document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+
+    // Ocultar todos los menús inicialmente
+    document.getElementById('navSolicitudes').classList.add('hidden');
+    document.getElementById('btnProyectos').classList.add('hidden');
+    document.getElementById('navMantenimiento').classList.add('hidden');
+
+    const p = usuarioActivo.permisos || [];
+
+    // Mostrar menús según permisos
+    if (p.includes('solicitudes') || p.includes('configuracion')) document.getElementById('navSolicitudes').classList.remove('hidden');
+    if (p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
+    
+    // Si tiene cualquier permiso de la lista de mantenimiento, mostramos el botón principal
+    const permisosMantenimiento = ['mantenimiento', 'empleados', 'ordenes', 'incidencias', 'compras', 'secciones', 'proveedores', 'configuracion'];
+    if (permisosMantenimiento.some(perm => p.includes(perm))) {
+        document.getElementById('navMantenimiento').classList.remove('hidden');
+    }
+
+    // Ocultar/Mostrar opciones DENTRO del menú de Mantenimiento
+    const btnsMant = document.getElementById('subMenuMantenimiento').children;
+    for (let btn of btnsMant) {
+        const text = btn.textContent.toLowerCase();
+        if (text.includes('bandeja') && !p.includes('mantenimiento')) btn.classList.add('hidden');
+        else if (text.includes('empleados') && !p.includes('empleados')) btn.classList.add('hidden');
+        else if (text.includes('órdenes') && !p.includes('ordenes')) btn.classList.add('hidden');
+        else if (text.includes('incidencias') && !p.includes('incidencias')) btn.classList.add('hidden');
+        else if (text.includes('compras') && !p.includes('compras')) btn.classList.add('hidden');
+        else if (text.includes('secciones') && !p.includes('secciones')) btn.classList.add('hidden');
+        else if (text.includes('proveedores') && !p.includes('proveedores')) btn.classList.add('hidden');
+        else if (text.includes('configuración') && !p.includes('configuracion')) btn.classList.add('hidden');
+        else if (text.includes('usuarios') && !p.includes('configuracion')) btn.classList.add('hidden'); // Usuarios depende de config
+        else btn.classList.remove('hidden');
+    }
+}
+
+async function recuperarSesion() {
+    const guardado = localStorage.getItem('usuarioActivo');
+    if (guardado) {
+        usuarioActivo = JSON.parse(guardado);
+        aplicarPermisosUI();
+        await cargarDatosIniciales();
+        await cargarSecciones();
+        actualizarTextoBoton();
+        nuevaSolicitud();
+        iniciarAutoRefresco();
+    }
+}
+
 async function cargarDatosIniciales() {
     await sincronizarDatos();
-    
     document.getElementById('numeroWhatsApp').value = numeroWhatsAppDestino;
     document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
     document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
     mostrarLogo();
 }
 
-// ==================== RECUPERAR SESIÓN ====================
-async function recuperarSesion() {
-    const guardado = localStorage.getItem('usuarioActivo');
-    if (guardado) {
-        usuarioActivo = JSON.parse(guardado);
-        document.getElementById('loginModal').classList.add('hidden');
-        document.getElementById('barraSuperior').classList.remove('hidden');
-        document.getElementById('menuNavegacion').classList.remove('hidden');
-        document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
-        
-        if (usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
-        if (usuarioActivo.rol === 'admin') {
-            document.getElementById('btnCoordinacion').classList.remove('hidden');
-            document.getElementById('btnEmpleados').classList.remove('hidden');
-            document.getElementById('btnOrdenes').classList.remove('hidden');
-            document.getElementById('btnIncidencias').classList.remove('hidden');
-            document.getElementById('btnCompras').classList.remove('hidden');
-            document.getElementById('btnSecciones').classList.remove('hidden');
-            document.getElementById('btnProveedores').classList.remove('hidden');
-        }
-        
-        await cargarDatosIniciales();
-        await cargarSecciones(); // <--- CARGAR SECCIONES
-        actualizarTextoBoton();
-        nuevaSolicitud();
-        iniciarAutoRefresco(); // <--- INICIA EL MODO EN VIVO
-    }
-}
-
-// ==================== AUTO-REFRESCO Y NOTIFICACIONES ====================
+// ==================== AUTO-REFRESCO ====================
 let intervaloRefresco = null;
-
-function pedirPermisoNotificaciones() {
-    if (!("Notification" in window)) return;
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-        Notification.requestPermission();
-    }
-}
-
-function lanzarNotificacion(titulo, cuerpo) {
-    if (!("Notification" in window)) return;
-    if (Notification.permission === "granted") {
-        new Notification(titulo, { body: cuerpo, icon: "/favicon.ico" });
-    }
-}
+function pedirPermisoNotificaciones() { if (("Notification" in window) && Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission(); }
+function lanzarNotificacion(titulo, cuerpo) { if (("Notification" in window) && Notification.permission === "granted") new Notification(titulo, { body: cuerpo }); }
 
 function iniciarAutoRefresco() {
     if (intervaloRefresco) clearInterval(intervaloRefresco);
-    pedirPermisoNotificaciones(); // Pedimos permiso al iniciar
-    
+    pedirPermisoNotificaciones();
     intervaloRefresco = setInterval(async () => {
         if (!usuarioActivo) return; 
-        
         const seccionActiva = document.querySelector('main>section:not(.hidden)');
         if (seccionActiva && seccionActiva.id === 'nuevaSolicitud') return;
-
         try {
             const solicitudesData = await apiRequest('/api/solicitudes');
-            
-            // Verificamos si hay cambios
             if (solicitudes.length > 0 && solicitudesData.length > solicitudes.length) {
-                // ¡HAY UNA NUEVA SOLICITUD!
-                const nueva = solicitudesData[0]; // La más reciente
-                
-                // Si el usuario es admin o proyectos, le avisamos
-                if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
-                    lanzarNotificacion(
-                        '📥 Nueva Solicitud Recibida', 
-                        `${nueva.solicitante} (${nueva.area}): ${nueva.descripcion.substring(0, 50)}...`
-                    );
-                }
+                const nueva = solicitudesData[0];
+                lanzarNotificacion('📥 Nueva Solicitud', `${nueva.solicitante} (${nueva.area}): ${nueva.descripcion.substring(0, 50)}...`);
             }
-            
             const huboCambios = JSON.stringify(solicitudes) !== JSON.stringify(solicitudesData);
             if (huboCambios) {
                 solicitudes = solicitudesData;
-                
-                // Actualizamos la pantalla actual
                 if (seccionActiva) {
                     if (seccionActiva.id === 'misSolicitudes') cargarMisSolicitudes();
                     if (seccionActiva.id === 'bandaProyectos') cargarBandejaProyectos();
@@ -1119,53 +732,36 @@ function iniciarAutoRefresco() {
                     if (seccionActiva.id === 'panelCompras') cargarCompras();
                 }
             }
-        } catch (error) {
-            console.log('Error en auto-refresco silencioso');
-        }
+        } catch (error) { }
     }, 15000); 
 }
 
-// ==================== ACTUALIZAR TEXTO DEL BOTÓN ====================
+// ==================== BOTONES Y NAVEGACIÓN ====================
 function actualizarTextoBoton() {
     const btnTexto = document.getElementById('btnTextoGuardar');
     const btnIcono = document.getElementById('btnIconoGuardar');
     const btnGuardar = document.getElementById('btnGuardarSol');
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
-    
     if (!btnTexto || !btnIcono || !btnGuardar) return;
     
     if (idEditar > 0) {
-        btnTexto.textContent = 'Guardar Cambios';
-        btnIcono.className = 'fas fa-save';
-        btnGuardar.className = 'btn-guardar-edicion';
-        return;
+        btnTexto.textContent = 'Guardar Cambios'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-edicion'; return;
     }
-    
     if (usuarioActivo && usuarioActivo.rol === 'admin') {
-        btnTexto.textContent = 'Guardar Solicitud';
-        btnIcono.className = 'fas fa-save';
-        btnGuardar.className = 'btn-guardar-mantenimiento';
+        btnTexto.textContent = 'Guardar Solicitud'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-mantenimiento';
     } else if (usuarioActivo && usuarioActivo.rol === 'proyectos') {
-        btnTexto.textContent = 'Enviar a Mantenimiento';
-        btnIcono.className = 'fas fa-tools';
-        btnGuardar.className = 'btn-enviar-mantenimiento';
+        btnTexto.textContent = 'Enviar a Mantenimiento'; btnIcono.className = 'fas fa-tools'; btnGuardar.className = 'btn-enviar-mantenimiento';
     } else {
-        btnTexto.textContent = 'Enviar a Proyectos Generales';
-        btnIcono.className = 'fas fa-paper-plane';
-        btnGuardar.className = 'btn-enviar-proyectos';
+        btnTexto.textContent = 'Enviar a Proyectos Generales'; btnIcono.className = 'fas fa-paper-plane'; btnGuardar.className = 'btn-enviar-proyectos';
     }
 }
 
-// ==================== SOLICITUDES ====================
 function nuevaSolicitud() {
     cancelarEdicionSol();
     mostrarSeccion('nuevaSolicitud');
     document.getElementById('nombreSolicitante').value = usuarioActivo?.nombre || '';
     const campoFecha = document.getElementById('fechaSolicitud');
-    if (campoFecha) {
-        const hoy = new Date();
-        campoFecha.value = hoy.toISOString().split('T')[0];
-    }
+    if (campoFecha) campoFecha.value = new Date().toISOString().split('T')[0];
     actualizarTextoBoton();
     document.getElementById('nuevaSolicitud').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -1173,140 +769,92 @@ function nuevaSolicitud() {
 async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
-    
     const s = {
-        tipo: tipo,
-        area: document.getElementById('areaSolicitante').value,
+        tipo: tipo, area: document.getElementById('areaSolicitante').value,
         descripcion: document.getElementById('descripcionSol').value.trim(),
         fechaSolicitud: document.getElementById('fechaSolicitud').value,
         fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
         nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '',
         lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
         solicitante: document.getElementById('nombreSolicitante').value,
-        fechaEnvio: new Date().toLocaleString('es-MX'),
-        observaciones: []
+        fechaEnvio: new Date().toLocaleString('es-MX'), observaciones: []
     };
-
-    if (!s.descripcion || !s.fechaSolicitud) { 
-        alert('⚠️ Completa la descripción y la fecha de solicitud'); 
-        return; 
-    }
-    if (tipo === 'evento' && (!s.nombreEvento || !s.fechaEvento || !s.lugarEvento)) { 
-        alert('⚠️ Completa todos los datos del evento'); 
-        return; 
-    }
+    if (!s.descripcion || !s.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
+    if (tipo === 'evento' && (!s.nombreEvento || !s.fechaEvento || !s.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
 
     try {
         if (idEditar > 0) {
-            const solicitudExistente = solicitudes.find(x => x.id === idEditar);
-            if (!solicitudExistente) {
-                alert('❌ No se encontró la solicitud');
-                return;
-            }
-            s.id = idEditar;
-            s.estado = solicitudExistente.estado;
-            s.observaciones = solicitudExistente.observaciones || [];
+            const sol = solicitudes.find(x => x.id === idEditar);
+            s.id = idEditar; s.estado = sol.estado; s.observaciones = sol.observaciones || [];
             await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', s);
-            alert('✅ Solicitud actualizada correctamente');
+            alert('✅ Solicitud actualizada');
         } else {
-            if (usuarioActivo.rol === 'admin') {
-                s.estado = 'PENDIENTE_MANTENIMIENTO';
-                alert('✅ Solicitud creada directamente por Mantenimiento');
-            } else if (usuarioActivo.rol === 'proyectos') {
-                s.estado = 'APROBADA';
-                s.autorizadoPor = usuarioActivo.nombre;
-                s.fechaAutorizacion = new Date().toLocaleString('es-MX');
-                alert('✅ Solicitud autorizada automáticamente por Proyectos Generales');
-            } else {
-                s.estado = 'PENDIENTE_PROYECTOS';
-                alert('✅ Solicitud enviada a Proyectos Generales');
-            }
+            if (usuarioActivo.rol === 'admin') { s.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
+            else if (usuarioActivo.rol === 'proyectos') { s.estado = 'APROBADA'; s.autorizadoPor = usuarioActivo.nombre; s.fechaAutorizacion = new Date().toLocaleString('es-MX'); alert('✅ Autorizada por Proyectos'); }
+            else { s.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos'); }
             await apiRequest('/api/solicitudes', 'POST', s);
         }
-        
-        await cargarDatosIniciales();
-        guardarRespaldoLocal();
-        cancelarEdicionSol();
-        
-        if (usuarioActivo.rol === 'proyectos') {
-            mostrarSeccion('bandaProyectos');
-        } else if (usuarioActivo.rol === 'admin') {
-            mostrarSeccion('panelCoordinacion');
-        } else {
-            mostrarSeccion('misSolicitudes');
-        }
-    } catch (error) {
-        alert('❌ Error al guardar la solicitud: ' + error.message);
-        console.error(error);
-    }
+        await cargarDatosIniciales(); guardarRespaldoLocal(); cancelarEdicionSol();
+        if (usuarioActivo.rol === 'proyectos') mostrarSeccion('bandaProyectos');
+        else if (usuarioActivo.rol === 'admin') mostrarSeccion('panelCoordinacion');
+        else mostrarSeccion('misSolicitudes');
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== FUNCIONES DE NAVEGACIÓN ====================
-function ocultarTodasSecciones() {
-    document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden'));
-}
+function ocultarTodasSecciones() { document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden')); }
 
 function mostrarSeccion(id) {
     ocultarTodasSecciones();
     document.getElementById(id).classList.remove('hidden');
     if (id === 'misSolicitudes') cargarMisSolicitudes();
     if (id === 'bandaProyectos') cargarBandejaProyectos();
-    if (id === 'panelCoordinacion') {
-        subPanelAdmin('solicitudes');
-        document.getElementById('numeroActualWhatsApp').textContent = numeroWhatsAppDestino || 'Sin configurar';
-        cargarNombreMantenimiento();
-        mostrarLogo();
-    }
-    // NUEVAS SECCIONES
+    if (id === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
     if (id === 'panelEmpleados') cargarEmpleados();
     if (id === 'panelOrdenes') cargarOrdenes();
     if (id === 'panelIncidencias') cargarIncidencias();
     if (id === 'panelCompras') { cargarCompras(); cargarProveedores(); }
     if (id === 'panelSecciones') cargarListaSecciones();
     if (id === 'panelProveedores') cargarListaProveedores();
+    if (id === 'adminConfiguracion') { cargarNombreMantenimiento(); mostrarLogo(); }
 }
 
+// ==================== SUBPANELES (USUARIOS Y CONFIG) ====================
 function subPanelAdmin(panel) {
-    const paneles = ['adminSolicitudes','adminUsuarios','adminConfiguracion'];
-    paneles.forEach(p => document.getElementById(p).classList.add('hidden'));
-    document.getElementById('admin'+panel.charAt(0).toUpperCase()+panel.slice(1)).classList.remove('hidden');
-    if (panel==='solicitudes') filtrarSolicitudesCoordinacion();
-    if (panel==='usuarios') cargarListaUsuarios();
-    if (panel==='configuracion') { cargarNombreMantenimiento(); mostrarLogo(); }
+    ocultarTodasSecciones();
+    // Si pide usuarios o config, mostramos la sección contenedora panelCoordinacion
+    document.getElementById('panelCoordinacion').classList.remove('hidden');
+    
+    // Ocultamos los subpaneles
+    document.getElementById('adminSolicitudes').classList.add('hidden');
+    document.getElementById('adminUsuarios').classList.add('hidden');
+    document.getElementById('adminConfiguracion').classList.add('hidden');
+    
+    // Mostramos el solicitado
+    if (panel === 'solicitudes') {
+        document.getElementById('adminSolicitudes').classList.remove('hidden');
+        filtrarSolicitudesCoordinacion();
+    } else if (panel === 'usuarios') {
+        document.getElementById('adminUsuarios').classList.remove('hidden');
+        cargarListaUsuarios();
+    } else if (panel === 'configuracion') {
+        document.getElementById('adminConfiguracion').classList.remove('hidden');
+        cargarNombreMantenimiento(); mostrarLogo();
+    }
 }
 
 // ==================== MIS SOLICITUDES ====================
 function cargarMisSolicitudes() {
-    const lista = document.getElementById('listaMisSolicitudes'); 
-    lista.innerHTML = '';
-    
+    const lista = document.getElementById('listaMisSolicitudes'); lista.innerHTML = '';
     const misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre);
-    if (misSolicitudes.length === 0) {
-        lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas.</p>';
-        return;
-    }
-    
+    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas.</p>'; return; }
     misSolicitudes.forEach(s => {
-        let est = '';
-        let claseExtra = '';
-        let badge = '';
-        
-        if (s.estado === 'DESBLOQUEADA') {
-            est = '🔓 Desbloqueada';
-            claseExtra = 'estado-desbloqueado';
-            badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
-        } else if (s.estado === 'PENDIENTE_PROYECTOS') {
-            est = '🟡 En evaluación (Proyectos)';
-        } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-            est = '🟡 Pendiente de Mantenimiento';
-            badge = '<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>';
-        } else if (s.estado === 'APROBADA') {
-            est = '🟢 Autorizada';
-        } else if (s.estado === 'CONCLUIDO') {
-            est = '✅ Concluida';
-        } else if (s.estado === 'RECHAZADA') {
-            est = '🔴 Rechazada';
-        }
+        let est = '', claseExtra = '', badge = '';
+        if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
+        else if (s.estado === 'PENDIENTE_PROYECTOS') est = '🟡 En evaluación (Proyectos)';
+        else if (s.estado === 'PENDIENTE_MANTENIMIENTO') { est = '🟡 Pendiente de Mantenimiento'; badge = '<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>'; }
+        else if (s.estado === 'APROBADA') est = '🟢 Autorizada';
+        else if (s.estado === 'CONCLUIDO') est = '✅ Concluida';
+        else if (s.estado === 'RECHAZADA') est = '🔴 Rechazada';
 
         lista.innerHTML += `
         <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
@@ -1315,12 +863,11 @@ function cargarMisSolicitudes() {
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 font-semibold">${est} ${badge}</div>
-            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</div>` : ''}
+            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
             <div class="mt-2 flex gap-2 flex-wrap">
                 <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
                 ${s.estado !== 'RECHAZADA' ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : ''}
-                ${usuarioActivo.rol === 'admin' && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? 
-                    `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
+                ${usuarioActivo.rol === 'admin' && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
             </div>
         </div>`;
     });
@@ -1328,80 +875,30 @@ function cargarMisSolicitudes() {
 
 // ==================== BANDEJA PROYECTOS ====================
 function cargarBandejaProyectos() {
-    const lista = document.getElementById('listaProyectos'); 
-    lista.innerHTML = '';
-    
-    const proyectos = solicitudes.filter(s => 
-        s.estado === 'PENDIENTE_PROYECTOS' || 
-        s.estado === 'APROBADA' || 
-        s.estado === 'CONCLUIDO' ||
-        s.estado === 'DESBLOQUEADA'
-    );
-    
-    if (proyectos.length === 0) {
-        lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes registradas.</p>';
-        return;
-    }
+    const lista = document.getElementById('listaProyectos'); lista.innerHTML = '';
+    const proyectos = solicitudes.filter(s => s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA');
+    if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes.</p>'; return; }
     
     proyectos.forEach(s => {
         let etiquetaEstado = '', colorFila = '', badge = '';
-        
-        if (s.estado === 'DESBLOQUEADA') { 
-            etiquetaEstado = '🔓 Desbloqueada'; 
-            colorFila = 'bg-yellow-50'; 
-            badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
-        } else if (s.estado === 'PENDIENTE_PROYECTOS') { 
-            etiquetaEstado = '🟡 En evaluación'; 
-            colorFila = 'bg-yellow-50'; 
-        } else if (s.estado === 'APROBADA') { 
-            etiquetaEstado = '🟢 Autorizada'; 
-            colorFila = 'bg-green-50'; 
-        } else if (s.estado === 'CONCLUIDO') { 
-            etiquetaEstado = '✅ Concluida'; 
-            colorFila = 'bg-gray-100'; 
-        }
+        if (s.estado === 'DESBLOQUEADA') { etiquetaEstado = '🔓 Desbloqueada'; colorFila = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
+        else if (s.estado === 'PENDIENTE_PROYECTOS') { etiquetaEstado = '🟡 En evaluación'; colorFila = 'bg-yellow-50'; }
+        else if (s.estado === 'APROBADA') { etiquetaEstado = '🟢 Autorizada'; colorFila = 'bg-green-50'; }
+        else if (s.estado === 'CONCLUIDO') { etiquetaEstado = '✅ Concluida'; colorFila = 'bg-gray-100'; }
 
         let botones = '';
-        if (s.estado === 'PENDIENTE_PROYECTOS') {
-            botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button>
-                        <button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
-        }
-        
-        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo.rol === 'proyectos') {
-            botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
-        }
-        
-        if (s.estado === 'DESBLOQUEADA' && usuarioActivo.rol === 'proyectos') {
-            botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
-        }
-        
-        if (usuarioActivo.rol === 'proyectos') {
-            botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>`;
-            botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
-        }
-        
-        if (numeroWhatsAppDestino) {
-            botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
-        }
-
-        // BOTÓN GENERAR ORDEN (SOLO ADMINISTRADOR)
-        if (s.estado === 'APROBADA' && usuarioActivo.rol === 'admin') {
-            botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
-        }
-        
-        botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button>
-                    <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
+        if (s.estado === 'PENDIENTE_PROYECTOS') botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button><button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
+        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo.rol === 'proyectos') botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
+        if (s.estado === 'DESBLOQUEADA' && usuarioActivo.rol === 'proyectos') botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
+        if (usuarioActivo.rol === 'proyectos') { botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button><button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`; }
+        if (numeroWhatsAppDestino) botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
+        if (s.estado === 'APROBADA' && usuarioActivo.rol === 'admin') botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
+        botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button><button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
 
         let obsHTML = '';
         if (s.observaciones && s.observaciones.length > 0) {
             obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
-            s.observaciones.forEach(obs => {
-                obsHTML += `
-                <div class="observacion-item">
-                    <div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div>
-                    <div class="obs-texto">${obs.texto}</div>
-                </div>`;
-            });
+            s.observaciones.forEach(obs => { obsHTML += `<div class="observacion-item"><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div><div class="obs-texto">${obs.texto}</div></div>`; });
             obsHTML += `</div>`;
         }
 
@@ -1412,142 +909,67 @@ function cargarBandejaProyectos() {
             <div class="text-sm mt-1">${s.descripcion}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="mt-2 font-semibold">${etiquetaEstado} ${badge}</div>
-            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</div>` : ''}
+            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
             ${obsHTML}
             <div class="mt-3 flex flex-wrap gap-2">${botones}</div>
         </div>`;
     });
 }
 
-// ==================== AUTORIZAR, RECHAZAR, CONCLUIR ====================
+// ==================== AUTORIZAR, ELIMINAR, ETC ====================
 async function autorizar(id) {
     const s = solicitudes.find(x => x.id === id);
-    if (!s) return;
-    
-    if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-        alert('⚠️ Esta solicitud es de Mantenimiento, no necesita autorización.');
-        return;
-    }
-    
+    if (s.estado === 'PENDIENTE_MANTENIMIENTO') { alert('⚠️ No necesita autorización.'); return; }
     try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-            estado: 'APROBADA',
-            autorizadoPor: usuarioActivo.nombre,
-            fechaAutorizacion: new Date().toLocaleString('es-MX')
-        });
-        await cargarDatosIniciales();
-        alert('✅ Solicitud autorizada por: ' + usuarioActivo.nombre);
-        cargarBandejaProyectos();
-    } catch (error) {
-        alert('❌ Error al autorizar: ' + error.message);
-        console.error(error);
-    }
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'APROBADA', autorizadoPor: usuarioActivo.nombre, fechaAutorizacion: new Date().toLocaleString('es-MX') });
+        await cargarDatosIniciales(); alert('✅ Autorizada'); cargarBandejaProyectos();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function rechazar(id) {
     if(!confirm('¿Rechazar esta solicitud?')) return;
     try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-            estado: 'RECHAZADA',
-            rechazadoPor: usuarioActivo.nombre,
-            fechaRechazo: new Date().toLocaleString('es-MX')
-        });
-        await cargarDatosIniciales();
-        alert('🔴 Solicitud rechazada por: ' + usuarioActivo.nombre);
-        cargarBandejaProyectos();
-    } catch (error) {
-        alert('❌ Error al rechazar: ' + error.message);
-        console.error(error);
-    }
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'RECHAZADA', rechazadoPor: usuarioActivo.nombre, fechaRechazo: new Date().toLocaleString('es-MX') });
+        await cargarDatosIniciales(); alert('🔴 Rechazada'); cargarBandejaProyectos();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function marcarConcluida(id) {
-    if(!confirm('¿El trabajo fue realizado? Se marcará como ✅ CONCLUIDA.')) return;
+    if(!confirm('¿Marcar como CONCLUIDA?')) return;
     try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-            estado: 'CONCLUIDO',
-            concluidoPor: usuarioActivo.nombre,
-            fechaConclusion: new Date().toLocaleString('es-MX')
-        });
-        await cargarDatosIniciales();
-        alert('✅ Trabajo concluido por: ' + usuarioActivo.nombre);
-        filtrarSolicitudesCoordinacion();
-    } catch (error) {
-        alert('❌ Error al concluir: ' + error.message);
-        console.error(error);
-    }
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toLocaleString('es-MX') });
+        await cargarDatosIniciales(); alert('✅ Concluida'); filtrarSolicitudesCoordinacion();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
+async function concluirDirecto(id) { if (confirm('✅ ¿Concluir directamente?')) await marcarConcluida(id); }
 
-async function concluirDirecto(id) {
-    if (!confirm('✅ ¿Estás seguro de que quieres CONCLUIR esta solicitud directamente?')) return;
-    await marcarConcluida(id);
-}
-
-// ==================== CORRECCIÓN 2: ELIMINAR SOLICITUD ====================
 async function eliminarSolicitud(id) {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres ELIMINAR esta solicitud?')) return;
+    if (!confirm('⚠️ ¿Eliminar esta solicitud?')) return;
     try {
-        // 1. Lo borramos en el servidor (Worker)
         await apiRequest(`/api/solicitudes/${id}`, 'DELETE');
-        
-        // 2. Lo borramos de la memoria local (el array de JS)
         solicitudes = solicitudes.filter(s => s.id !== id);
-        
-        // 3. Actualizamos el respaldo local
         guardarRespaldoLocal();
-        
-        // 4. Recargamos la vista actual para que desaparezca de la pantalla de inmediato
         recargarVistaActual();
-        
-        alert('🗑️ Solicitud eliminada correctamente');
-    } catch (error) {
-        alert('❌ Error al eliminar: ' + error.message);
-        console.error(error);
-    }
+        alert('🗑️ Eliminada');
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== DESBLOQUEAR / BLOQUEAR ====================
 async function desbloquearSolicitud(id) {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres DESBLOQUEAR esta solicitud?')) return;
+    if (!confirm('⚠️ ¿Desbloquear?')) return;
     try {
         const s = solicitudes.find(x => x.id === id);
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-            estado: 'DESBLOQUEADA',
-            estadoAnterior: s.estado,
-            desbloqueadoPor: usuarioActivo.nombre,
-            fechaDesbloqueo: new Date().toLocaleString('es-MX')
-        });
-        await cargarDatosIniciales();
-        alert('🔓 Solicitud desbloqueada correctamente.');
-        recargarVistaActual();
-    } catch (error) {
-        alert('❌ Error al desbloquear: ' + error.message);
-        console.error(error);
-    }
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'DESBLOQUEADA', estadoAnterior: s.estado, desbloqueadoPor: usuarioActivo.nombre, fechaDesbloqueo: new Date().toLocaleString('es-MX') });
+        await cargarDatosIniciales(); alert('🔓 Desbloqueada'); recargarVistaActual();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function bloquearSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
-    if (!s) return;
-    if (s.estado !== 'DESBLOQUEADA') {
-        alert('⚠️ Esta solicitud no está desbloqueada.');
-        return;
-    }
-    if (!confirm('🔒 ¿Estás seguro de que quieres BLOQUEAR esta solicitud?')) return;
+    if (!confirm('🔒 ¿Bloquear?')) return;
     try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-            estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS',
-            estadoAnterior: undefined,
-            bloqueadoPor: usuarioActivo.nombre,
-            fechaBloqueo: new Date().toLocaleString('es-MX')
-        });
-        await cargarDatosIniciales();
-        alert('🔒 Solicitud bloqueada correctamente.');
-        recargarVistaActual();
-    } catch (error) {
-        alert('❌ Error al bloquear: ' + error.message);
-        console.error(error);
-    }
+        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS', estadoAnterior: undefined, bloqueadoPor: usuarioActivo.nombre, fechaBloqueo: new Date().toLocaleString('es-MX') });
+        await cargarDatosIniciales(); alert('🔒 Bloqueada'); recargarVistaActual();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function recargarVistaActual() {
@@ -1560,80 +982,45 @@ function recargarVistaActual() {
     }
 }
 
-// ==================== EDITAR SOLICITUD ====================
 function editarSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
-    if (!s) { alert('❌ No se encontró la solicitud'); return; }
-    
+    if (!s) return;
     const estaDesbloqueada = s.estado === 'DESBLOQUEADA';
-    
     if (estaDesbloqueada) {
         const esCreador = s.solicitante === usuarioActivo.nombre;
         const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos';
-        if (!esCreador && !tienePermiso) {
-            alert('🔒 Esta solicitud está desbloqueada, pero solo el creador o Administración/Proyectos pueden modificarla.');
-            return;
-        }
-        cargarDatosEdicion(s);
-        return;
+        if (!esCreador && !tienePermiso) { alert('🔒 Solo el creador o Admin pueden modificarla.'); return; }
+        cargarDatosEdicion(s); return;
     }
-    
-    if (s.estado === 'RECHAZADA') { 
-        alert('❌ No se puede modificar una solicitud rechazada'); 
-        return; 
-    }
-
+    if (s.estado === 'RECHAZADA') { alert('❌ No se puede modificar'); return; }
     const esUsuarioComun = (!usuarioActivo.rol || usuarioActivo.rol === 'seccion');
-    if (esUsuarioComun && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO')) {
-        alert('🔒 Esta solicitud ya fue autorizada. Solo Proyectos o Mantenimiento pueden modificarla.');
-        return;
-    }
+    if (esUsuarioComun && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO')) { alert('🔒 Ya fue autorizada.'); return; }
     
     if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
         if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') {
-            if (confirm('🔓 ¿Quieres DESBLOQUEARLA para que el creador pueda modificarla?')) {
-                desbloquearSolicitud(id);
-                return;
-            }
+            if (confirm('🔓 ¿Desbloquear para que el creador edite?')) { desbloquearSolicitud(id); return; }
         }
-        cargarDatosEdicion(s);
-        return;
+        cargarDatosEdicion(s); return;
     }
-    
-    if (s.estado === 'PENDIENTE_PROYECTOS') {
-        cargarDatosEdicion(s);
-        return;
-    }
+    if (s.estado === 'PENDIENTE_PROYECTOS') cargarDatosEdicion(s);
 }
 
 function cargarDatosEdicion(s) {
     document.getElementById('idEditarSol').value = s.id;
-    document.getElementById('tituloFormSol').innerHTML = '📝 Editar Solicitud #' + s.id + (s.estado === 'DESBLOQUEADA' ? ' 🔓 (Desbloqueada)' : '');
+    document.getElementById('tituloFormSol').innerHTML = '📝 Editar Solicitud #' + s.id + (s.estado === 'DESBLOQUEADA' ? ' 🔓' : '');
     document.getElementById('tipoSolicitud').value = s.tipo;
     document.getElementById('areaSolicitante').value = s.area;
     document.getElementById('nombreSolicitante').value = s.solicitante;
     document.getElementById('descripcionSol').value = s.descripcion;
     document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
-
     if (s.tipo === 'evento') {
-        document.getElementById('nombreEvento').value = s.nombreEvento || '';
-        document.getElementById('fechaEvento').value = s.fechaEvento || '';
-        document.getElementById('lugarEvento').value = s.lugarEvento || '';
-        document.getElementById('camposEvento').classList.remove('hidden');
+        document.getElementById('nombreEvento').value = s.nombreEvento || ''; document.getElementById('fechaEvento').value = s.fechaEvento || ''; document.getElementById('lugarEvento').value = s.lugarEvento || ''; document.getElementById('camposEvento').classList.remove('hidden');
     } else {
-        document.getElementById('nombreEvento').value = '';
-        document.getElementById('fechaEvento').value = '';
-        document.getElementById('lugarEvento').value = '';
-        document.getElementById('camposEvento').classList.add('hidden');
+        document.getElementById('nombreEvento').value = ''; document.getElementById('fechaEvento').value = ''; document.getElementById('lugarEvento').value = ''; document.getElementById('camposEvento').classList.add('hidden');
     }
-
-    const btnGuardar = document.getElementById('btnGuardarSol');
-    const btnIcono = document.getElementById('btnIconoGuardar');
-    const btnTexto = document.getElementById('btnTextoGuardar');
-    
-    btnGuardar.className = 'btn-guardar-edicion';
-    btnIcono.className = 'fas fa-save';
-    btnTexto.textContent = 'Guardar Cambios';
+    document.getElementById('btnGuardarSol').className = 'btn-guardar-edicion';
+    document.getElementById('btnIconoGuardar').className = 'fas fa-save';
+    document.getElementById('btnTextoGuardar').textContent = 'Guardar Cambios';
     document.getElementById('btnCancelarSol').classList.remove('hidden');
     mostrarSeccion('nuevaSolicitud');
 }
@@ -1654,90 +1041,35 @@ function cancelarEdicionSol() {
     document.getElementById('btnCancelarSol').classList.add('hidden');
 }
 
-// ==================== MANTENIMIENTO - FILTRAR ====================
 function filtrarSolicitudesCoordinacion() {
     const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
     const ff = document.getElementById('filtroFecha').value;
-    const lista = document.getElementById('listaCoordinacion'); 
-    lista.innerHTML = '';
+    const lista = document.getElementById('listaCoordinacion'); lista.innerHTML = '';
     
-    const filtradas = solicitudes.filter(s => 
-        s.estado === 'APROBADA' || 
-        s.estado === 'CONCLUIDO' || 
-        s.estado === 'DESBLOQUEADA' ||
-        s.estado === 'PENDIENTE_MANTENIMIENTO'
-    ).filter(s => {
-        if(fs && !s.solicitante.toLowerCase().includes(fs)) return false;
-        if(ff && s.fechaSolicitud !== ff) return false;
-        return true;
-    });
+    const filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO')
+        .filter(s => { if(fs && !s.solicitante.toLowerCase().includes(fs)) return false; if(ff && s.fechaSolicitud !== ff) return false; return true; });
     
-    if (filtradas.length === 0) {
-        lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>';
-        return;
-    }
+    if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
     
     filtradas.forEach(s => {
         let est = '', clase = '', badge = '';
-        if(s.estado === 'DESBLOQUEADA'){ 
-            est='🔓 Desbloqueada'; 
-            clase='bg-yellow-50';
-            badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
-        } else if(s.estado === 'PENDIENTE_MANTENIMIENTO'){ 
-            est='🟡 Pendiente de Mantenimiento'; 
-            clase='bg-yellow-50';
-            badge = '<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>';
-        } else if(s.estado === 'APROBADA'){ 
-            est='🟢 Autorizada'; 
-            clase='bg-green-50'; 
-        } else if(s.estado === 'CONCLUIDO'){ 
-            est='✅ Concluida'; 
-            clase='bg-gray-100'; 
-        }
-        
-        let btnConcluir = '';
-        if((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin'){
-            btnConcluir = `<button onclick="marcarConcluida(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>`;
-        }
-        
-        let btnDesbloquear = '';
-        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo?.rol === 'admin') {
-            btnDesbloquear = `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>`;
-        }
-        
-        let btnBloquear = '';
-        if (s.estado === 'DESBLOQUEADA' && usuarioActivo?.rol === 'admin') {
-            btnBloquear = `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
-        }
-        
-        let btnEliminar = '';
-        let btnWhatsApp = '';
-        let btnObservacion = '';
-        if (usuarioActivo?.rol === 'admin') {
-            btnEliminar = `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>`;
-            btnObservacion = `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
-        }
-        
-        if (numeroWhatsAppDestino) {
-            btnWhatsApp = `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
-        }
-        
-        // BOTÓN GENERAR ORDEN EN PANEL MANTENIMIENTO (SOLO ADMINISTRADOR)
-        let btnGenerarOrden = '';
-        if ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin') {
-            btnGenerarOrden = `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>`;
-        }
+        if(s.estado === 'DESBLOQUEADA'){ est='🔓 Desbloqueada'; clase='bg-yellow-50'; badge='<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
+        else if(s.estado === 'PENDIENTE_MANTENIMIENTO'){ est='🟡 Pendiente'; clase='bg-yellow-50'; badge='<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>'; }
+        else if(s.estado === 'APROBADA'){ est='🟢 Autorizada'; clase='bg-green-50'; }
+        else if(s.estado === 'CONCLUIDO'){ est='✅ Concluida'; clase='bg-gray-100'; }
+
+        let btnConcluir = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin') ? `<button onclick="marcarConcluida(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>` : '';
+        let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo?.rol === 'admin') ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
+        let btnBloquear = (s.estado === 'DESBLOQUEADA' && usuarioActivo?.rol === 'admin') ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
+        let btnEliminar = (usuarioActivo?.rol === 'admin') ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
+        let btnObservacion = (usuarioActivo?.rol === 'admin') ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
+        let btnWhatsApp = numeroWhatsAppDestino ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
+        let btnGenerarOrden = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin') ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
 
         let obsHTML = '';
         if (s.observaciones && s.observaciones.length > 0) {
             obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
-            s.observaciones.forEach(obs => {
-                obsHTML += `
-                <div class="observacion-item">
-                    <div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div>
-                    <div class="obs-texto">${obs.texto}</div>
-                </div>`;
-            });
+            s.observaciones.forEach(obs => { obsHTML += `<div class="observacion-item"><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div><div class="obs-texto">${obs.texto}</div></div>`; });
             obsHTML += `</div>`;
         }
         
@@ -1750,107 +1082,40 @@ function filtrarSolicitudesCoordinacion() {
             <div class="mt-2 flex flex-wrap gap-2 items-center">
                 <span class="font-semibold text-sm">${est} ${badge}</span>
                 <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-                ${btnWhatsApp}
-                ${btnGenerarOrden}
-                ${btnConcluir}
-                ${btnDesbloquear}
-                ${btnBloquear}
-                ${btnEliminar}
-                ${btnObservacion}
+                ${btnWhatsApp}${btnGenerarOrden}${btnConcluir}${btnDesbloquear}${btnBloquear}${btnEliminar}${btnObservacion}
             </div>
             ${obsHTML}
-            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500 mt-1">Desbloqueada por: ${s.desbloqueadoPor} - ${s.fechaDesbloqueo || ''}</div>` : ''}
-            ${s.fechaBloqueo ? `<div class="text-xs text-gray-500 mt-1">Bloqueada por: ${s.bloqueadoPor} - ${s.fechaBloqueo || ''}</div>` : ''}
+            ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500 mt-1">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
         </div>`;
     });
 }
 
-function limpiarFiltros() {
-    document.getElementById('filtroSolicitante').value='';
-    document.getElementById('filtroFecha').value='';
-    filtrarSolicitudesCoordinacion();
-}
+function limpiarFiltros() { document.getElementById('filtroSolicitante').value=''; document.getElementById('filtroFecha').value=''; filtrarSolicitudesCoordinacion(); }
 
-// ==================== OBSERVACIONES ====================
 async function agregarObservacion(id) {
     const s = solicitudes.find(x => x.id === id);
-    if (!s) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    if (usuarioActivo.rol !== 'proyectos' && usuarioActivo.rol !== 'admin') {
-        alert('⚠️ Solo Proyectos Generales y Mantenimiento pueden agregar observaciones.');
-        return;
-    }
-    
-    const observacion = prompt('📝 Ingresa tu observación para la solicitud #' + id + ':');
-    if (!observacion || observacion.trim() === '') return;
-    
+    if (usuarioActivo.rol !== 'proyectos' && usuarioActivo.rol !== 'admin') { alert('⚠️ Sin permiso'); return; }
+    const observacion = prompt('📝 Observación para #' + id + ':');
+    if (!observacion) return;
     try {
-        await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', {
-            autor: usuarioActivo.nombre,
-            rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos Generales',
-            texto: observacion.trim()
-        });
-        await cargarDatosIniciales();
-        alert('✅ Observación agregada correctamente');
-        recargarVistaActual();
-    } catch (error) {
-        alert('❌ Error al agregar observación: ' + error.message);
-        console.error(error);
-    }
+        await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos', texto: observacion.trim() });
+        await cargarDatosIniciales(); alert('✅ Observación agregada'); recargarVistaActual();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== WHATSAPP ====================
 function enviarWhatsApp(id) {
     const s = solicitudes.find(x => x.id === id);
-    if (!s) {
-        alert('❌ No se encontró la solicitud');
-        return;
-    }
-    
-    if (!numeroWhatsAppDestino) {
-        alert('⚠️ No hay número de WhatsApp configurado.');
-        return;
-    }
-    
-    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n';
-    mensaje += '📌 Folio: #' + s.id + '\n';
-    mensaje += '👤 Solicitante: ' + s.solicitante + '\n';
-    mensaje += '🏫 Sección: ' + s.area + '\n';
-    mensaje += '📅 Fecha: ' + s.fechaSolicitud + '\n';
-    mensaje += '📝 Descripción: ' + s.descripcion + '\n';
-    
-    if (s.tipo === 'evento') {
-        mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n';
-        mensaje += '📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n';
-        mensaje += '📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
-    }
-    
+    if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
+    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n📌 Folio: #' + s.id + '\n👤 Solicitante: ' + s.solicitante + '\n🏫 Sección: ' + s.area + '\n📅 Fecha: ' + s.fechaSolicitud + '\n📝 Descripción: ' + s.descripcion + '\n';
+    if (s.tipo === 'evento') mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
     mensaje += '\n📌 *Estado: ' + s.estado + '*';
-    
-    if (s.autorizadoPor) {
-        mensaje += '\n✅ Autorizado por: ' + s.autorizadoPor;
-    }
-    
-    if (s.concluidoPor) {
-        mensaje += '\n🔧 Concluido por: ' + s.concluidoPor;
-    }
-    
-    if (s.observaciones && s.observaciones.length > 0) {
-        mensaje += '\n\n📝 *Observaciones:*';
-        s.observaciones.forEach(obs => {
-            mensaje += '\n• ' + obs.autor + ' (' + obs.rol + '): ' + obs.texto;
-        });
-    }
-    
-    const mensajeCodificado = encodeURIComponent(mensaje);
-    const url = 'https://wa.me/' + numeroWhatsAppDestino + '?text=' + mensajeCodificado;
-    window.open(url, '_blank');
+    if (s.autorizadoPor) mensaje += '\n✅ Autorizado por: ' + s.autorizadoPor;
+    if (s.concluidoPor) mensaje += '\n🔧 Concluido por: ' + s.concluidoPor;
+    if (s.observaciones && s.observaciones.length > 0) { mensaje += '\n\n📝 *Observaciones:*'; s.observaciones.forEach(obs => { mensaje += '\n• ' + obs.autor + ' (' + obs.rol + '): ' + obs.texto; }); }
+    window.open('https://wa.me/' + numeroWhatsAppDestino + '?text=' + encodeURIComponent(mensaje), '_blank');
 }
 
-// ==================== USUARIOS ====================
+// ==================== USUARIOS Y PERMISOS ====================
 async function agregarUsuario() {
     const user = document.getElementById('nuevoUsuario').value.trim();
     const pass = document.getElementById('nuevoPass').value.trim();
@@ -1858,210 +1123,116 @@ async function agregarUsuario() {
     const rol = document.getElementById('rolUsuario').value;
     const editando = document.getElementById('editandoUsuario').value;
     
-    if (!user || !pass || !nombre) {
-        alert('⚠️ Todos los campos son obligatorios');
-        return;
-    }
-    
-    if (pass.length < 6) {
-        alert('⚠️ La contraseña debe tener al menos 6 caracteres');
-        return;
-    }
-    
+    // Recopilar checkboxes
+    const checkboxes = document.querySelectorAll('.permiso-checkbox:checked');
+    const permisos = Array.from(checkboxes).map(cb => cb.value);
+
+    if (!user || !nombre || (!editando && !pass)) { alert('⚠️ Complete los campos (contraseña solo al crear)'); return; }
+    if (pass && pass.length < 6) { alert('⚠️ La contraseña debe tener al menos 6 caracteres'); return; }
+
     try {
         if (editando) {
-            await apiRequest(`/api/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol });
+            await apiRequest(`/api/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol, permisos });
             document.getElementById('editandoUsuario').value = '';
-            document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
+            document.getElementById('btnAgregarUsuario').innerHTML = '💾 Guardar Usuario';
             document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
-            alert('✅ Usuario actualizado correctamente');
+            alert('✅ Usuario actualizado');
         } else {
-            await apiRequest('/api/usuarios', 'POST', { usuario: user, password: pass, nombre, rol });
-            alert('✅ Usuario agregado correctamente');
+            await apiRequest('/api/usuarios', 'POST', { usuario: user, password: pass, nombre, rol, permisos });
+            alert('✅ Usuario agregado');
         }
         await cargarDatosIniciales();
         cargarListaUsuarios();
         limpiarFormularioUsuario();
-    } catch (error) {
-        alert('❌ Error al guardar usuario: ' + error.message);
-        console.error(error);
-    }
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function editarUsuario(username) {
     const user = usuarios[username];
     if (!user) return;
     document.getElementById('nuevoUsuario').value = username;
-    document.getElementById('nuevoPass').value = user.pass || '';
+    document.getElementById('nuevoPass').value = user.password || '';
     document.getElementById('nombreCompletoUsuario').value = user.nombre;
     document.getElementById('rolUsuario').value = user.rol;
     document.getElementById('editandoUsuario').value = username;
     document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
     document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
+    
+    // Marcar checkboxes
+    document.querySelectorAll('.permiso-checkbox').forEach(cb => {
+        cb.checked = (user.permisos || []).includes(cb.value);
+    });
 }
 
-function cancelarEdicionUsuario() {
-    limpiarFormularioUsuario();
-    document.getElementById('editandoUsuario').value = '';
-    document.getElementById('btnAgregarUsuario').innerHTML = 'Agregar Usuario';
-    document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
-}
-
-function limpiarFormularioUsuario() {
-    document.getElementById('nuevoUsuario').value = '';
-    document.getElementById('nuevoPass').value = '';
-    document.getElementById('nombreCompletoUsuario').value = '';
-    document.getElementById('rolUsuario').value = 'seccion';
-}
+function cancelarEdicionUsuario() { limpiarFormularioUsuario(); document.getElementById('editandoUsuario').value = ''; document.getElementById('btnAgregarUsuario').innerHTML = '💾 Guardar Usuario'; document.getElementById('btnCancelarEditarUsuario').classList.add('hidden'); }
+function limpiarFormularioUsuario() { document.getElementById('nuevoUsuario').value = ''; document.getElementById('nuevoPass').value = ''; document.getElementById('nombreCompletoUsuario').value = ''; document.getElementById('rolUsuario').value = 'seccion'; document.querySelectorAll('.permiso-checkbox').forEach(cb => cb.checked = false); }
 
 function cargarListaUsuarios() {
-    const c = document.getElementById('listaUsuarios');
-    c.innerHTML = '';
-    
-    if (Object.keys(usuarios).length === 0) {
-        c.innerHTML = '<p class="text-gray-500">No hay usuarios registrados.</p>';
-        return;
-    }
+    const c = document.getElementById('listaUsuarios'); c.innerHTML = '';
+    if (Object.keys(usuarios).length === 0) { c.innerHTML = '<p class="text-gray-500">No hay usuarios.</p>'; return; }
     
     for (const [k, v] of Object.entries(usuarios)) {
-        // CORRECCIÓN 1 (PARTE 2): Textos de roles en la lista cambiados
-        let rolTexto = '';
-        if (v.rol === 'admin') rolTexto = 'Administrador';
-        else if (v.rol === 'proyectos') rolTexto = 'Supervisor';
-        else rolTexto = 'Operador';
-        
+        let rolTexto = v.rol === 'admin' ? 'Administrador' : (v.rol === 'proyectos' ? 'Supervisor' : 'Operador');
         c.innerHTML += `
         <div class="border rounded p-3 bg-white flex justify-between items-center mb-2">
             <div>
                 <b>${v.nombre}</b><br>
-                Usuario: ${k} | Rol: ${rolTexto}
+                Usuario: ${k} | Rol Base: ${rolTexto}
             </div>
             <div class="flex gap-2">
                 <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
                 ${k !== 'admin' ? `<button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>` : ''}
-                ${k === 'admin' ? '<span class="text-gray-400 text-sm ml-2">(Principal)</span>' : ''}
             </div>
         </div>`;
     }
 }
 
 async function eliminarUsuario(u) { 
-    if (u === 'admin') {
-        alert('⚠️ No se puede eliminar la cuenta principal de Mantenimiento');
-        return;
-    }
-    if (!confirm(`⚠️ ¿Estás seguro de que quieres ELIMINAR al usuario "${u}"?`)) return;
+    if (u === 'admin') { alert('⚠️ No se puede eliminar el admin principal'); return; }
+    if (!confirm(`⚠️ ¿ELIMINAR al usuario "${u}"?`)) return;
     try {
         await apiRequest(`/api/usuarios/${u}`, 'DELETE');
-        await cargarDatosIniciales();
-        cargarListaUsuarios();
-        alert('🗑️ Usuario eliminado correctamente');
-    } catch (error) {
-        alert('❌ Error al eliminar usuario: ' + error.message);
-        console.error(error);
-    }
+        await cargarDatosIniciales(); cargarListaUsuarios(); alert('🗑️ Eliminado');
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 // ==================== CONFIGURACIÓN ====================
 async function guardarNombreMantenimiento() {
     const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
-    if (!nuevoNombre) {
-        alert('⚠️ Por favor ingresa un nombre válido');
-        return;
-    }
-    
+    if (!nuevoNombre) return;
     try {
-        await apiRequest('/api/configuracion', 'PUT', {
-            nombreResponsableMantenimiento: nuevoNombre
-        });
+        await apiRequest('/api/configuracion', 'PUT', { nombreResponsableMantenimiento: nuevoNombre });
         nombreResponsableMantenimiento = nuevoNombre;
-        
-        if (usuarios.admin) {
-            usuarios.admin.nombre = nuevoNombre;
-        }
-        
-        if (usuarioActivo && usuarioActivo.id === 'admin') {
-            usuarioActivo.nombre = nuevoNombre;
-            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-            document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre;
-        }
-        
-        await cargarDatosIniciales();
-        cargarListaUsuarios();
-        alert('✅ Nombre actualizado correctamente');
-    } catch (error) {
-        alert('❌ Error al guardar el nombre: ' + error.message);
-        console.error(error);
-    }
+        if (usuarios.admin) usuarios.admin.nombre = nuevoNombre;
+        if (usuarioActivo && usuarioActivo.id === 'admin') { usuarioActivo.nombre = nuevoNombre; localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo)); document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre; }
+        await cargarDatosIniciales(); cargarListaUsuarios(); alert('✅ Actualizado');
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
+function cargarNombreMantenimiento() { document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento; }
 
-function cargarNombreMantenimiento() {
-    document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
-}
-
-// ==================== LOGO ====================
 function cargarLogo(input) {
-    const file = input.files[0];
-    if (!file) return;
-    
+    const file = input.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = async function(e) {
         logoDataURL = e.target.result;
-        try {
-            await apiRequest('/api/configuracion', 'PUT', { logoDataURL: logoDataURL });
-            mostrarLogo();
-            alert('✅ Logo cargado correctamente');
-        } catch (error) {
-            alert('❌ Error al guardar el logo: ' + error.message);
-            console.error(error);
-        }
+        try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: logoDataURL }); mostrarLogo(); alert('✅ Logo cargado'); } catch (error) { alert('❌ Error: ' + error.message); }
     };
     reader.readAsDataURL(file);
 }
-
 function mostrarLogo() {
-    const preview = document.getElementById('previewLogo');
-    const sinLogoText = document.getElementById('sinLogoText');
-    if (logoDataURL) {
-        preview.src = logoDataURL;
-        preview.style.display = 'block';
-        sinLogoText.style.display = 'none';
-    } else {
-        preview.style.display = 'none';
-        sinLogoText.style.display = 'block';
-    }
+    const preview = document.getElementById('previewLogo'), txt = document.getElementById('sinLogoText');
+    if (logoDataURL) { preview.src = logoDataURL; preview.style.display = 'block'; txt.style.display = 'none'; }
+    else { preview.style.display = 'none'; txt.style.display = 'block'; }
 }
-
 async function eliminarLogo() {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres eliminar el logo?')) return;
+    if (!confirm('⚠️ ¿Eliminar logo?')) return;
     logoDataURL = '';
-    try {
-        await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' });
-        mostrarLogo();
-        document.getElementById('inputLogo').value = '';
-        alert('🗑️ Logo eliminado correctamente');
-    } catch (error) {
-        alert('❌ Error al eliminar el logo: ' + error.message);
-        console.error(error);
-    }
+    try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' }); mostrarLogo(); document.getElementById('inputLogo').value = ''; alert('🗑️ Logo eliminado'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
-// ==================== WHATSAPP CONFIG ====================
 async function actualizarWhatsApp() {
     const numero = document.getElementById('numeroWhatsApp').value.trim();
-    if (!numero) {
-        alert('⚠️ Ingresa un número de WhatsApp válido');
-        return;
-    }
-    try {
-        await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numero });
-        numeroWhatsAppDestino = numero;
-        document.getElementById('numeroActualWhatsApp').textContent = numero;
-        alert('✅ Número WhatsApp actualizado correctamente');
-    } catch (error) {
-        alert('❌ Error al guardar el número: ' + error.message);
-        console.error(error);
-    }
+    if (!numero) return;
+    try { await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numero }); numeroWhatsAppDestino = numero; document.getElementById('numeroActualWhatsApp').textContent = numero; alert('✅ WhatsApp guardado'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 // ==================== RESPALDOS ====================
@@ -2071,888 +1242,264 @@ async function crearRespaldo() {
         const datos = await response.json();
         const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Respaldo_Mantenimiento_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        alert('✅ Respaldo descargado correctamente');
-    } catch (error) {
-        alert('❌ Error al crear respaldo: ' + error.message);
-        console.error(error);
-    }
+        const a = document.createElement('a'); a.href = url; a.download = `Respaldo_${new Date().toISOString().slice(0,10)}.json`; a.click();
+        URL.revokeObjectURL(url); alert('✅ Respaldo descargado');
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function restaurarRespaldo(input) {
-    const archivo = input.files[0];
-    if (!archivo) return;
+    const archivo = input.files[0]; if (!archivo) return;
     if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
 
     const lector = new FileReader();
     lector.onload = async function(e) {
         try {
             const datos = JSON.parse(e.target.result);
-            
-            if (!datos.usuarios || typeof datos.usuarios !== 'object') {
-                alert('❌ El archivo no contiene usuarios válidos');
-                return;
-            }
-            
-            if (!datos.solicitudes || !Array.isArray(datos.solicitudes)) {
-                alert('❌ El archivo no contiene solicitudes válidas');
-                return;
-            }
-            
-            const response = await fetch(`${API_URL}/api/restaurar`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            
+            if (!datos.usuarios || !datos.solicitudes) { alert('❌ Archivo no válido'); return; }
+            const response = await fetch(`${API_URL}/api/restaurar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
             const result = await response.json();
-            
-            if (result.success) {
-                alert(`✅ Datos restaurados correctamente\n👤 Usuarios: ${result.usuarios}\n📋 Solicitudes: ${result.solicitudes}`);
-                location.reload();
-            } else {
-                alert('❌ ' + result.error);
-            }
-        } catch (err) {
-            alert('❌ El archivo no es válido o está dañado: ' + err.message);
-            console.error(err);
-        }
+            if (result.success) { alert(`✅ Restaurado\nUsuarios: ${result.usuarios}\nSolicitudes: ${result.solicitudes}`); location.reload(); }
+            else alert('❌ ' + result.error);
+        } catch (err) { alert('❌ Archivo dañado: ' + err.message); }
     };
     lector.readAsText(archivo);
 }
 
-// ==================== IMPRESIÓN ====================
-function imprimirSolicitud(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) { alert('❌ No se encontró la solicitud'); return; }
-    
-    const tipoEtiqueta = s.tipo === 'servicio' ? 'SERVICIO DE MANTENIMIENTO' : 'EVENTO ESCOLAR';
-    
-    let estadoClase = '';
-    let estadoTexto = '';
-    if (s.estado === 'DESBLOQUEADA') {
-        estadoClase = 'badge-desbloqueada';
-        estadoTexto = 'DESBLOQUEADA';
-    } else if (s.estado === 'PENDIENTE_PROYECTOS') {
-        estadoClase = 'badge-pendiente';
-        estadoTexto = 'EN EVALUACIÓN';
-    } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-        estadoClase = 'badge-pendiente';
-        estadoTexto = 'PENDIENTE MANTENIMIENTO';
-    } else if (s.estado === 'APROBADA') {
-        estadoClase = 'badge-aprobada';
-        estadoTexto = 'AUTORIZADA';
-    } else if (s.estado === 'CONCLUIDO') {
-        estadoClase = 'badge-concluida';
-        estadoTexto = 'CONCLUIDA';
-    } else if (s.estado === 'RECHAZADA') {
-        estadoClase = 'badge-rechazada';
-        estadoTexto = 'RECHAZADA';
-    }
-
-    const fechaActual = new Date().toLocaleDateString('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    const horaActual = new Date().toLocaleTimeString('es-MX', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-
-    const c = document.getElementById('formatoImpresion');
-    
-    let headerHTML = '';
-    if (logoDataURL) {
-        headerHTML = `
-        <div class="header-impresion">
-            <img src="${logoDataURL}" class="logo-impresion" alt="Logo del Colegio" onerror="this.style.display='none'">
-            <div class="header-text">
-                <div class="titulo-principal">${tipoEtiqueta}</div>
-                <div class="subtitulo-header">${s.area}</div>
-                <div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div>
-            </div>
-        </div>`;
-    } else {
-        headerHTML = `
-        <div class="titulo-central">${tipoEtiqueta}</div>
-        <div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
-    }
-    
-    let autorizadoPor = s.autorizadoPor || '';
-    let fechaAutorizacion = s.fechaAutorizacion || '';
-    
-    let concluidoPor = s.concluidoPor || '';
-    let fechaConclusion = s.fechaConclusion || '';
-    
-    let html = `
-        ${headerHTML}
-        
-        <table>
-            <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr>
-            <tr><td>Sección que solicita</td><td>${s.area}</td></tr>
-            <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
-            <tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
-    
-    if (s.tipo === 'evento') {
-        html += `
-            <tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr>
-            <tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr>
-            <tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
-    }
-    
-    html += `
-            <tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
-    
-    if (autorizadoPor) {
-        html += `<tr><td>Autorizado por</td><td>${autorizadoPor}</td></tr>`;
-        if (fechaAutorizacion) {
-            html += `<tr><td>Fecha de autorización</td><td>${fechaAutorizacion}</td></tr>`;
-        }
-    } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-        html += `<tr><td>Autorizado por</td><td>No requiere autorización (Mantenimiento)</td></tr>`;
-    } else {
-        html += `<tr><td>Autorizado por</td><td>Pendiente de autorización</td></tr>`;
-    }
-    
-    if (s.estado === 'CONCLUIDO' && concluidoPor) {
-        html += `<tr><td>Concluido por</td><td>${concluidoPor}</td></tr>`;
-        if (fechaConclusion) {
-            html += `<tr><td>Fecha de conclusión</td><td>${fechaConclusion}</td></tr>`;
-        }
-    }
-    
-    if (s.observaciones && s.observaciones.length > 0) {
-        let obsText = '';
-        s.observaciones.forEach(obs => {
-            obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`;
-        });
-        html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`;
-    }
-    
-    let firmaSolicitante = s.solicitante || '';
-    let firmaAutorizacion = autorizadoPor || '_________________________';
-    if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') {
-        firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente de autorización';
-    } else if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-        firmaAutorizacion = 'No requiere autorización';
-    }
-    
-    let firmaMantenimiento = '';
-    if (s.estado === 'CONCLUIDO') {
-        firmaMantenimiento = concluidoPor || nombreResponsableMantenimiento;
-    } else if (s.estado === 'DESBLOQUEADA') {
-        firmaMantenimiento = 'Pendiente de Vo.Bo.';
-    } else {
-        firmaMantenimiento = 'Pendiente';
-    }
-    
-    let fechaAutorizacionMostrar = fechaAutorizacion || (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' ? fechaActual : 'Pendiente de autorización');
-    if (s.estado === 'PENDIENTE_MANTENIMIENTO') {
-        fechaAutorizacionMostrar = 'No requiere autorización';
-    }
-    let fechaConclusionMostrar = fechaConclusion || (s.estado === 'CONCLUIDO' ? fechaActual : 'Pendiente');
-    
-    html += `
-        </table>
-        
-        <div class="firmas">
-            <div class="firma-item">
-                <div class="firma-nombre">${firmaSolicitante}</div>
-                <div class="linea"></div>
-                <div class="firma-cargo">Nombre del Solicitante</div>
-                <div class="firma-fecha">${s.fechaSolicitud}</div>
-            </div>
-            <div class="firma-item">
-                <div class="firma-nombre">${firmaAutorizacion}</div>
-                <div class="linea"></div>
-                <div class="firma-cargo">Autorizado por</div>
-                <div class="firma-fecha">${fechaAutorizacionMostrar}</div>
-            </div>
-            <div class="firma-item">
-                <div class="firma-nombre">${firmaMantenimiento}</div>
-                <div class="linea"></div>
-                <div class="firma-cargo">Vo.Bo. Mantenimiento</div>
-                <div class="firma-fecha">${fechaConclusionMostrar}</div>
-            </div>
-        </div>
-        
-        <div class="pie-pagina">
-            <span>${fechaActual} ${horaActual}</span>
-            <span class="qr-text">SISTEMA DE GESTIÓN DE MANTENIMIENTO</span>
-            <span>v1.0</span>
-        </div>
-    `;
-    
-    c.innerHTML = html;
-    c.style.display = 'block';
-    document.getElementById('formatoImpresion').style.display = 'block';
-    setTimeout(() => {
-        window.print();
-        setTimeout(() => {
-            c.style.display = 'none';
-            document.getElementById('formatoImpresion').style.display = 'none';
-        }, 500);
-    }, 300);
-}
-
-// ==================== MOSTRAR CAMPOS DE EVENTO ====================
-function mostrarCamposEvento() {
-    document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento');
-}
-
-// ==================== MÓDULO DE EMPLEADOS ====================
+// ==================== EMPLEADOS ====================
 async function cargarEmpleados() {
-    const lista = document.getElementById('listaEmpleados');
-    lista.innerHTML = 'Cargando...';
+    const lista = document.getElementById('listaEmpleados'); lista.innerHTML = 'Cargando...';
     try {
         const empleados = await apiRequest('/api/empleados');
-        if (empleados.length === 0) {
-            lista.innerHTML = '<p class="text-gray-500">No hay empleados registrados.</p>';
-            return;
-        }
+        if (empleados.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay empleados.</p>'; return; }
         lista.innerHTML = empleados.map(e => `
             <div class="border rounded p-3 bg-white flex justify-between items-center ${e.activo ? '' : 'opacity-50'}">
-                <div>
-                    <b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'} 
-                    ${e.activo ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>' : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
-                </div>
+                <div><b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'} ${e.activo ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>' : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}</div>
                 <div class="flex gap-2">
                     <button onclick='editarEmpleado(${JSON.stringify(e)})' class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">✏️ Editar</button>
                     <button onclick="eliminarEmpleado(${e.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
                 </div>
             </div>
         `).join('');
-    } catch (error) {
-        lista.innerHTML = '<p class="text-red-500">Error al cargar empleados.</p>';
-    }
+    } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
-
 async function guardarEmpleado() {
     const id = document.getElementById('idEditarEmpleado').value;
     const nombre = document.getElementById('nombreEmpleado').value.trim();
     const puesto = document.getElementById('puestoEmpleado').value.trim();
     const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
-
-    if (!nombre) { alert('⚠️ El nombre es obligatorio'); return; }
-
+    if (!nombre) return;
     try {
-        if (id) {
-            await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo });
-            alert('✅ Empleado actualizado');
-        } else {
-            await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo });
-            alert('✅ Empleado agregado');
-        }
-        cancelarEdicionEmpleado();
-        cargarEmpleados();
-    } catch (error) {
-        alert('❌ Error: ' + error.message);
-    }
+        if (id) { await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo }); alert('✅ Actualizado'); }
+        else { await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo }); alert('✅ Agregado'); }
+        cancelarEdicionEmpleado(); cargarEmpleados();
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
 function editarEmpleado(emp) {
-    document.getElementById('idEditarEmpleado').value = emp.id;
-    document.getElementById('nombreEmpleado').value = emp.nombre;
-    document.getElementById('puestoEmpleado').value = emp.puesto || '';
-    document.getElementById('activoEmpleado').checked = emp.activo === 1;
-    document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar Empleado';
-    document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
+    document.getElementById('idEditarEmpleado').value = emp.id; document.getElementById('nombreEmpleado').value = emp.nombre;
+    document.getElementById('puestoEmpleado').value = emp.puesto || ''; document.getElementById('activoEmpleado').checked = emp.activo === 1;
+    document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar'; document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
 }
-
 function cancelarEdicionEmpleado() {
-    document.getElementById('idEditarEmpleado').value = '';
-    document.getElementById('nombreEmpleado').value = '';
-    document.getElementById('puestoEmpleado').value = '';
-    document.getElementById('activoEmpleado').checked = true;
-    document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado';
-    document.getElementById('btnCancelarEmpleado').classList.add('hidden');
+    document.getElementById('idEditarEmpleado').value = ''; document.getElementById('nombreEmpleado').value = ''; document.getElementById('puestoEmpleado').value = '';
+    document.getElementById('activoEmpleado').checked = true; document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado'; document.getElementById('btnCancelarEmpleado').classList.add('hidden');
 }
-
 async function eliminarEmpleado(id) {
-    if (!confirm('⚠️ ¿Eliminar este empleado?')) return;
-    try {
-        await apiRequest(`/api/empleados/${id}`, 'DELETE');
-        cargarEmpleados();
-    } catch (error) {
-        alert('❌ Error al eliminar: ' + error.message);
-    }
+    if (!confirm('⚠️ ¿Eliminar empleado?')) return;
+    try { await apiRequest(`/api/empleados/${id}`, 'DELETE'); cargarEmpleados(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== MÓDULO DE ÓRDENES ====================
+// ==================== ÓRDENES ====================
 async function cargarOrdenes() {
-    const lista = document.getElementById('listaOrdenes');
-    lista.innerHTML = 'Cargando...';
+    const lista = document.getElementById('listaOrdenes'); lista.innerHTML = 'Cargando...';
     try {
         const ordenes = await apiRequest('/api/ordenes');
-        if (ordenes.length === 0) {
-            lista.innerHTML = '<p class="text-gray-500">No hay órdenes de trabajo generadas.</p>';
-            return;
-        }
+        if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
         lista.innerHTML = ordenes.map(o => `
             <div class="border rounded p-4 bg-white shadow-sm">
                 <div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
                 <div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div>
                 <div class="text-sm mt-1">${o.descripcion} (${o.area})</div>
                 <div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div>
-                
                 <div class="mt-3 flex gap-2 flex-wrap">
-                    <button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir Formato</button>
-                    ${o.estado !== 'CONCLUIDO' ? 
-                        `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` 
-                        : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
-                    <button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar Orden</button>
+                    <button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+                    ${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
+                    <button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
                 </div>
             </div>
         `).join('');
-    } catch (error) {
-        lista.innerHTML = '<p class="text-red-500">Error al cargar órdenes.</p>';
-    }
+    } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
-
 async function abrirModalOrden(solicitudId) {
     try {
-        const empleados = await apiRequest('/api/empleados');
-        const activos = empleados.filter(e => e.activo === 1);
-        
-        if (activos.length === 0) {
-            alert('⚠️ No hay empleados activos. Por favor, agrega uno en el módulo de Empleados.');
-            return;
-        }
-
+        const empleados = await apiRequest('/api/empleados'); const activos = empleados.filter(e => e.activo === 1);
+        if (activos.length === 0) { alert('⚠️ No hay empleados activos.'); return; }
         const select = document.getElementById('selectEmpleadoOrden');
         select.innerHTML = activos.map(e => `<option value="${e.id}">${e.nombre} (${e.puesto || 'Sin puesto'})</option>`).join('');
-        
         document.getElementById('solicitudIdParaOrden').value = solicitudId;
-        document.getElementById('modalGenerarOrden').classList.remove('hidden');
-        document.getElementById('modalGenerarOrden').classList.add('flex');
-    } catch (error) {
-        alert('❌ Error al cargar empleados: ' + error.message);
-    }
+        document.getElementById('modalGenerarOrden').classList.remove('hidden'); document.getElementById('modalGenerarOrden').classList.add('flex');
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
-function cerrarModalGenerarOrden() {
-    document.getElementById('modalGenerarOrden').classList.add('hidden');
-    document.getElementById('modalGenerarOrden').classList.remove('flex');
-}
-
+function cerrarModalGenerarOrden() { document.getElementById('modalGenerarOrden').classList.add('hidden'); document.getElementById('modalGenerarOrden').classList.remove('flex'); }
 async function confirmarGenerarOrden() {
-    const solicitudId = document.getElementById('solicitudIdParaOrden').value;
-    const empleadoId = document.getElementById('selectEmpleadoOrden').value;
-    
+    const solicitudId = document.getElementById('solicitudIdParaOrden').value; const empleadoId = document.getElementById('selectEmpleadoOrden').value;
     if (!empleadoId) return;
-
-    try {
-        await apiRequest('/api/ordenes', 'POST', { solicitud_id: parseInt(solicitudId), empleado_id: parseInt(empleadoId) });
-        alert('✅ Orden de trabajo generada correctamente.');
-        cerrarModalGenerarOrden();
-        mostrarSeccion('panelOrdenes');
-    } catch (error) {
-        alert('❌ Error al generar orden: ' + error.message);
-    }
+    try { await apiRequest('/api/ordenes', 'POST', { solicitud_id: parseInt(solicitudId), empleado_id: parseInt(empleadoId) }); alert('✅ Orden generada'); cerrarModalGenerarOrden(); mostrarSeccion('panelOrdenes'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
 async function eliminarOrden(id) {
-    if (!confirm('⚠️ ¿Eliminar esta orden de trabajo? La solicitud volverá a estar disponible.')) return;
-    try {
-        await apiRequest(`/api/ordenes/${id}`, 'DELETE');
-        alert('🗑️ Orden eliminada y solicitud liberada.');
-        cargarOrdenes();
-        await cargarDatosIniciales(); // Actualiza la lista de solicitudes en memoria
-    } catch (error) {
-        alert('❌ Error al eliminar orden: ' + error.message);
-    }
-}
-
-// ==================== IMPRESIÓN DE ORDEN DE TRABAJO ====================
-async function imprimirOrdenTrabajo(ordenId) {
-    try {
-        const ordenes = await apiRequest('/api/ordenes');
-        const o = ordenes.find(x => x.id === ordenId);
-        if (!o) { alert('❌ No se encontró la orden'); return; }
-
-        const fechaActual = new Date().toLocaleDateString('es-MX');
-        
-        let headerHTML = '';
-        if (logoDataURL) {
-            headerHTML = `
-            <div class="header-impresion">
-                <img src="${logoDataURL}" class="logo-impresion" alt="Logo" onerror="this.style.display='none'">
-                <div class="header-text">
-                    <div class="titulo-principal">ORDEN DE TRABAJO</div>
-                    <div class="subtitulo-header">${o.area}</div>
-                    <div class="folio-header">Orden: #${String(o.id).padStart(4, '0')}</div>
-                </div>
-            </div>`;
-        } else {
-            headerHTML = `
-            <div class="titulo-central">ORDEN DE TRABAJO</div>
-            <div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
-        }
-
-        // Lógica para rellenar los campos si ya está concluida
-        let fechaAtencion = '_________________________________';
-        let horaInicio = '_________________________________';
-        let horaFin = '_________________________________';
-        let recibidoPor = '_________________________________';
-        let tituloSeccion = 'PARA LLENAR AL MOMENTO DE ATENDER EL SERVICIO';
-        let colorBorde = '#999';
-
-        if (o.estado === 'CONCLUIDO') {
-            fechaAtencion = `<b>${o.fechaAtencion || ''}</b>`;
-            horaInicio = `<b>${o.horaInicio || ''}</b>`;
-            horaFin = `<b>${o.horaFin || ''}</b>`;
-            recibidoPor = `<b>${o.recibidoPor || ''}</b>`;
-            tituloSeccion = 'DATOS DE ATENCIÓN Y CONFORMIDAD';
-            colorBorde = '#00B42A'; // Borde verde para indicar que ya está lleno
-        }
-
-        let html = `
-            ${headerHTML}
-            <table>
-                <tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr>
-                <tr><td>Fecha de solicitud</td><td>${o.fecha_creacion.split(',')[0]}</td></tr>
-                <tr><td>Nombre de quien solicita</td><td>${o.solicitante}</td></tr>
-                <tr><td>Sección</td><td>${o.area}</td></tr>
-                <tr><td>Descripción del servicio</td><td>${o.descripcion}</td></tr>
-                <tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr>
-            </table>
-
-            <div style="margin-top: 20px; border: 2px dashed ${colorBorde}; padding: 15px; border-radius: 8px;">
-                <h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4>
-                <table style="border: none;">
-                    <tr>
-                        <td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td>
-                        <td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td>
-                    </tr>
-                    <tr>
-                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br>${horaFin}</td>
-                        <td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad (quien recibe):</b><br><br>${recibidoPor}</td>
-                    </tr>
-                </table>
-            </div>
-            
-            <div class="pie-pagina">
-                <span>${fechaActual}</span>
-                <span>SISTEMA DE GESTIÓN DE MANTENIMIENTO</span>
-                <span>v1.0</span>
-            </div>
-        `;
-
-        const c = document.getElementById('formatoImpresion');
-        c.innerHTML = html;
-        c.style.display = 'block';
-        setTimeout(() => {
-            window.print();
-            setTimeout(() => { c.style.display = 'none'; }, 500);
-        }, 300);
-
-    } catch (error) {
-        alert('❌ Error al generar el formato: ' + error.message);
-    }
+    if (!confirm('⚠️ ¿Eliminar orden? La solicitud volverá a estar disponible.')) return;
+    try { await apiRequest(`/api/ordenes/${id}`, 'DELETE'); alert('🗑️ Eliminada'); cargarOrdenes(); await cargarDatosIniciales(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function capturarOrden(ordenId, solicitudId) {
-    document.getElementById('capturaOrdenId').value = ordenId;
-    document.getElementById('capturaSolicitudId').value = solicitudId;
-    document.getElementById('capturaFecha').valueAsDate = new Date();
-    document.getElementById('capturaHoraInicio').value = '';
-    document.getElementById('capturaHoraFin').value = '';
-    document.getElementById('capturaRecibidoPor').value = '';
-    
-    document.getElementById('modalCapturaOrden').classList.remove('hidden');
-    document.getElementById('modalCapturaOrden').classList.add('flex');
+    document.getElementById('capturaOrdenId').value = ordenId; document.getElementById('capturaSolicitudId').value = solicitudId;
+    document.getElementById('capturaFecha').valueAsDate = new Date(); document.getElementById('capturaHoraInicio').value = ''; document.getElementById('capturaHoraFin').value = ''; document.getElementById('capturaRecibidoPor').value = '';
+    document.getElementById('modalCapturaOrden').classList.remove('hidden'); document.getElementById('modalCapturaOrden').classList.add('flex');
 }
-
-function cerrarModalCaptura() {
-    document.getElementById('modalCapturaOrden').classList.add('hidden');
-    document.getElementById('modalCapturaOrden').classList.remove('flex');
-}
-
+function cerrarModalCaptura() { document.getElementById('modalCapturaOrden').classList.add('hidden'); document.getElementById('modalCapturaOrden').classList.remove('flex'); }
 async function guardarCapturaOrden() {
-    const ordenId = document.getElementById('capturaOrdenId').value;
-    const solicitudId = document.getElementById('capturaSolicitudId').value;
-    const fecha = document.getElementById('capturaFecha').value;
-    const horaInicio = document.getElementById('capturaHoraInicio').value;
-    const horaFin = document.getElementById('capturaHoraFin').value;
-    const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
-
-    if (!fecha || !horaInicio || !horaFin || !recibidoPor) {
-        alert('⚠️ Por favor, llena todos los campos.');
-        return;
-    }
-
-    try {
-        await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', {
-            fechaAtencion: fecha,
-            horaInicio: horaInicio,
-            horaFin: horaFin,
-            recibidoPor: recibidoPor,
-            solicitud_id: solicitudId
-        });
-        
-        alert('✅ Orden concluida y solicitud finalizada.');
-        cerrarModalCaptura();
-        cargarOrdenes();
-        await cargarDatosIniciales(); 
-    } catch (error) {
-        alert('❌ Error al guardar: ' + error.message);
-    }
+    const ordenId = document.getElementById('capturaOrdenId').value; const solicitudId = document.getElementById('capturaSolicitudId').value;
+    const fecha = document.getElementById('capturaFecha').value; const horaInicio = document.getElementById('capturaHoraInicio').value; const horaFin = document.getElementById('capturaHoraFin').value; const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
+    if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
+    try { await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio: horaInicio, horaFin: horaFin, recibidoPor: recibidoPor, solicitud_id: solicitudId }); alert('✅ Concluida'); cerrarModalCaptura(); cargarOrdenes(); await cargarDatosIniciales(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== MÓDULO DE INCIDENCIAS ====================
+// ==================== INCIDENCIAS ====================
 async function cargarIncidencias() {
-    const lista = document.getElementById('listaIncidencias');
-    const selectEmp = document.getElementById('incidenciaEmpleado');
-    
+    const lista = document.getElementById('listaIncidencias'); const selectEmp = document.getElementById('incidenciaEmpleado');
     try {
         const empleados = await apiRequest('/api/empleados');
-        selectEmp.innerHTML = '<option value="">Selecciona...</option>' + 
-            empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-
+        selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
         const incidencias = await apiRequest('/api/incidencias');
-        if (incidencias.length === 0) {
-            lista.innerHTML = '<p class="text-gray-500">No hay incidencias registradas.</p>';
-            return;
-        }
-        
-        lista.innerHTML = incidencias.map(i => `
-            <div class="border rounded p-3 bg-white shadow-sm flex justify-between">
-                <div>
-                    <b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${i.fecha})</span><br>
-                    <span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        lista.innerHTML = '<p class="text-red-500">Error al cargar incidencias.</p>';
-    }
+        if (incidencias.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>'; return; }
+        lista.innerHTML = incidencias.map(i => `<div class="border rounded p-3 bg-white shadow-sm flex justify-between"><div><b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${i.fecha})</span><br><span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span></div></div>`).join('');
+    } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
-
-async function guardarIncidencia() {
-    const empleado_id = document.getElementById('incidenciaEmpleado').value;
-    const tipo = document.getElementById('incidenciaTipo').value;
-    const fecha = document.getElementById('incidenciaFecha').value;
-    const motivo = document.getElementById('incidenciaMotivo').value.trim();
-
-    if (!empleado_id || !fecha) { alert('⚠️ Selecciona empleado y fecha'); return; }
-
-    const datos = { empleado_id, tipo, fecha, motivo };
-    
-    if (tipo === 'Permiso por horas') {
-        datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
-        datos.hora_salida = document.getElementById('incidenciaHoraSalida').value;
-    } else if (tipo === 'Permiso por días' || tipo === 'Vacaciones') {
-        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
-        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
-    } else if (tipo === 'Incapacidad') {
-        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
-        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
-        datos.diagnostico = document.getElementById('incidenciaDiagnostico').value;
-    }
-
-    try {
-        await apiRequest('/api/incidencias', 'POST', datos);
-        alert('✅ Incidencia registrada');
-        document.getElementById('incidenciaMotivo').value = '';
-        cargarIncidencias();
-    } catch (error) {
-        alert('❌ Error: ' + error.message);
-    }
-}
-
-// ==================== SECCIONES ====================
-async function cargarSecciones() {
-    try {
-        const secciones = await apiRequest('/api/secciones');
-        const select = document.getElementById('areaSolicitante');
-        select.innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
-    } catch (error) { console.error(error); }
-}
-
-async function cargarListaSecciones() {
-    const lista = document.getElementById('listaSecciones');
-    lista.innerHTML = 'Cargando...';
-    try {
-        const secciones = await apiRequest('/api/secciones');
-        lista.innerHTML = secciones.map(s => `
-            <div class="border rounded p-3 bg-white flex justify-between items-center">
-                <span>${s.nombre}</span>
-                <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-            </div>
-        `).join('');
-    } catch (error) { lista.innerHTML = 'Error'; }
-}
-
-async function guardarSeccion() {
-    const nombre = document.getElementById('nuevaSeccionNombre').value.trim();
-    if (!nombre) return;
-    try {
-        await apiRequest('/api/secciones', 'POST', { nombre });
-        document.getElementById('nuevaSeccionNombre').value = '';
-        cargarListaSecciones();
-        cargarSecciones();
-    } catch (e) { alert(e.message); }
-}
-
-async function eliminarSeccion(id) {
-    if (!confirm('¿Eliminar sección?')) return;
-    try {
-        await apiRequest(`/api/secciones/${id}`, 'DELETE');
-        cargarListaSecciones();
-        cargarSecciones();
-    } catch (e) { alert(e.message); }
-}
-
-// ==================== PROVEEDORES ====================
-async function cargarProveedores() {
-    try {
-        const proveedores = await apiRequest('/api/proveedores');
-        const select = document.getElementById('compraProveedor');
-        select.innerHTML = proveedores.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-    } catch (error) { console.error(error); }
-}
-
-async function cargarListaProveedores() {
-    const lista = document.getElementById('listaProveedores');
-    lista.innerHTML = 'Cargando...';
-    try {
-        const proveedores = await apiRequest('/api/proveedores');
-        lista.innerHTML = proveedores.map(p => `
-            <div class="border rounded p-3 bg-white flex justify-between items-center">
-                <span>${p.nombre}</span>
-                <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-            </div>
-        `).join('');
-    } catch (error) { lista.innerHTML = 'Error'; }
-}
-
-async function guardarProveedor() {
-    const nombre = document.getElementById('nuevoProveedorNombre').value.trim();
-    if (!nombre) return;
-    try {
-        await apiRequest('/api/proveedores', 'POST', { nombre });
-        document.getElementById('nuevoProveedorNombre').value = '';
-        cargarListaProveedores();
-        cargarProveedores();
-    } catch (e) { alert(e.message); }
-}
-
-async function eliminarProveedor(id) {
-    if (!confirm('¿Eliminar proveedor?')) return;
-    try {
-        await apiRequest(`/api/proveedores/${id}`, 'DELETE');
-        cargarListaProveedores();
-        cargarProveedores();
-    } catch (e) { alert(e.message); }
-}
-
-// ==================== INCIDENCIAS DINÁMICAS ====================
 function cambiarCamposIncidencia() {
     const tipo = document.getElementById('incidenciaTipo').value;
-    document.getElementById('camposFechas').classList.add('hidden');
-    document.getElementById('camposHoras').classList.add('hidden');
-
-    if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
-        document.getElementById('camposFechas').classList.remove('hidden');
-    } else if (tipo === 'Permiso por horas') {
-        document.getElementById('camposHoras').classList.remove('hidden');
-    }
+    document.getElementById('camposFechas').classList.add('hidden'); document.getElementById('camposHoras').classList.add('hidden');
+    if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') document.getElementById('camposFechas').classList.remove('hidden');
+    else if (tipo === 'Permiso por horas') document.getElementById('camposHoras').classList.remove('hidden');
 }
-
 async function guardarIncidencia() {
-    const empleado_id = document.getElementById('incidenciaEmpleado').value;
-    const tipo = document.getElementById('incidenciaTipo').value;
-    const fecha = document.getElementById('incidenciaFecha').value;
-    const motivo = document.getElementById('incidenciaMotivo').value.trim();
-
+    const empleado_id = document.getElementById('incidenciaEmpleado').value; const tipo = document.getElementById('incidenciaTipo').value;
+    const fecha = document.getElementById('incidenciaFecha').value; const motivo = document.getElementById('incidenciaMotivo').value.trim();
     if (!empleado_id || !fecha) { alert('Selecciona empleado y fecha'); return; }
-
     const datos = { empleado_id, tipo, fecha, motivo };
-    
-    if (tipo === 'Permiso por horas') {
-        datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
-        datos.hora_salida = document.getElementById('incidenciaHoraSalida').value;
-    } else {
-        datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
-        datos.fecha_fin = document.getElementById('incidenciaFechaFin').value;
-    }
-
-    try {
-        await apiRequest('/api/incidencias', 'POST', datos);
-        alert('✅ Incidencia registrada');
-        document.getElementById('incidenciaMotivo').value = '';
-        cargarIncidencias();
-    } catch (error) { alert('Error: ' + error.message); }
+    if (tipo === 'Permiso por horas') { datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value; datos.hora_salida = document.getElementById('incidenciaHoraSalida').value; }
+    else { datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value; datos.fecha_fin = document.getElementById('incidenciaFechaFin').value; }
+    try { await apiRequest('/api/incidencias', 'POST', datos); alert('✅ Incidencia registrada'); document.getElementById('incidenciaMotivo').value = ''; cargarIncidencias(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== ÓRDENES DE COMPRA (SIN PRECIOS) ====================
+// ==================== SECCIONES Y PROVEEDORES ====================
+async function cargarSecciones() {
+    try { const secciones = await apiRequest('/api/secciones'); document.getElementById('areaSolicitante').innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join(''); } catch (error) { }
+}
+async function cargarListaSecciones() {
+    const lista = document.getElementById('listaSecciones'); lista.innerHTML = 'Cargando...';
+    try { const secciones = await apiRequest('/api/secciones'); lista.innerHTML = secciones.map(s => `<div class="border rounded p-3 bg-white flex justify-between items-center"><span>${s.nombre}</span><button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div>`).join(''); } catch (error) { lista.innerHTML = 'Error'; }
+}
+async function guardarSeccion() {
+    const nombre = document.getElementById('nuevaSeccionNombre').value.trim(); if (!nombre) return;
+    try { await apiRequest('/api/secciones', 'POST', { nombre }); document.getElementById('nuevaSeccionNombre').value = ''; cargarListaSecciones(); cargarSecciones(); } catch (e) { alert(e.message); }
+}
+async function eliminarSeccion(id) {
+    if (!confirm('¿Eliminar sección?')) return;
+    try { await apiRequest(`/api/secciones/${id}`, 'DELETE'); cargarListaSecciones(); cargarSecciones(); } catch (e) { alert(e.message); }
+}
+
+async function cargarProveedores() {
+    try { const proveedores = await apiRequest('/api/proveedores'); document.getElementById('compraProveedor').innerHTML = proveedores.map(p => `<option value="${p.id}">${p.nombre}</option>`).join(''); } catch (error) { }
+}
+async function cargarListaProveedores() {
+    const lista = document.getElementById('listaProveedores'); lista.innerHTML = 'Cargando...';
+    try { const proveedores = await apiRequest('/api/proveedores'); lista.innerHTML = proveedores.map(p => `<div class="border rounded p-3 bg-white flex justify-between items-center"><span>${p.nombre}</span><button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div>`).join(''); } catch (error) { lista.innerHTML = 'Error'; }
+}
+async function guardarProveedor() {
+    const nombre = document.getElementById('nuevoProveedorNombre').value.trim(); if (!nombre) return;
+    try { await apiRequest('/api/proveedores', 'POST', { nombre }); document.getElementById('nuevoProveedorNombre').value = ''; cargarListaProveedores(); cargarProveedores(); } catch (e) { alert(e.message); }
+}
+async function eliminarProveedor(id) {
+    if (!confirm('¿Eliminar proveedor?')) return;
+    try { await apiRequest(`/api/proveedores/${id}`, 'DELETE'); cargarListaProveedores(); cargarProveedores(); } catch (e) { alert(e.message); }
+}
+
+// ==================== ÓRDENES DE COMPRA ====================
 function agregarArticuloCompra() {
-    const div = document.createElement('div');
-    div.className = 'flex gap-2 items-center mb-2 articulo-row';
-    div.innerHTML = `
-        <input type="text" placeholder="Artículo" class="flex-1 border rounded px-3 py-2 articulo-nombre">
-        <input type="number" placeholder="Cant." class="w-20 border rounded px-3 py-2 articulo-cantidad" min="1">
-        <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">X</button>
-    `;
+    const div = document.createElement('div'); div.className = 'flex gap-2 items-center mb-2 articulo-row';
+    div.innerHTML = `<input type="text" placeholder="Artículo" class="flex-1 border rounded px-3 py-2 articulo-nombre"><input type="number" placeholder="Cant." class="w-20 border rounded px-3 py-2 articulo-cantidad" min="1"><button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">X</button>`;
     document.getElementById('listaArticulosCompra').appendChild(div);
 }
-
 async function guardarOrdenCompra() {
-    const proveedor_id = document.getElementById('compraProveedor').value;
-    const solicitado_por = document.getElementById('compraSolicitadoPor').value;
-    const observaciones = document.getElementById('compraObservaciones').value;
-    
-    const rows = document.querySelectorAll('.articulo-row');
-    const articulos = [];
-    
-    rows.forEach(row => {
-        const articulo = row.querySelector('.articulo-nombre').value.trim();
-        const cantidad = parseFloat(row.querySelector('.articulo-cantidad').value) || 0;
-        if (articulo && cantidad > 0) {
-            articulos.push({ articulo, cantidad });
-        }
-    });
-
-    if (!proveedor_id || articulos.length === 0) {
-        alert('Selecciona un proveedor y agrega al menos un artículo.'); return;
-    }
-
-    try {
-        await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos });
-        alert('✅ Orden de compra generada');
-        cargarCompras();
-        document.getElementById('listaArticulosCompra').innerHTML = '';
-        document.getElementById('compraObservaciones').value = '';
-    } catch (error) { alert('Error: ' + error.message); }
+    const proveedor_id = document.getElementById('compraProveedor').value; const solicitado_por = document.getElementById('compraSolicitadoPor').value; const observaciones = document.getElementById('compraObservaciones').value;
+    const articulos = []; document.querySelectorAll('.articulo-row').forEach(row => { const a = row.querySelector('.articulo-nombre').value.trim(); const c = parseFloat(row.querySelector('.articulo-cantidad').value) || 0; if (a && c > 0) articulos.push({ articulo: a, cantidad: c }); });
+    if (!proveedor_id || articulos.length === 0) { alert('Selecciona proveedor y artículos.'); return; }
+    try { await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos }); alert('✅ Orden generada'); cargarCompras(); document.getElementById('listaArticulosCompra').innerHTML = ''; document.getElementById('compraObservaciones').value = ''; } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
 async function cargarCompras() {
-    const lista = document.getElementById('listaCompras');
-    lista.innerHTML = 'Cargando...';
+    const lista = document.getElementById('listaCompras'); lista.innerHTML = 'Cargando...';
     try {
         const compras = await apiRequest('/api/compras');
         if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes de compra.</p>'; return; }
-        lista.innerHTML = compras.map(c => `
-            <div class="border rounded p-4 bg-white shadow-sm">
-                <div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div>
-                <div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div>
-                <div class="mt-2 flex gap-2">
-                    <button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-                    <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-                </div>
-            </div>
-        `).join('');
+        lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { lista.innerHTML = 'Error'; }
 }
+async function eliminarCompra(id) { if (!confirm('¿Eliminar orden de compra?')) return; try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (error) { alert(error.message); } }
 
-async function eliminarCompra(id) {
-    if (!confirm('¿Eliminar esta orden de compra?')) return;
+// ==================== IMPRESIONES ====================
+function imprimirSolicitud(id) {
+    const s = solicitudes.find(x => x.id === id); if (!s) return;
+    const tipoEtiqueta = s.tipo === 'servicio' ? 'SERVICIO DE MANTENIMIENTO' : 'EVENTO ESCOLAR';
+    let estadoClase = '', estadoTexto = '';
+    if (s.estado === 'DESBLOQUEADA') { estadoClase = 'badge-desbloqueada'; estadoTexto = 'DESBLOQUEADA'; }
+    else if (s.estado === 'PENDIENTE_PROYECTOS') { estadoClase = 'badge-pendiente'; estadoTexto = 'EN EVALUACIÓN'; }
+    else if (s.estado === 'PENDIENTE_MANTENIMIENTO') { estadoClase = 'badge-pendiente'; estadoTexto = 'PENDIENTE MANTENIMIENTO'; }
+    else if (s.estado === 'APROBADA') { estadoClase = 'badge-aprobada'; estadoTexto = 'AUTORIZADA'; }
+    else if (s.estado === 'CONCLUIDO') { estadoClase = 'badge-concluida'; estadoTexto = 'CONCLUIDA'; }
+    else if (s.estado === 'RECHAZADA') { estadoClase = 'badge-rechazada'; estadoTexto = 'RECHAZADA'; }
+    const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }); const horaActual = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const c = document.getElementById('formatoImpresion');
+    let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">${tipoEtiqueta}</div><div class="subtitulo-header">${s.area}</div><div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">${tipoEtiqueta}</div><div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
+    let html = `${headerHTML}<table><tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr><tr><td>Sección que solicita</td><td>${s.area}</td></tr><tr><td>Solicitante</td><td>${s.solicitante}</td></tr><tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
+    if (s.tipo === 'evento') html += `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
+    html += `<tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
+    if (s.autorizadoPor) html += `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>`; else if (s.estado === 'PENDIENTE_MANTENIMIENTO') html += `<tr><td>Autorizado por</td><td>No requiere (Mantenimiento)</td></tr>`; else html += `<tr><td>Autorizado por</td><td>Pendiente</td></tr>`;
+    if (s.estado === 'CONCLUIDO' && s.concluidoPor) html += `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>`;
+    if (s.observaciones && s.observaciones.length > 0) { let obsText = ''; s.observaciones.forEach(obs => { obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`; }); html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`; }
+    let firmaSolicitante = s.solicitante || '', firmaAutorizacion = s.autorizadoPor || '_________________________', firmaMantenimiento = (s.estado === 'CONCLUIDO') ? (s.concluidoPor || nombreResponsableMantenimiento) : (s.estado === 'DESBLOQUEADA' ? 'Pendiente de Vo.Bo.' : 'Pendiente');
+    if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente';
+    if (s.estado === 'PENDIENTE_MANTENIMIENTO') firmaAutorizacion = 'No requiere';
+    html += `</table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${firmaSolicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitante</div><div class="firma-fecha">${s.fechaSolicitud}</div></div><div class="firma-item"><div class="firma-nombre">${firmaAutorizacion}</div><div class="linea"></div><div class="firma-cargo">Autorizado por</div><div class="firma-fecha">${s.fechaAutorizacion || 'Pendiente'}</div></div><div class="firma-item"><div class="firma-nombre">${firmaMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Vo.Bo. Mantenimiento</div><div class="firma-fecha">${s.fechaConclusion || 'Pendiente'}</div></div></div><div class="pie-pagina"><span>${fechaActual} ${horaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+    c.innerHTML = html; c.style.display = 'block'; document.getElementById('formatoImpresion').style.display = 'block';
+    setTimeout(() => { window.print(); setTimeout(() => { c.style.display = 'none'; document.getElementById('formatoImpresion').style.display = 'none'; }, 500); }, 300);
+}
+
+async function imprimirOrdenTrabajo(ordenId) {
     try {
-        await apiRequest(`/api/compras/${id}`, 'DELETE');
-        cargarCompras();
-    } catch (error) { alert(error.message); }
+        const ordenes = await apiRequest('/api/ordenes'); const o = ordenes.find(x => x.id === ordenId); if (!o) return;
+        const fechaActual = new Date().toLocaleDateString('es-MX');
+        let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">ORDEN DE TRABAJO</div><div class="subtitulo-header">${o.area}</div><div class="folio-header">Orden: #${String(o.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">ORDEN DE TRABAJO</div><div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
+        let fechaAtencion = '_________________________________', horaInicio = '_________________________________', horaFin = '_________________________________', recibidoPor = '_________________________________', tituloSeccion = 'PARA LLENAR AL MOMENTO DE ATENDER', colorBorde = '#999';
+        if (o.estado === 'CONCLUIDO') { fechaAtencion = `<b>${o.fechaAtencion || ''}</b>`; horaInicio = `<b>${o.horaInicio || ''}</b>`; horaFin = `<b>${o.horaFin || ''}</b>`; recibidoPor = `<b>${o.recibidoPor || ''}</b>`; tituloSeccion = 'DATOS DE ATENCIÓN'; colorBorde = '#00B42A'; }
+        let html = `${headerHTML}<table><tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr><tr><td>Fecha de solicitud</td><td>${o.fecha_creacion.split(',')[0]}</td></tr><tr><td>Solicitante</td><td>${o.solicitante}</td></tr><tr><td>Sección</td><td>${o.area}</td></tr><tr><td>Descripción</td><td>${o.descripcion}</td></tr><tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr></table><div style="margin-top: 20px; border: 2px dashed ${colorBorde}; padding: 15px; border-radius: 8px;"><h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4><table style="border: none;"><tr><td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td><td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td></tr><tr><td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br>${horaFin}</td><td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad:</b><br><br>${recibidoPor}</td></tr></table></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        const c = document.getElementById('formatoImpresion'); c.innerHTML = html; c.style.display = 'block';
+        setTimeout(() => { window.print(); setTimeout(() => { c.style.display = 'none'; }, 500); }, 300);
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function imprimirOrdenCompra(id) {
     try {
-        const compras = await apiRequest('/api/compras');
-        const c = compras.find(x => x.id === id);
-        if (!c) return;
-
+        const compras = await apiRequest('/api/compras'); const c = compras.find(x => x.id === id); if (!c) return;
         const fechaActual = new Date().toLocaleDateString('es-MX');
-        
-        let headerHTML = '';
-        if (logoDataURL) {
-            headerHTML = `
-            <div class="header-impresion">
-                <img src="${logoDataURL}" class="logo-impresion" alt="Logo" onerror="this.style.display='none'">
-                <div class="header-text">
-                    <div class="titulo-principal">ORDEN DE COMPRA</div>
-                    <div class="subtitulo-header">Folio: ${c.folio}</div>
-                </div>
-            </div>`;
-        } else {
-            headerHTML = `
-            <div class="titulo-central">ORDEN DE COMPRA</div>
-            <div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
-        }
-
-        let filas = '';
-        if (c.articulos) {
-            c.articulos.forEach(art => {
-                filas += `<tr><td>${art.articulo}</td><td>${art.cantidad}</td></tr>`;
-            });
-        }
-
-        let html = `
-            ${headerHTML}
-            <table>
-                <tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr>
-                <tr><td>Fecha</td><td>${c.fecha}</td></tr>
-                <tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr>
-                <tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr>
-            </table>
-            
-            <h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4>
-            <table>
-                <thead>
-                    <tr style="background: #f3f4f6;">
-                        <th style="text-align: left; padding: 8px; border: 1px solid #d1d5db;">Descripción del Artículo</th>
-                        <th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 100px;">Cantidad</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${filas}
-                </tbody>
-            </table>
-            
-            <div class="firmas">
-                <div class="firma-item">
-                    <div class="firma-nombre">${c.solicitado_por}</div>
-                    <div class="linea"></div>
-                    <div class="firma-cargo">Solicitó</div>
-                    <div class="firma-fecha">${c.fecha}</div>
-                </div>
-                <div class="firma-item">
-                    <div class="firma-nombre">_________________________</div>
-                    <div class="linea"></div>
-                    <div class="firma-cargo">Autorizó (Dirección)</div>
-                    <div class="firma-fecha">Pendiente</div>
-                </div>
-                <div class="firma-item">
-                    <div class="firma-nombre">_________________________</div>
-                    <div class="linea"></div>
-                    <div class="firma-cargo">Recibió Proveedor</div>
-                    <div class="firma-fecha">Pendiente</div>
-                </div>
-            </div>
-            
-            <div class="pie-pagina">
-                <span>${fechaActual}</span>
-                <span>SISTEMA DE GESTIÓN DE MANTENIMIENTO</span>
-                <span>v1.0</span>
-            </div>
-        `;
-
-        const formato = document.getElementById('formatoImpresion');
-        formato.innerHTML = html;
-        formato.style.display = 'block';
-        setTimeout(() => {
-            window.print();
-            setTimeout(() => { formato.style.display = 'none'; }, 500);
-        }, 300);
-
-    } catch (error) {
-        alert('❌ Error al generar el formato: ' + error.message);
-    }
+        let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">ORDEN DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">ORDEN DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
+        let filas = ''; if (c.articulos) c.articulos.forEach(art => { filas += `<tr><td>${art.articulo}</td><td>${art.cantidad}</td></tr>`; });
+        let html = `${headerHTML}<table><tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr><tr><td>Fecha</td><td>${c.fecha}</td></tr><tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr><tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr></table><h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4><table><thead><tr style="background: #f3f4f6;"><th style="text-align: left; padding: 8px; border: 1px solid #d1d5db;">Descripción del Artículo</th><th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 100px;">Cantidad</th></tr></thead><tbody>${filas}</tbody></table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${c.solicitado_por}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div><div class="firma-fecha">${c.fecha}</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Autorizó</div><div class="firma-fecha">Pendiente</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Recibió Proveedor</div><div class="firma-fecha">Pendiente</div></div></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        const formato = document.getElementById('formatoImpresion'); formato.innerHTML = html; formato.style.display = 'block';
+        setTimeout(() => { window.print(); setTimeout(() => { formato.style.display = 'none'; }, 500); }, 300);
+    } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-// ==================== INICIO ====================
+function mostrarCamposEvento() { document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento'); }
+
 document.addEventListener('DOMContentLoaded', () => {
     recuperarSesion();
     const campoFecha = document.getElementById('fechaSolicitud');
