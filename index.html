@@ -1069,7 +1069,7 @@ function cargarListaUsuarios() {
 }
 
 async function eliminarUsuario(u) { 
-    if (u === 'admin') { alert('⚠️ No se puede eliminar el admin principal'); return; }
+    // Se eliminó la restricción para que puedas borrar cualquier usuario
     if (!confirm(`⚠️ ¿ELIMINAR al usuario "${u}"?`)) return;
     try { await apiRequest(`/api/usuarios/${u}`, 'DELETE'); await cargarDatosIniciales(); cargarListaUsuarios(); alert('🗑️ Eliminado'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
