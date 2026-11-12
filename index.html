@@ -179,7 +179,6 @@
                 <i class="fas fa-cogs"></i> Mantenimiento <i class="fas fa-chevron-down text-xs"></i>
             </button>
             <div id="subMenuMantenimiento" class="absolute right-0 mt-2 w-56 bg-white border rounded shadow-lg hidden z-50">
-                <!-- CORRECCIÓN: Ahora llama a la función correcta para ver TODAS las solicitudes -->
                 <button onclick="mostrarSeccion('panelCoordinacion', 'solicitudes')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                     <i class="fas fa-clipboard-list text-colegio-verde"></i> Bandeja de Solicitudes
                 </button>
@@ -659,7 +658,7 @@ async function cargarDatosIniciales() {
     mostrarLogo();
 }
 
-// ==================== AUTO-REFRESCO ====================
+// ==================== AUTO-REFRESCO (EN VIVO) ====================
 let intervaloRefresco = null;
 function pedirPermisoNotificaciones() { if (("Notification" in window) && Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission(); }
 function lanzarNotificacion(titulo, cuerpo) { if (("Notification" in window) && Notification.permission === "granted") new Notification(titulo, { body: cuerpo }); }
@@ -671,6 +670,7 @@ function iniciarAutoRefresco() {
         if (!usuarioActivo) return; 
         const seccionActiva = document.querySelector('main>section:not(.hidden)');
         if (seccionActiva && seccionActiva.id === 'nuevaSolicitud') return;
+        
         try {
             const solicitudesData = await apiRequest('/api/solicitudes');
             if (solicitudes.length > 0 && solicitudesData.length > solicitudes.length) {
@@ -679,14 +679,24 @@ function iniciarAutoRefresco() {
             const huboCambios = JSON.stringify(solicitudes) !== JSON.stringify(solicitudesData);
             if (huboCambios) {
                 solicitudes = solicitudesData;
-                if (seccionActiva) {
-                    if (seccionActiva.id === 'misSolicitudes') cargarMisSolicitudes();
-                    if (seccionActiva.id === 'bandaProyectos') cargarBandejaProyectos();
-                    if (seccionActiva.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) filtrarSolicitudesCoordinacion();
-                    if (seccionActiva.id === 'panelOrdenes') cargarOrdenes();
-                    if (seccionActiva.id === 'panelIncidencias') cargarIncidencias();
-                    if (seccionActiva.id === 'panelCompras') cargarCompras();
-                }
+            }
+
+            // Refresco silencioso para Órdenes de Trabajo
+            if (seccionActiva && seccionActiva.id === 'panelOrdenes') {
+                await cargarOrdenesSilencioso();
+            }
+
+            // Refresco silencioso para Órdenes de Compra
+            if (seccionActiva && seccionActiva.id === 'panelCompras') {
+                await cargarComprasSilencioso();
+            }
+
+            // Refresco para las demás solicitudes
+            if (huboCambios && seccionActiva) {
+                if (seccionActiva.id === 'misSolicitudes') cargarMisSolicitudes();
+                if (seccionActiva.id === 'bandaProyectos') cargarBandejaProyectos();
+                if (seccionActiva.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) filtrarSolicitudesCoordinacion();
+                if (seccionActiva.id === 'panelIncidencias') cargarIncidencias();
             }
         } catch (error) { }
     }, 15000); 
@@ -751,12 +761,10 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
     document.getElementById(id).classList.remove('hidden');
     
     if (id === 'panelCoordinacion') {
-        // Ocultar todos los subpaneles
         document.getElementById('adminSolicitudes').classList.add('hidden');
         document.getElementById('adminUsuarios').classList.add('hidden');
         document.getElementById('adminConfiguracion').classList.add('hidden');
         
-        // Mostrar el solicitado
         if (subpanel === 'solicitudes') {
             document.getElementById('adminSolicitudes').classList.remove('hidden');
             filtrarSolicitudesCoordinacion();
@@ -1141,6 +1149,16 @@ async function cargarOrdenes() {
         lista.innerHTML = ordenes.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
+
+async function cargarOrdenesSilencioso() {
+    try {
+        const ordenes = await apiRequest('/api/ordenes');
+        const lista = document.getElementById('listaOrdenes');
+        if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
+        lista.innerHTML = ordenes.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+    } catch (error) { console.log("Error en refresco silencioso de órdenes"); }
+}
+
 async function abrirModalOrden(solicitudId) {
     try { const empleados = await apiRequest('/api/empleados'); const activos = empleados.filter(e => e.activo === 1); if (activos.length === 0) { alert('⚠️ No hay empleados activos.'); return; } const select = document.getElementById('selectEmpleadoOrden'); select.innerHTML = activos.map(e => `<option value="${e.id}">${e.nombre} (${e.puesto || 'Sin puesto'})</option>`).join(''); document.getElementById('solicitudIdParaOrden').value = solicitudId; document.getElementById('modalGenerarOrden').classList.remove('hidden'); document.getElementById('modalGenerarOrden').classList.add('flex'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
@@ -1236,6 +1254,16 @@ async function cargarCompras() {
         lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { lista.innerHTML = 'Error'; }
 }
+
+async function cargarComprasSilencioso() {
+    try {
+        const compras = await apiRequest('/api/compras');
+        const lista = document.getElementById('listaCompras');
+        if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes de compra.</p>'; return; }
+        lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+    } catch (error) { console.log("Error en refresco silencioso de compras"); }
+}
+
 async function eliminarCompra(id) { if (!confirm('¿Eliminar orden de compra?')) return; try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (error) { alert(error.message); } }
 
 // ==================== IMPRESIONES ====================
