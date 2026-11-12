@@ -179,7 +179,8 @@
                 <i class="fas fa-cogs"></i> Mantenimiento <i class="fas fa-chevron-down text-xs"></i>
             </button>
             <div id="subMenuMantenimiento" class="absolute right-0 mt-2 w-56 bg-white border rounded shadow-lg hidden z-50">
-                <button onclick="mostrarSeccion('panelCoordinacion')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                <!-- CORRECCIÓN: Ahora llama a la función correcta para ver TODAS las solicitudes -->
+                <button onclick="mostrarSeccion('panelCoordinacion', 'solicitudes')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                     <i class="fas fa-clipboard-list text-colegio-verde"></i> Bandeja de Solicitudes
                 </button>
                 <button onclick="mostrarSeccion('panelEmpleados')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
@@ -201,10 +202,10 @@
                     <i class="fas fa-truck text-colegio-verde"></i> Proveedores
                 </button>
                 <div class="border-t my-1"></div>
-                <button onclick="subPanelAdmin('configuracion')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                <button onclick="mostrarSeccion('panelCoordinacion', 'configuracion')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                     <i class="fas fa-sliders-h text-gray-500"></i> Configuración
                 </button>
-                <button onclick="subPanelAdmin('usuarios')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                <button onclick="mostrarSeccion('panelCoordinacion', 'usuarios')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                     <i class="fas fa-user-shield text-gray-500"></i> Gestión de Usuarios
                 </button>
             </div>
@@ -271,7 +272,7 @@
 
     <section id="panelCoordinacion" class="hidden">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-colegio-verde">🔧 Bandeja de Mantenimiento</h2>
+            <h2 class="text-xl font-bold text-colegio-verde">🔧 Mantenimiento</h2>
         </div>
 
         <div id="adminSolicitudes">
@@ -518,45 +519,28 @@ let nombreResponsableMantenimiento = 'Ricardo Madera';
 
 // ==================== MENÚS DESPLEGABLES ====================
 function toggleMenu(id) {
-    document.querySelectorAll('nav .absolute').forEach(el => {
-        if(el.id !== id) el.classList.add('hidden');
-    });
+    document.querySelectorAll('nav .absolute').forEach(el => { if(el.id !== id) el.classList.add('hidden'); });
     document.getElementById(id).classList.toggle('hidden');
 }
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.relative')) {
-        document.querySelectorAll('nav .absolute').forEach(el => el.classList.add('hidden'));
-    }
+    if (!e.target.closest('.relative')) { document.querySelectorAll('nav .absolute').forEach(el => el.classList.add('hidden')); }
 });
 
 // ==================== RESPALDO AUTOMÁTICO ====================
 function guardarRespaldoLocal() {
     try {
-        const backupData = {
-            fecha: new Date().toLocaleString('es-MX'), usuarios: usuarios, solicitudes: solicitudes, numeroWhatsAppDestino: numeroWhatsAppDestino, logoDataURL: logoDataURL, nombreResponsableMantenimiento: nombreResponsableMantenimiento, timestamp: Date.now()
-        };
+        const backupData = { fecha: new Date().toLocaleString('es-MX'), usuarios: usuarios, solicitudes: solicitudes, numeroWhatsAppDestino: numeroWhatsAppDestino, logoDataURL: logoDataURL, nombreResponsableMantenimiento: nombreResponsableMantenimiento, timestamp: Date.now() };
         localStorage.setItem('app_backup_auto', JSON.stringify(backupData));
         mostrarEstado('💾 Datos guardados localmente', 'saving');
         setTimeout(() => mostrarEstado('✅ Datos sincronizados', 'online'), 1500);
         return true;
     } catch (e) { return false; }
 }
-
 function cargarRespaldoLocal() {
-    try {
-        const data = localStorage.getItem('app_backup_auto');
-        if (!data) return null;
-        const parsed = JSON.parse(data);
-        if (parsed.usuarios && parsed.solicitudes) return parsed;
-        return null;
-    } catch (e) { return null; }
+    try { const data = localStorage.getItem('app_backup_auto'); if (!data) return null; const parsed = JSON.parse(data); if (parsed.usuarios && parsed.solicitudes) return parsed; return null; } catch (e) { return null; }
 }
-
 function mostrarEstado(mensaje, tipo) {
-    const status = document.getElementById('storageStatus');
-    status.textContent = mensaje;
-    status.className = 'storage-status ' + (tipo || 'online');
-    status.style.display = 'block';
+    const status = document.getElementById('storageStatus'); status.textContent = mensaje; status.className = 'storage-status ' + (tipo || 'online'); status.style.display = 'block';
     if (tipo === 'online') setTimeout(() => { status.style.display = 'none'; }, 3000);
 }
 
@@ -566,15 +550,9 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
         const options = { method: method, headers: { 'Content-Type': 'application/json' } };
         if (data) options.body = JSON.stringify(data);
         const response = await fetch(`${API_URL}${endpoint}`, options);
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Error en la petición');
-        }
+        if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Error en la petición'); }
         return await response.json();
-    } catch (error) {
-        console.error(`❌ Error en ${method} ${endpoint}:`, error);
-        throw error;
-    }
+    } catch (error) { console.error(`❌ Error en ${method} ${endpoint}:`, error); throw error; }
 }
 
 async function sincronizarDatos() {
@@ -584,26 +562,18 @@ async function sincronizarDatos() {
         const usuariosData = await apiRequest('/api/usuarios');
         const configData = await apiRequest('/api/configuracion');
         
-        solicitudes = solicitudesData;
-        usuarios = usuariosData;
-        numeroWhatsAppDestino = configData.numeroWhatsApp || '';
-        nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera';
-        logoDataURL = configData.logoDataURL || '';
-        guardarRespaldoLocal();
-        return true;
+        solicitudes = solicitudesData; usuarios = usuariosData;
+        numeroWhatsAppDestino = configData.numeroWhatsApp || ''; nombreResponsableMantenimiento = configData.nombreResponsableMantenimiento || 'Ricardo Madera'; logoDataURL = configData.logoDataURL || '';
+        guardarRespaldoLocal(); return true;
     } catch (error) {
         console.error('❌ Error al sincronizar:', error);
         const respaldoLocal = cargarRespaldoLocal();
         if (respaldoLocal) {
             usuarios = respaldoLocal.usuarios || {}; solicitudes = respaldoLocal.solicitudes || [];
-            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || '';
-            nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera';
-            logoDataURL = respaldoLocal.logoDataURL || '';
-            mostrarEstado('⚠️ Modo offline', 'error');
-            return true;
+            numeroWhatsAppDestino = respaldoLocal.numeroWhatsAppDestino || ''; nombreResponsableMantenimiento = respaldoLocal.nombreResponsableMantenimiento || 'Ricardo Madera'; logoDataURL = respaldoLocal.logoDataURL || '';
+            mostrarEstado('⚠️ Modo offline', 'error'); return true;
         }
-        mostrarEstado('❌ Error al sincronizar', 'error');
-        return false;
+        mostrarEstado('❌ Error al sincronizar', 'error'); return false;
     }
 }
 
@@ -617,7 +587,6 @@ async function iniciarSesion() {
         const data = await apiRequest('/api/login', 'POST', { usuario: user, password: pass });
         
         if (data.success) {
-            // Guardamos usuario, rol y el array de permisos
             usuarioActivo = { id: user, nombre: data.nombre, rol: data.rol, permisos: data.permisos || [] };
             localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
             
@@ -627,19 +596,11 @@ async function iniciarSesion() {
             actualizarTextoBoton();
             nuevaSolicitud();
             iniciarAutoRefresco();
-        } else {
-            alert('❌ Usuario o contraseña incorrectos');
-        }
-    } catch (error) {
-        alert('❌ Error al conectar con el servidor.');
-        console.error(error);
-    }
+        } else { alert('❌ Usuario o contraseña incorrectos'); }
+    } catch (error) { alert('❌ Error al conectar con el servidor.'); console.error(error); }
 }
 
-function cerrarSesion() {
-    localStorage.removeItem('usuarioActivo');
-    location.reload();
-}
+function cerrarSesion() { localStorage.removeItem('usuarioActivo'); location.reload(); }
 
 function aplicarPermisosUI() {
     document.getElementById('loginModal').classList.add('hidden');
@@ -647,36 +608,32 @@ function aplicarPermisosUI() {
     document.getElementById('menuNavegacion').classList.remove('hidden');
     document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
 
-    // Ocultar todos los menús inicialmente
     document.getElementById('navSolicitudes').classList.add('hidden');
     document.getElementById('btnProyectos').classList.add('hidden');
     document.getElementById('navMantenimiento').classList.add('hidden');
 
     const p = usuarioActivo.permisos || [];
 
-    // Mostrar menús según permisos
-    if (p.includes('solicitudes') || p.includes('configuracion')) document.getElementById('navSolicitudes').classList.remove('hidden');
-    if (p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
+    if (p.includes('solicitudes') || p.includes('configuracion') || usuarioActivo.rol === 'admin') document.getElementById('navSolicitudes').classList.remove('hidden');
+    if (p.includes('proyectos') || usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
     
-    // Si tiene cualquier permiso de la lista de mantenimiento, mostramos el botón principal
     const permisosMantenimiento = ['mantenimiento', 'empleados', 'ordenes', 'incidencias', 'compras', 'secciones', 'proveedores', 'configuracion'];
-    if (permisosMantenimiento.some(perm => p.includes(perm))) {
+    if (permisosMantenimiento.some(perm => p.includes(perm)) || usuarioActivo.rol === 'admin') {
         document.getElementById('navMantenimiento').classList.remove('hidden');
     }
 
-    // Ocultar/Mostrar opciones DENTRO del menú de Mantenimiento
     const btnsMant = document.getElementById('subMenuMantenimiento').children;
     for (let btn of btnsMant) {
         const text = btn.textContent.toLowerCase();
-        if (text.includes('bandeja') && !p.includes('mantenimiento')) btn.classList.add('hidden');
-        else if (text.includes('empleados') && !p.includes('empleados')) btn.classList.add('hidden');
-        else if (text.includes('órdenes') && !p.includes('ordenes')) btn.classList.add('hidden');
-        else if (text.includes('incidencias') && !p.includes('incidencias')) btn.classList.add('hidden');
-        else if (text.includes('compras') && !p.includes('compras')) btn.classList.add('hidden');
-        else if (text.includes('secciones') && !p.includes('secciones')) btn.classList.add('hidden');
-        else if (text.includes('proveedores') && !p.includes('proveedores')) btn.classList.add('hidden');
-        else if (text.includes('configuración') && !p.includes('configuracion')) btn.classList.add('hidden');
-        else if (text.includes('usuarios') && !p.includes('configuracion')) btn.classList.add('hidden'); // Usuarios depende de config
+        if (text.includes('bandeja') && !p.includes('mantenimiento') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('empleados') && !p.includes('empleados') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('órdenes') && !p.includes('ordenes') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('incidencias') && !p.includes('incidencias') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('compras') && !p.includes('compras') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('secciones') && !p.includes('secciones') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('proveedores') && !p.includes('proveedores') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('configuración') && !p.includes('configuracion') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
+        else if (text.includes('usuarios') && !p.includes('configuracion') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
         else btn.classList.remove('hidden');
     }
 }
@@ -717,8 +674,7 @@ function iniciarAutoRefresco() {
         try {
             const solicitudesData = await apiRequest('/api/solicitudes');
             if (solicitudes.length > 0 && solicitudesData.length > solicitudes.length) {
-                const nueva = solicitudesData[0];
-                lanzarNotificacion('📥 Nueva Solicitud', `${nueva.solicitante} (${nueva.area}): ${nueva.descripcion.substring(0, 50)}...`);
+                const nueva = solicitudesData[0]; lanzarNotificacion('📥 Nueva Solicitud', `${nueva.solicitante} (${nueva.area}): ${nueva.descripcion.substring(0, 50)}...`);
             }
             const huboCambios = JSON.stringify(solicitudes) !== JSON.stringify(solicitudesData);
             if (huboCambios) {
@@ -726,7 +682,7 @@ function iniciarAutoRefresco() {
                 if (seccionActiva) {
                     if (seccionActiva.id === 'misSolicitudes') cargarMisSolicitudes();
                     if (seccionActiva.id === 'bandaProyectos') cargarBandejaProyectos();
-                    if (seccionActiva.id === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+                    if (seccionActiva.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) filtrarSolicitudesCoordinacion();
                     if (seccionActiva.id === 'panelOrdenes') cargarOrdenes();
                     if (seccionActiva.id === 'panelIncidencias') cargarIncidencias();
                     if (seccionActiva.id === 'panelCompras') cargarCompras();
@@ -738,18 +694,13 @@ function iniciarAutoRefresco() {
 
 // ==================== BOTONES Y NAVEGACIÓN ====================
 function actualizarTextoBoton() {
-    const btnTexto = document.getElementById('btnTextoGuardar');
-    const btnIcono = document.getElementById('btnIconoGuardar');
-    const btnGuardar = document.getElementById('btnGuardarSol');
+    const btnTexto = document.getElementById('btnTextoGuardar'); const btnIcono = document.getElementById('btnIconoGuardar'); const btnGuardar = document.getElementById('btnGuardarSol');
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     if (!btnTexto || !btnIcono || !btnGuardar) return;
-    
-    if (idEditar > 0) {
-        btnTexto.textContent = 'Guardar Cambios'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-edicion'; return;
-    }
-    if (usuarioActivo && usuarioActivo.rol === 'admin') {
+    if (idEditar > 0) { btnTexto.textContent = 'Guardar Cambios'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-edicion'; return; }
+    if (usuarioActivo && (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento')))) {
         btnTexto.textContent = 'Guardar Solicitud'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-mantenimiento';
-    } else if (usuarioActivo && usuarioActivo.rol === 'proyectos') {
+    } else if (usuarioActivo && (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')))) {
         btnTexto.textContent = 'Enviar a Mantenimiento'; btnIcono.className = 'fas fa-tools'; btnGuardar.className = 'btn-enviar-mantenimiento';
     } else {
         btnTexto.textContent = 'Enviar a Proyectos Generales'; btnIcono.className = 'fas fa-paper-plane'; btnGuardar.className = 'btn-enviar-proyectos';
@@ -757,89 +708,73 @@ function actualizarTextoBoton() {
 }
 
 function nuevaSolicitud() {
-    cancelarEdicionSol();
-    mostrarSeccion('nuevaSolicitud');
+    cancelarEdicionSol(); mostrarSeccion('nuevaSolicitud');
     document.getElementById('nombreSolicitante').value = usuarioActivo?.nombre || '';
     const campoFecha = document.getElementById('fechaSolicitud');
     if (campoFecha) campoFecha.value = new Date().toISOString().split('T')[0];
-    actualizarTextoBoton();
-    document.getElementById('nuevaSolicitud').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    actualizarTextoBoton(); document.getElementById('nuevaSolicitud').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
     const s = {
-        tipo: tipo, area: document.getElementById('areaSolicitante').value,
-        descripcion: document.getElementById('descripcionSol').value.trim(),
-        fechaSolicitud: document.getElementById('fechaSolicitud').value,
-        fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
-        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '',
-        lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
-        solicitante: document.getElementById('nombreSolicitante').value,
-        fechaEnvio: new Date().toLocaleString('es-MX'), observaciones: []
+        tipo: tipo, area: document.getElementById('areaSolicitante').value, descripcion: document.getElementById('descripcionSol').value.trim(),
+        fechaSolicitud: document.getElementById('fechaSolicitud').value, fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
+        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '', lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
+        solicitante: document.getElementById('nombreSolicitante').value, fechaEnvio: new Date().toLocaleString('es-MX'), observaciones: []
     };
     if (!s.descripcion || !s.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
     if (tipo === 'evento' && (!s.nombreEvento || !s.fechaEvento || !s.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
 
     try {
         if (idEditar > 0) {
-            const sol = solicitudes.find(x => x.id === idEditar);
-            s.id = idEditar; s.estado = sol.estado; s.observaciones = sol.observaciones || [];
-            await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', s);
-            alert('✅ Solicitud actualizada');
+            const sol = solicitudes.find(x => x.id === idEditar); s.id = idEditar; s.estado = sol.estado; s.observaciones = sol.observaciones || [];
+            await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', s); alert('✅ Solicitud actualizada');
         } else {
-            if (usuarioActivo.rol === 'admin') { s.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
-            else if (usuarioActivo.rol === 'proyectos') { s.estado = 'APROBADA'; s.autorizadoPor = usuarioActivo.nombre; s.fechaAutorizacion = new Date().toLocaleString('es-MX'); alert('✅ Autorizada por Proyectos'); }
+            if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { s.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
+            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { s.estado = 'APROBADA'; s.autorizadoPor = usuarioActivo.nombre; s.fechaAutorizacion = new Date().toLocaleString('es-MX'); alert('✅ Autorizada por Proyectos'); }
             else { s.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos'); }
             await apiRequest('/api/solicitudes', 'POST', s);
         }
         await cargarDatosIniciales(); guardarRespaldoLocal(); cancelarEdicionSol();
         if (usuarioActivo.rol === 'proyectos') mostrarSeccion('bandaProyectos');
-        else if (usuarioActivo.rol === 'admin') mostrarSeccion('panelCoordinacion');
+        else if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) mostrarSeccion('panelCoordinacion', 'solicitudes');
         else mostrarSeccion('misSolicitudes');
     } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function ocultarTodasSecciones() { document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden')); }
 
-function mostrarSeccion(id) {
+function mostrarSeccion(id, subpanel = 'solicitudes') {
     ocultarTodasSecciones();
     document.getElementById(id).classList.remove('hidden');
-    if (id === 'misSolicitudes') cargarMisSolicitudes();
-    if (id === 'bandaProyectos') cargarBandejaProyectos();
-    if (id === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
-    if (id === 'panelEmpleados') cargarEmpleados();
-    if (id === 'panelOrdenes') cargarOrdenes();
-    if (id === 'panelIncidencias') cargarIncidencias();
-    if (id === 'panelCompras') { cargarCompras(); cargarProveedores(); }
-    if (id === 'panelSecciones') cargarListaSecciones();
-    if (id === 'panelProveedores') cargarListaProveedores();
-    if (id === 'adminConfiguracion') { cargarNombreMantenimiento(); mostrarLogo(); }
-}
-
-// ==================== SUBPANELES (USUARIOS Y CONFIG) ====================
-function subPanelAdmin(panel) {
-    ocultarTodasSecciones();
-    // Si pide usuarios o config, mostramos la sección contenedora panelCoordinacion
-    document.getElementById('panelCoordinacion').classList.remove('hidden');
     
-    // Ocultamos los subpaneles
-    document.getElementById('adminSolicitudes').classList.add('hidden');
-    document.getElementById('adminUsuarios').classList.add('hidden');
-    document.getElementById('adminConfiguracion').classList.add('hidden');
-    
-    // Mostramos el solicitado
-    if (panel === 'solicitudes') {
-        document.getElementById('adminSolicitudes').classList.remove('hidden');
-        filtrarSolicitudesCoordinacion();
-    } else if (panel === 'usuarios') {
-        document.getElementById('adminUsuarios').classList.remove('hidden');
-        cargarListaUsuarios();
-    } else if (panel === 'configuracion') {
-        document.getElementById('adminConfiguracion').classList.remove('hidden');
-        cargarNombreMantenimiento(); mostrarLogo();
-    }
+    if (id === 'panelCoordinacion') {
+        // Ocultar todos los subpaneles
+        document.getElementById('adminSolicitudes').classList.add('hidden');
+        document.getElementById('adminUsuarios').classList.add('hidden');
+        document.getElementById('adminConfiguracion').classList.add('hidden');
+        
+        // Mostrar el solicitado
+        if (subpanel === 'solicitudes') {
+            document.getElementById('adminSolicitudes').classList.remove('hidden');
+            filtrarSolicitudesCoordinacion();
+        } else if (subpanel === 'usuarios') {
+            document.getElementById('adminUsuarios').classList.remove('hidden');
+            cargarListaUsuarios();
+        } else if (subpanel === 'configuracion') {
+            document.getElementById('adminConfiguracion').classList.remove('hidden');
+            cargarNombreMantenimiento(); mostrarLogo();
+        }
+    } else if (id === 'misSolicitudes') cargarMisSolicitudes();
+    else if (id === 'bandaProyectos') cargarBandejaProyectos();
+    else if (id === 'panelEmpleados') cargarEmpleados();
+    else if (id === 'panelOrdenes') cargarOrdenes();
+    else if (id === 'panelIncidencias') cargarIncidencias();
+    else if (id === 'panelCompras') { cargarCompras(); cargarProveedores(); }
+    else if (id === 'panelSecciones') cargarListaSecciones();
+    else if (id === 'panelProveedores') cargarListaProveedores();
 }
 
 // ==================== MIS SOLICITUDES ====================
@@ -867,7 +802,7 @@ function cargarMisSolicitudes() {
             <div class="mt-2 flex gap-2 flex-wrap">
                 <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
                 ${s.estado !== 'RECHAZADA' ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : ''}
-                ${usuarioActivo.rol === 'admin' && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
+                ${(usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
             </div>
         </div>`;
     });
@@ -888,11 +823,11 @@ function cargarBandejaProyectos() {
 
         let botones = '';
         if (s.estado === 'PENDIENTE_PROYECTOS') botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button><button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
-        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo.rol === 'proyectos') botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
-        if (s.estado === 'DESBLOQUEADA' && usuarioActivo.rol === 'proyectos') botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
-        if (usuarioActivo.rol === 'proyectos') { botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button><button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`; }
+        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
+        if (s.estado === 'DESBLOQUEADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
+        if (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin') { botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button><button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`; }
         if (numeroWhatsAppDestino) botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
-        if (s.estado === 'APROBADA' && usuarioActivo.rol === 'admin') botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
+        if (s.estado === 'APROBADA' && (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento')))) botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
         botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button><button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
 
         let obsHTML = '';
@@ -920,26 +855,15 @@ function cargarBandejaProyectos() {
 async function autorizar(id) {
     const s = solicitudes.find(x => x.id === id);
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') { alert('⚠️ No necesita autorización.'); return; }
-    try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'APROBADA', autorizadoPor: usuarioActivo.nombre, fechaAutorizacion: new Date().toLocaleString('es-MX') });
-        await cargarDatosIniciales(); alert('✅ Autorizada'); cargarBandejaProyectos();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'APROBADA', autorizadoPor: usuarioActivo.nombre, fechaAutorizacion: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('✅ Autorizada'); cargarBandejaProyectos(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
 async function rechazar(id) {
     if(!confirm('¿Rechazar esta solicitud?')) return;
-    try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'RECHAZADA', rechazadoPor: usuarioActivo.nombre, fechaRechazo: new Date().toLocaleString('es-MX') });
-        await cargarDatosIniciales(); alert('🔴 Rechazada'); cargarBandejaProyectos();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'RECHAZADA', rechazadoPor: usuarioActivo.nombre, fechaRechazo: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('🔴 Rechazada'); cargarBandejaProyectos(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
-
 async function marcarConcluida(id) {
     if(!confirm('¿Marcar como CONCLUIDA?')) return;
-    try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toLocaleString('es-MX') });
-        await cargarDatosIniciales(); alert('✅ Concluida'); filtrarSolicitudesCoordinacion();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('✅ Concluida'); filtrarSolicitudesCoordinacion(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 async function concluirDirecto(id) { if (confirm('✅ ¿Concluir directamente?')) await marcarConcluida(id); }
 
@@ -948,28 +872,19 @@ async function eliminarSolicitud(id) {
     try {
         await apiRequest(`/api/solicitudes/${id}`, 'DELETE');
         solicitudes = solicitudes.filter(s => s.id !== id);
-        guardarRespaldoLocal();
-        recargarVistaActual();
-        alert('🗑️ Eliminada');
+        guardarRespaldoLocal(); recargarVistaActual(); alert('🗑️ Eliminada');
     } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function desbloquearSolicitud(id) {
     if (!confirm('⚠️ ¿Desbloquear?')) return;
-    try {
-        const s = solicitudes.find(x => x.id === id);
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'DESBLOQUEADA', estadoAnterior: s.estado, desbloqueadoPor: usuarioActivo.nombre, fechaDesbloqueo: new Date().toLocaleString('es-MX') });
-        await cargarDatosIniciales(); alert('🔓 Desbloqueada'); recargarVistaActual();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { const s = solicitudes.find(x => x.id === id); await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'DESBLOQUEADA', estadoAnterior: s.estado, desbloqueadoPor: usuarioActivo.nombre, fechaDesbloqueo: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('🔓 Desbloqueada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function bloquearSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
     if (!confirm('🔒 ¿Bloquear?')) return;
-    try {
-        await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS', estadoAnterior: undefined, bloqueadoPor: usuarioActivo.nombre, fechaBloqueo: new Date().toLocaleString('es-MX') });
-        await cargarDatosIniciales(); alert('🔒 Bloqueada'); recargarVistaActual();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS', estadoAnterior: undefined, bloqueadoPor: usuarioActivo.nombre, fechaBloqueo: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('🔒 Bloqueada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function recargarVistaActual() {
@@ -978,17 +893,15 @@ function recargarVistaActual() {
         const idSeccion = seccionActual.id;
         if (idSeccion === 'misSolicitudes') cargarMisSolicitudes();
         if (idSeccion === 'bandaProyectos') cargarBandejaProyectos();
-        if (idSeccion === 'panelCoordinacion') filtrarSolicitudesCoordinacion();
+        if (idSeccion === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) filtrarSolicitudesCoordinacion();
     }
 }
 
 function editarSolicitud(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!s) return;
+    const s = solicitudes.find(x => x.id === id); if (!s) return;
     const estaDesbloqueada = s.estado === 'DESBLOQUEADA';
     if (estaDesbloqueada) {
-        const esCreador = s.solicitante === usuarioActivo.nombre;
-        const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos';
+        const esCreador = s.solicitante === usuarioActivo.nombre; const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'));
         if (!esCreador && !tienePermiso) { alert('🔒 Solo el creador o Admin pueden modificarla.'); return; }
         cargarDatosEdicion(s); return;
     }
@@ -997,9 +910,7 @@ function editarSolicitud(id) {
     if (esUsuarioComun && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO')) { alert('🔒 Ya fue autorizada.'); return; }
     
     if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
-        if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') {
-            if (confirm('🔓 ¿Desbloquear para que el creador edite?')) { desbloquearSolicitud(id); return; }
-        }
+        if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') { if (confirm('🔓 ¿Desbloquear para que el creador edite?')) { desbloquearSolicitud(id); return; } }
         cargarDatosEdicion(s); return;
     }
     if (s.estado === 'PENDIENTE_PROYECTOS') cargarDatosEdicion(s);
@@ -1008,45 +919,25 @@ function editarSolicitud(id) {
 function cargarDatosEdicion(s) {
     document.getElementById('idEditarSol').value = s.id;
     document.getElementById('tituloFormSol').innerHTML = '📝 Editar Solicitud #' + s.id + (s.estado === 'DESBLOQUEADA' ? ' 🔓' : '');
-    document.getElementById('tipoSolicitud').value = s.tipo;
-    document.getElementById('areaSolicitante').value = s.area;
-    document.getElementById('nombreSolicitante').value = s.solicitante;
-    document.getElementById('descripcionSol').value = s.descripcion;
-    document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
-    if (s.tipo === 'evento') {
-        document.getElementById('nombreEvento').value = s.nombreEvento || ''; document.getElementById('fechaEvento').value = s.fechaEvento || ''; document.getElementById('lugarEvento').value = s.lugarEvento || ''; document.getElementById('camposEvento').classList.remove('hidden');
-    } else {
-        document.getElementById('nombreEvento').value = ''; document.getElementById('fechaEvento').value = ''; document.getElementById('lugarEvento').value = ''; document.getElementById('camposEvento').classList.add('hidden');
-    }
-    document.getElementById('btnGuardarSol').className = 'btn-guardar-edicion';
-    document.getElementById('btnIconoGuardar').className = 'fas fa-save';
-    document.getElementById('btnTextoGuardar').textContent = 'Guardar Cambios';
-    document.getElementById('btnCancelarSol').classList.remove('hidden');
+    document.getElementById('tipoSolicitud').value = s.tipo; document.getElementById('areaSolicitante').value = s.area; document.getElementById('nombreSolicitante').value = s.solicitante; document.getElementById('descripcionSol').value = s.descripcion; document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
+    if (s.tipo === 'evento') { document.getElementById('nombreEvento').value = s.nombreEvento || ''; document.getElementById('fechaEvento').value = s.fechaEvento || ''; document.getElementById('lugarEvento').value = s.lugarEvento || ''; document.getElementById('camposEvento').classList.remove('hidden'); }
+    else { document.getElementById('nombreEvento').value = ''; document.getElementById('fechaEvento').value = ''; document.getElementById('lugarEvento').value = ''; document.getElementById('camposEvento').classList.add('hidden'); }
+    document.getElementById('btnGuardarSol').className = 'btn-guardar-edicion'; document.getElementById('btnIconoGuardar').className = 'fas fa-save'; document.getElementById('btnTextoGuardar').textContent = 'Guardar Cambios'; document.getElementById('btnCancelarSol').classList.remove('hidden');
     mostrarSeccion('nuevaSolicitud');
 }
 
 function cancelarEdicionSol() {
-    document.getElementById('idEditarSol').value = '0';
-    document.getElementById('tituloFormSol').innerHTML = '📝 Nueva Solicitud';
-    document.getElementById('tipoSolicitud').value = 'servicio';
-    document.getElementById('areaSolicitante').value = 'Preescolar';
-    document.getElementById('nombreSolicitante').value = '';
-    document.getElementById('descripcionSol').value = '';
-    document.getElementById('fechaSolicitud').value = '';
-    document.getElementById('nombreEvento').value = '';
-    document.getElementById('fechaEvento').value = '';
-    document.getElementById('lugarEvento').value = '';
-    document.getElementById('camposEvento').classList.add('hidden');
-    actualizarTextoBoton();
-    document.getElementById('btnCancelarSol').classList.add('hidden');
+    document.getElementById('idEditarSol').value = '0'; document.getElementById('tituloFormSol').innerHTML = '📝 Nueva Solicitud';
+    document.getElementById('tipoSolicitud').value = 'servicio'; document.getElementById('areaSolicitante').value = 'Preescolar';
+    document.getElementById('nombreSolicitante').value = ''; document.getElementById('descripcionSol').value = ''; document.getElementById('fechaSolicitud').value = '';
+    document.getElementById('nombreEvento').value = ''; document.getElementById('fechaEvento').value = ''; document.getElementById('lugarEvento').value = '';
+    document.getElementById('camposEvento').classList.add('hidden'); actualizarTextoBoton(); document.getElementById('btnCancelarSol').classList.add('hidden');
 }
 
 function filtrarSolicitudesCoordinacion() {
-    const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
-    const ff = document.getElementById('filtroFecha').value;
+    const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim(); const ff = document.getElementById('filtroFecha').value;
     const lista = document.getElementById('listaCoordinacion'); lista.innerHTML = '';
-    
-    const filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO')
+    const filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'PENDIENTE_PROYECTOS')
         .filter(s => { if(fs && !s.solicitante.toLowerCase().includes(fs)) return false; if(ff && s.fechaSolicitud !== ff) return false; return true; });
     
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
@@ -1055,16 +946,17 @@ function filtrarSolicitudesCoordinacion() {
         let est = '', clase = '', badge = '';
         if(s.estado === 'DESBLOQUEADA'){ est='🔓 Desbloqueada'; clase='bg-yellow-50'; badge='<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
         else if(s.estado === 'PENDIENTE_MANTENIMIENTO'){ est='🟡 Pendiente'; clase='bg-yellow-50'; badge='<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>'; }
+        else if(s.estado === 'PENDIENTE_PROYECTOS'){ est='🟡 En evaluación'; clase='bg-yellow-50'; badge='<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>'; }
         else if(s.estado === 'APROBADA'){ est='🟢 Autorizada'; clase='bg-green-50'; }
         else if(s.estado === 'CONCLUIDO'){ est='✅ Concluida'; clase='bg-gray-100'; }
 
-        let btnConcluir = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin') ? `<button onclick="marcarConcluida(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>` : '';
-        let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && usuarioActivo?.rol === 'admin') ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
-        let btnBloquear = (s.estado === 'DESBLOQUEADA' && usuarioActivo?.rol === 'admin') ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
-        let btnEliminar = (usuarioActivo?.rol === 'admin') ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
-        let btnObservacion = (usuarioActivo?.rol === 'admin') ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
+        let btnConcluir = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="marcarConcluida(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>` : '';
+        let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
+        let btnBloquear = (s.estado === 'DESBLOQUEADA' && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
+        let btnEliminar = (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'))) ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
+        let btnObservacion = (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'))) ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
         let btnWhatsApp = numeroWhatsAppDestino ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
-        let btnGenerarOrden = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && usuarioActivo?.rol === 'admin') ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
+        let btnGenerarOrden = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
 
         let obsHTML = '';
         if (s.observaciones && s.observaciones.length > 0) {
@@ -1094,18 +986,15 @@ function limpiarFiltros() { document.getElementById('filtroSolicitante').value='
 
 async function agregarObservacion(id) {
     const s = solicitudes.find(x => x.id === id);
-    if (usuarioActivo.rol !== 'proyectos' && usuarioActivo.rol !== 'admin') { alert('⚠️ Sin permiso'); return; }
+    const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'));
+    if (!tienePermiso) { alert('⚠️ Sin permiso'); return; }
     const observacion = prompt('📝 Observación para #' + id + ':');
     if (!observacion) return;
-    try {
-        await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos', texto: observacion.trim() });
-        await cargarDatosIniciales(); alert('✅ Observación agregada'); recargarVistaActual();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos', texto: observacion.trim() }); await cargarDatosIniciales(); alert('✅ Observación agregada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function enviarWhatsApp(id) {
-    const s = solicitudes.find(x => x.id === id);
-    if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
+    const s = solicitudes.find(x => x.id === id); if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
     let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n📌 Folio: #' + s.id + '\n👤 Solicitante: ' + s.solicitante + '\n🏫 Sección: ' + s.area + '\n📅 Fecha: ' + s.fechaSolicitud + '\n📝 Descripción: ' + s.descripcion + '\n';
     if (s.tipo === 'evento') mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
     mensaje += '\n📌 *Estado: ' + s.estado + '*';
@@ -1122,8 +1011,6 @@ async function agregarUsuario() {
     const nombre = document.getElementById('nombreCompletoUsuario').value.trim();
     const rol = document.getElementById('rolUsuario').value;
     const editando = document.getElementById('editandoUsuario').value;
-    
-    // Recopilar checkboxes
     const checkboxes = document.querySelectorAll('.permiso-checkbox:checked');
     const permisos = Array.from(checkboxes).map(cb => cb.value);
 
@@ -1141,9 +1028,7 @@ async function agregarUsuario() {
             await apiRequest('/api/usuarios', 'POST', { usuario: user, password: pass, nombre, rol, permisos });
             alert('✅ Usuario agregado');
         }
-        await cargarDatosIniciales();
-        cargarListaUsuarios();
-        limpiarFormularioUsuario();
+        await cargarDatosIniciales(); cargarListaUsuarios(); limpiarFormularioUsuario();
     } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
@@ -1157,11 +1042,7 @@ function editarUsuario(username) {
     document.getElementById('editandoUsuario').value = username;
     document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
     document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
-    
-    // Marcar checkboxes
-    document.querySelectorAll('.permiso-checkbox').forEach(cb => {
-        cb.checked = (user.permisos || []).includes(cb.value);
-    });
+    document.querySelectorAll('.permiso-checkbox').forEach(cb => { cb.checked = (user.permisos || []).includes(cb.value); });
 }
 
 function cancelarEdicionUsuario() { limpiarFormularioUsuario(); document.getElementById('editandoUsuario').value = ''; document.getElementById('btnAgregarUsuario').innerHTML = '💾 Guardar Usuario'; document.getElementById('btnCancelarEditarUsuario').classList.add('hidden'); }
@@ -1190,67 +1071,36 @@ function cargarListaUsuarios() {
 async function eliminarUsuario(u) { 
     if (u === 'admin') { alert('⚠️ No se puede eliminar el admin principal'); return; }
     if (!confirm(`⚠️ ¿ELIMINAR al usuario "${u}"?`)) return;
-    try {
-        await apiRequest(`/api/usuarios/${u}`, 'DELETE');
-        await cargarDatosIniciales(); cargarListaUsuarios(); alert('🗑️ Eliminado');
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/usuarios/${u}`, 'DELETE'); await cargarDatosIniciales(); cargarListaUsuarios(); alert('🗑️ Eliminado'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 // ==================== CONFIGURACIÓN ====================
 async function guardarNombreMantenimiento() {
-    const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
-    if (!nuevoNombre) return;
-    try {
-        await apiRequest('/api/configuracion', 'PUT', { nombreResponsableMantenimiento: nuevoNombre });
-        nombreResponsableMantenimiento = nuevoNombre;
-        if (usuarios.admin) usuarios.admin.nombre = nuevoNombre;
-        if (usuarioActivo && usuarioActivo.id === 'admin') { usuarioActivo.nombre = nuevoNombre; localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo)); document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre; }
-        await cargarDatosIniciales(); cargarListaUsuarios(); alert('✅ Actualizado');
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim(); if (!nuevoNombre) return;
+    try { await apiRequest('/api/configuracion', 'PUT', { nombreResponsableMantenimiento: nuevoNombre }); nombreResponsableMantenimiento = nuevoNombre; if (usuarios.admin) usuarios.admin.nombre = nuevoNombre; if (usuarioActivo && usuarioActivo.id === 'admin') { usuarioActivo.nombre = nuevoNombre; localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo)); document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre; } await cargarDatosIniciales(); cargarListaUsuarios(); alert('✅ Actualizado'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 function cargarNombreMantenimiento() { document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento; }
 
 function cargarLogo(input) {
     const file = input.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = async function(e) {
-        logoDataURL = e.target.result;
-        try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: logoDataURL }); mostrarLogo(); alert('✅ Logo cargado'); } catch (error) { alert('❌ Error: ' + error.message); }
-    };
+    reader.onload = async function(e) { logoDataURL = e.target.result; try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: logoDataURL }); mostrarLogo(); alert('✅ Logo cargado'); } catch (error) { alert('❌ Error: ' + error.message); } };
     reader.readAsDataURL(file);
 }
-function mostrarLogo() {
-    const preview = document.getElementById('previewLogo'), txt = document.getElementById('sinLogoText');
-    if (logoDataURL) { preview.src = logoDataURL; preview.style.display = 'block'; txt.style.display = 'none'; }
-    else { preview.style.display = 'none'; txt.style.display = 'block'; }
-}
-async function eliminarLogo() {
-    if (!confirm('⚠️ ¿Eliminar logo?')) return;
-    logoDataURL = '';
-    try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' }); mostrarLogo(); document.getElementById('inputLogo').value = ''; alert('🗑️ Logo eliminado'); } catch (error) { alert('❌ Error: ' + error.message); }
-}
-async function actualizarWhatsApp() {
-    const numero = document.getElementById('numeroWhatsApp').value.trim();
-    if (!numero) return;
-    try { await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numero }); numeroWhatsAppDestino = numero; document.getElementById('numeroActualWhatsApp').textContent = numero; alert('✅ WhatsApp guardado'); } catch (error) { alert('❌ Error: ' + error.message); }
-}
+function mostrarLogo() { const preview = document.getElementById('previewLogo'), txt = document.getElementById('sinLogoText'); if (logoDataURL) { preview.src = logoDataURL; preview.style.display = 'block'; txt.style.display = 'none'; } else { preview.style.display = 'none'; txt.style.display = 'block'; } }
+async function eliminarLogo() { if (!confirm('⚠️ ¿Eliminar logo?')) return; logoDataURL = ''; try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' }); mostrarLogo(); document.getElementById('inputLogo').value = ''; alert('🗑️ Logo eliminado'); } catch (error) { alert('❌ Error: ' + error.message); } }
+async function actualizarWhatsApp() { const numero = document.getElementById('numeroWhatsApp').value.trim(); if (!numero) return; try { await apiRequest('/api/configuracion', 'PUT', { numeroWhatsApp: numero }); numeroWhatsAppDestino = numero; document.getElementById('numeroActualWhatsApp').textContent = numero; alert('✅ WhatsApp guardado'); } catch (error) { alert('❌ Error: ' + error.message); } }
 
 // ==================== RESPALDOS ====================
 async function crearRespaldo() {
     try {
-        const response = await fetch(`${API_URL}/api/respaldo`);
-        const datos = await response.json();
-        const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `Respaldo_${new Date().toISOString().slice(0,10)}.json`; a.click();
-        URL.revokeObjectURL(url); alert('✅ Respaldo descargado');
+        const response = await fetch(`${API_URL}/api/respaldo`); const datos = await response.json(); const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `Respaldo_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); alert('✅ Respaldo descargado');
     } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function restaurarRespaldo(input) {
     const archivo = input.files[0]; if (!archivo) return;
     if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
-
     const lector = new FileReader();
     lector.onload = async function(e) {
         try {
@@ -1258,8 +1108,7 @@ async function restaurarRespaldo(input) {
             if (!datos.usuarios || !datos.solicitudes) { alert('❌ Archivo no válido'); return; }
             const response = await fetch(`${API_URL}/api/restaurar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
             const result = await response.json();
-            if (result.success) { alert(`✅ Restaurado\nUsuarios: ${result.usuarios}\nSolicitudes: ${result.solicitudes}`); location.reload(); }
-            else alert('❌ ' + result.error);
+            if (result.success) { alert(`✅ Restaurado\nUsuarios: ${result.usuarios}\nSolicitudes: ${result.solicitudes}`); location.reload(); } else alert('❌ ' + result.error);
         } catch (err) { alert('❌ Archivo dañado: ' + err.message); }
     };
     lector.readAsText(archivo);
@@ -1271,42 +1120,17 @@ async function cargarEmpleados() {
     try {
         const empleados = await apiRequest('/api/empleados');
         if (empleados.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay empleados.</p>'; return; }
-        lista.innerHTML = empleados.map(e => `
-            <div class="border rounded p-3 bg-white flex justify-between items-center ${e.activo ? '' : 'opacity-50'}">
-                <div><b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'} ${e.activo ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>' : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}</div>
-                <div class="flex gap-2">
-                    <button onclick='editarEmpleado(${JSON.stringify(e)})' class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">✏️ Editar</button>
-                    <button onclick="eliminarEmpleado(${e.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-                </div>
-            </div>
-        `).join('');
+        lista.innerHTML = empleados.map(e => `<div class="border rounded p-3 bg-white flex justify-between items-center ${e.activo ? '' : 'opacity-50'}"><div><b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'} ${e.activo ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>' : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}</div><div class="flex gap-2"><button onclick='editarEmpleado(${JSON.stringify(e)})' class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">✏️ Editar</button><button onclick="eliminarEmpleado(${e.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 async function guardarEmpleado() {
-    const id = document.getElementById('idEditarEmpleado').value;
-    const nombre = document.getElementById('nombreEmpleado').value.trim();
-    const puesto = document.getElementById('puestoEmpleado').value.trim();
-    const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
+    const id = document.getElementById('idEditarEmpleado').value; const nombre = document.getElementById('nombreEmpleado').value.trim(); const puesto = document.getElementById('puestoEmpleado').value.trim(); const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
     if (!nombre) return;
-    try {
-        if (id) { await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo }); alert('✅ Actualizado'); }
-        else { await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo }); alert('✅ Agregado'); }
-        cancelarEdicionEmpleado(); cargarEmpleados();
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { if (id) { await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo }); alert('✅ Actualizado'); } else { await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo }); alert('✅ Agregado'); } cancelarEdicionEmpleado(); cargarEmpleados(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
-function editarEmpleado(emp) {
-    document.getElementById('idEditarEmpleado').value = emp.id; document.getElementById('nombreEmpleado').value = emp.nombre;
-    document.getElementById('puestoEmpleado').value = emp.puesto || ''; document.getElementById('activoEmpleado').checked = emp.activo === 1;
-    document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar'; document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
-}
-function cancelarEdicionEmpleado() {
-    document.getElementById('idEditarEmpleado').value = ''; document.getElementById('nombreEmpleado').value = ''; document.getElementById('puestoEmpleado').value = '';
-    document.getElementById('activoEmpleado').checked = true; document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado'; document.getElementById('btnCancelarEmpleado').classList.add('hidden');
-}
-async function eliminarEmpleado(id) {
-    if (!confirm('⚠️ ¿Eliminar empleado?')) return;
-    try { await apiRequest(`/api/empleados/${id}`, 'DELETE'); cargarEmpleados(); } catch (error) { alert('❌ Error: ' + error.message); }
-}
+function editarEmpleado(emp) { document.getElementById('idEditarEmpleado').value = emp.id; document.getElementById('nombreEmpleado').value = emp.nombre; document.getElementById('puestoEmpleado').value = emp.puesto || ''; document.getElementById('activoEmpleado').checked = emp.activo === 1; document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar'; document.getElementById('btnCancelarEmpleado').classList.remove('hidden'); }
+function cancelarEdicionEmpleado() { document.getElementById('idEditarEmpleado').value = ''; document.getElementById('nombreEmpleado').value = ''; document.getElementById('puestoEmpleado').value = ''; document.getElementById('activoEmpleado').checked = true; document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado'; document.getElementById('btnCancelarEmpleado').classList.add('hidden'); }
+async function eliminarEmpleado(id) { if (!confirm('⚠️ ¿Eliminar empleado?')) return; try { await apiRequest(`/api/empleados/${id}`, 'DELETE'); cargarEmpleados(); } catch (error) { alert('❌ Error: ' + error.message); } }
 
 // ==================== ÓRDENES ====================
 async function cargarOrdenes() {
@@ -1314,51 +1138,23 @@ async function cargarOrdenes() {
     try {
         const ordenes = await apiRequest('/api/ordenes');
         if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
-        lista.innerHTML = ordenes.map(o => `
-            <div class="border rounded p-4 bg-white shadow-sm">
-                <div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
-                <div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div>
-                <div class="text-sm mt-1">${o.descripcion} (${o.area})</div>
-                <div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div>
-                <div class="mt-3 flex gap-2 flex-wrap">
-                    <button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-                    ${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
-                    <button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-                </div>
-            </div>
-        `).join('');
+        lista.innerHTML = ordenes.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 async function abrirModalOrden(solicitudId) {
-    try {
-        const empleados = await apiRequest('/api/empleados'); const activos = empleados.filter(e => e.activo === 1);
-        if (activos.length === 0) { alert('⚠️ No hay empleados activos.'); return; }
-        const select = document.getElementById('selectEmpleadoOrden');
-        select.innerHTML = activos.map(e => `<option value="${e.id}">${e.nombre} (${e.puesto || 'Sin puesto'})</option>`).join('');
-        document.getElementById('solicitudIdParaOrden').value = solicitudId;
-        document.getElementById('modalGenerarOrden').classList.remove('hidden'); document.getElementById('modalGenerarOrden').classList.add('flex');
-    } catch (error) { alert('❌ Error: ' + error.message); }
+    try { const empleados = await apiRequest('/api/empleados'); const activos = empleados.filter(e => e.activo === 1); if (activos.length === 0) { alert('⚠️ No hay empleados activos.'); return; } const select = document.getElementById('selectEmpleadoOrden'); select.innerHTML = activos.map(e => `<option value="${e.id}">${e.nombre} (${e.puesto || 'Sin puesto'})</option>`).join(''); document.getElementById('solicitudIdParaOrden').value = solicitudId; document.getElementById('modalGenerarOrden').classList.remove('hidden'); document.getElementById('modalGenerarOrden').classList.add('flex'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 function cerrarModalGenerarOrden() { document.getElementById('modalGenerarOrden').classList.add('hidden'); document.getElementById('modalGenerarOrden').classList.remove('flex'); }
 async function confirmarGenerarOrden() {
-    const solicitudId = document.getElementById('solicitudIdParaOrden').value; const empleadoId = document.getElementById('selectEmpleadoOrden').value;
-    if (!empleadoId) return;
+    const solicitudId = document.getElementById('solicitudIdParaOrden').value; const empleadoId = document.getElementById('selectEmpleadoOrden').value; if (!empleadoId) return;
     try { await apiRequest('/api/ordenes', 'POST', { solicitud_id: parseInt(solicitudId), empleado_id: parseInt(empleadoId) }); alert('✅ Orden generada'); cerrarModalGenerarOrden(); mostrarSeccion('panelOrdenes'); } catch (error) { alert('❌ Error: ' + error.message); }
 }
-async function eliminarOrden(id) {
-    if (!confirm('⚠️ ¿Eliminar orden? La solicitud volverá a estar disponible.')) return;
-    try { await apiRequest(`/api/ordenes/${id}`, 'DELETE'); alert('🗑️ Eliminada'); cargarOrdenes(); await cargarDatosIniciales(); } catch (error) { alert('❌ Error: ' + error.message); }
-}
+async function eliminarOrden(id) { if (!confirm('⚠️ ¿Eliminar orden? La solicitud volverá a estar disponible.')) return; try { await apiRequest(`/api/ordenes/${id}`, 'DELETE'); alert('🗑️ Eliminada'); cargarOrdenes(); await cargarDatosIniciales(); } catch (error) { alert('❌ Error: ' + error.message); } }
 
-function capturarOrden(ordenId, solicitudId) {
-    document.getElementById('capturaOrdenId').value = ordenId; document.getElementById('capturaSolicitudId').value = solicitudId;
-    document.getElementById('capturaFecha').valueAsDate = new Date(); document.getElementById('capturaHoraInicio').value = ''; document.getElementById('capturaHoraFin').value = ''; document.getElementById('capturaRecibidoPor').value = '';
-    document.getElementById('modalCapturaOrden').classList.remove('hidden'); document.getElementById('modalCapturaOrden').classList.add('flex');
-}
+function capturarOrden(ordenId, solicitudId) { document.getElementById('capturaOrdenId').value = ordenId; document.getElementById('capturaSolicitudId').value = solicitudId; document.getElementById('capturaFecha').valueAsDate = new Date(); document.getElementById('capturaHoraInicio').value = ''; document.getElementById('capturaHoraFin').value = ''; document.getElementById('capturaRecibidoPor').value = ''; document.getElementById('modalCapturaOrden').classList.remove('hidden'); document.getElementById('modalCapturaOrden').classList.add('flex'); }
 function cerrarModalCaptura() { document.getElementById('modalCapturaOrden').classList.add('hidden'); document.getElementById('modalCapturaOrden').classList.remove('flex'); }
 async function guardarCapturaOrden() {
-    const ordenId = document.getElementById('capturaOrdenId').value; const solicitudId = document.getElementById('capturaSolicitudId').value;
-    const fecha = document.getElementById('capturaFecha').value; const horaInicio = document.getElementById('capturaHoraInicio').value; const horaFin = document.getElementById('capturaHoraFin').value; const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
+    const ordenId = document.getElementById('capturaOrdenId').value; const solicitudId = document.getElementById('capturaSolicitudId').value; const fecha = document.getElementById('capturaFecha').value; const horaInicio = document.getElementById('capturaHoraInicio').value; const horaFin = document.getElementById('capturaHoraFin').value; const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
     if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
     try { await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio: horaInicio, horaFin: horaFin, recibidoPor: recibidoPor, solicitud_id: solicitudId }); alert('✅ Concluida'); cerrarModalCaptura(); cargarOrdenes(); await cargarDatosIniciales(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
@@ -1367,22 +1163,19 @@ async function guardarCapturaOrden() {
 async function cargarIncidencias() {
     const lista = document.getElementById('listaIncidencias'); const selectEmp = document.getElementById('incidenciaEmpleado');
     try {
-        const empleados = await apiRequest('/api/empleados');
-        selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+        const empleados = await apiRequest('/api/empleados'); selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
         const incidencias = await apiRequest('/api/incidencias');
         if (incidencias.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>'; return; }
         lista.innerHTML = incidencias.map(i => `<div class="border rounded p-3 bg-white shadow-sm flex justify-between"><div><b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${i.fecha})</span><br><span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span></div></div>`).join('');
     } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 function cambiarCamposIncidencia() {
-    const tipo = document.getElementById('incidenciaTipo').value;
-    document.getElementById('camposFechas').classList.add('hidden'); document.getElementById('camposHoras').classList.add('hidden');
+    const tipo = document.getElementById('incidenciaTipo').value; document.getElementById('camposFechas').classList.add('hidden'); document.getElementById('camposHoras').classList.add('hidden');
     if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') document.getElementById('camposFechas').classList.remove('hidden');
     else if (tipo === 'Permiso por horas') document.getElementById('camposHoras').classList.remove('hidden');
 }
 async function guardarIncidencia() {
-    const empleado_id = document.getElementById('incidenciaEmpleado').value; const tipo = document.getElementById('incidenciaTipo').value;
-    const fecha = document.getElementById('incidenciaFecha').value; const motivo = document.getElementById('incidenciaMotivo').value.trim();
+    const empleado_id = document.getElementById('incidenciaEmpleado').value; const tipo = document.getElementById('incidenciaTipo').value; const fecha = document.getElementById('incidenciaFecha').value; const motivo = document.getElementById('incidenciaMotivo').value.trim();
     if (!empleado_id || !fecha) { alert('Selecciona empleado y fecha'); return; }
     const datos = { empleado_id, tipo, fecha, motivo };
     if (tipo === 'Permiso por horas') { datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value; datos.hora_salida = document.getElementById('incidenciaHoraSalida').value; }
