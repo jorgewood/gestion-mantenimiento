@@ -1062,7 +1062,7 @@ function cargarListaUsuarios() {
             </div>
             <div class="flex gap-2">
                 <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
-                ${k !== 'admin' ? `<button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>` : ''}
+                <button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>
             </div>
         </div>`;
     }
