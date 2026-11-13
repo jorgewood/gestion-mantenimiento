@@ -606,7 +606,6 @@ let numeroWhatsAppDestino = '';
 let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
 
-// VARIABLES PARA PESTAÑAS (TABS)
 let tabMisActiva = 'servicio';
 let tabProyActiva = 'servicio';
 
@@ -926,7 +925,6 @@ function cargarMisSolicitudes() {
     const fFecha = document.getElementById('filtroMisFecha').value;
     const fEstado = document.getElementById('filtroMisEstado').value;
 
-    // FILTRADO BASE: Por Solicitante y Pestaña Activa
     let misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre && s.tipo === tabMisActiva);
     
     if (fBuscar) {
@@ -938,12 +936,11 @@ function cargarMisSolicitudes() {
     if (fFecha) misSolicitudes = misSolicitudes.filter(s => s.fechaSolicitud === fFecha);
     if (fEstado) misSolicitudes = misSolicitudes.filter(s => s.estado === fEstado);
 
-    // ORDENAMIENTO: Eventos por fechaEvento, Servicios por fechaSolicitud
     misSolicitudes.sort((a, b) => {
         if (tabMisActiva === 'evento') {
             return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
         } else {
-            return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud); // Servicios: más recientes primero
+            return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
         }
     });
 
@@ -1004,7 +1001,6 @@ function cargarBandejaProyectos() {
     const fFecha = document.getElementById('filtroProyFecha').value;
     const fEstado = document.getElementById('filtroProyEstado').value;
 
-    // FILTRADO BASE: Pestaña Activa y Estados válidos para Proyectos
     let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva && (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA'));
     
     if (fBuscar) {
@@ -1016,7 +1012,6 @@ function cargarBandejaProyectos() {
     if (fFecha) proyectos = proyectos.filter(s => s.fechaSolicitud === fFecha);
     if (fEstado) proyectos = proyectos.filter(s => s.estado === fEstado);
 
-    // ORDENAMIENTO: Eventos por fechaEvento, Servicios por fechaSolicitud
     proyectos.sort((a, b) => {
         if (tabProyActiva === 'evento') {
             return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
@@ -1197,11 +1192,10 @@ function filtrarSolicitudesCoordinacion() {
     if (ft) filtradas = filtradas.filter(s => s.tipo === ft);
     if (fest) filtradas = filtradas.filter(s => s.estado === fest);
     
-    // ORDENAMIENTO GENERAL: Eventos por fechaEvento, Servicios por fechaSolicitud
     filtradas.sort((a, b) => {
         if (a.tipo === 'evento' && b.tipo === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
         if (a.tipo === 'servicio' && b.tipo === 'servicio') return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
-        return 0; // Si son mixtos, mantener orden
+        return 0;
     });
 
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
@@ -1462,7 +1456,6 @@ function cargarOrdenes() {
         if (fSolicitante) filtradas = filtradas.filter(o => o.solicitante && o.solicitante.toLowerCase().includes(fSolicitante));
         if (fEstado) filtradas = filtradas.filter(o => o.estado === fEstado);
 
-        // ORDENAMIENTO: Órdenes de trabajo por fecha de creación
         filtradas.sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
 
         if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes con esos filtros.</p>'; return; }
@@ -1589,7 +1582,6 @@ function cargarCompras() {
         if (fSolicitante) filtradas = filtradas.filter(c => c.solicitado_por && c.solicitado_por.toLowerCase().includes(fSolicitante));
         if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
 
-        // ORDENAMIENTO: Solicitudes de compra por fecha de creación
         filtradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
         if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes con esos filtros.</p>'; return; }
@@ -1616,8 +1608,21 @@ async function cargarComprasSilencioso() {
 async function eliminarCompra(id) { if (!confirm('¿Eliminar solicitud de compra?')) return; try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (error) { alert(error.message); } }
 
 // ==================== IMPRESIONES ====================
-function imprimirSolicitud(id) {
+async function imprimirSolicitud(id) {
     const s = solicitudes.find(x => x.id === id); if (!s) return;
+    
+    // Obtenemos el nombre del empleado si es un servicio y tiene orden
+    let empleadoAtendio = 'No asignado';
+    if (s.tipo === 'servicio') {
+        try {
+            const ordenes = await apiRequest('/api/ordenes');
+            const ordenAsociada = ordenes.find(o => o.solicitud_id === s.id);
+            if (ordenAsociada && ordenAsociada.empleado_nombre) {
+                empleadoAtendio = ordenAsociada.empleado_nombre;
+            }
+        } catch (e) { console.log("No se pudo cargar la orden para impresión"); }
+    }
+
     const tipoEtiqueta = s.tipo === 'servicio' ? 'SERVICIO DE MANTENIMIENTO' : 'EVENTO ESCOLAR';
     let estadoClase = '', estadoTexto = '';
     if (s.estado === 'DESBLOQUEADA') { estadoClase = 'badge-desbloqueada'; estadoTexto = 'DESBLOQUEADA'; }
@@ -1635,6 +1640,11 @@ function imprimirSolicitud(id) {
     html += `<tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
     if (s.tipo === 'evento') html += `<tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
     
+    // AGREGAMOS EL EMPLEADO SI ES SERVICIO
+    if (s.tipo === 'servicio') {
+        html += `<tr><td>Empleado Asignado</td><td><b>${empleadoAtendio}</b></td></tr>`;
+    }
+
     html += `<tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
     if (s.autorizadoPor) html += `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>`; else if (s.estado === 'PENDIENTE_MANTENIMIENTO') html += `<tr><td>Autorizado por</td><td>No requiere (Mantenimiento)</td></tr>`; else html += `<tr><td>Autorizado por</td><td>Pendiente</td></tr>`;
     if (s.estado === 'CONCLUIDO' && s.concluidoPor) html += `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>`;
@@ -1648,7 +1658,25 @@ function imprimirSolicitud(id) {
     let firmaSolicitante = s.solicitante || '', firmaAutorizacion = s.autorizadoPor || '_________________________', firmaMantenimiento = (s.estado === 'CONCLUIDO') ? (s.concluidoPor || nombreResponsableMantenimiento) : (s.estado === 'DESBLOQUEADA' ? 'Pendiente de Vo.Bo.' : 'Pendiente');
     if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente';
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') firmaAutorizacion = 'No requiere';
-    html += `</table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${firmaSolicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitante</div><div class="firma-fecha">${s.fechaSolicitud}</div></div><div class="firma-item"><div class="firma-nombre">${firmaAutorizacion}</div><div class="linea"></div><div class="firma-cargo">Autorizado por</div><div class="firma-fecha">${s.fechaAutorizacion || 'Pendiente'}</div></div><div class="firma-item"><div class="firma-nombre">${firmaMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Vo.Bo. Mantenimiento</div><div class="firma-fecha">${s.fechaConclusion || 'Pendiente'}</div></div></div><div class="pie-pagina"><span>${fechaActual} ${horaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+    
+    // CORRECCIÓN DE FIRMAS: Solo 2 firmas claras
+    html += `</table>
+    <div class="firmas">
+        <div class="firma-item">
+            <div class="firma-nombre">${firmaSolicitante}</div>
+            <div class="linea"></div>
+            <div class="firma-cargo">Solicitante</div>
+            <div class="firma-fecha">${s.fechaSolicitud}</div>
+        </div>
+        <div class="firma-item">
+            <div class="firma-nombre">${s.tipo === 'servicio' ? empleadoAtendio : firmaAutorizacion}</div>
+            <div class="linea"></div>
+            <div class="firma-cargo">${s.tipo === 'servicio' ? 'Atendido por' : 'Autorizado por'}</div>
+            <div class="firma-fecha">${s.tipo === 'servicio' ? (s.fechaConclusion || 'Pendiente') : (s.fechaAutorizacion || 'Pendiente')}</div>
+        </div>
+    </div>
+    <div class="pie-pagina"><span>${fechaActual} ${horaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+    
     c.innerHTML = html; c.style.display = 'block'; document.getElementById('formatoImpresion').style.display = 'block';
     setTimeout(() => { window.print(); setTimeout(() => { c.style.display = 'none'; document.getElementById('formatoImpresion').style.display = 'none'; }, 500); }, 300);
 }
@@ -1687,6 +1715,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v10.0 - Pestañas de Servicios/Eventos y ordenamientos por fecha aplicados");</script>
+<script>console.log("Script actualizado v11.0 - Empleado en impresión y firmas corregidas");</script>
 </body>
 </html>
