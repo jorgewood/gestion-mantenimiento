@@ -73,7 +73,7 @@
             .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; color: #1a1a2e !important; }
             .formato-impresion td:last-child { width: 75% !important; background: white !important; color: #333 !important; white-space: pre-wrap !important; word-wrap: break-word !important; }
             .formato-impresion .firmas { margin-top: 20px !important; display: flex !important; justify-content: space-between !important; padding-top: 15px !important; border-top: 1px solid #e5e7eb !important; }
-            .formato-impresion .firma-item { text-align: center !important; width: 30% !important; }
+            .formato-impresion .firma-item { text-align: center !important; width: 45% !important; } /* Ajustado a 45% para que quepan 2 firmas */
             .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 25px 0 4px 0 !important; }
             .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 9pt !important; color: #1a1a2e !important; }
             .formato-impresion .firma-item .firma-cargo { font-size: 8pt !important; color: #666 !important; }
@@ -103,7 +103,7 @@
         .formato-impresion td:first-child { width: 25%; font-weight: 700; background: #f3f4f6; color: #1a1a2e; }
         .formato-impresion td:last-child { width: 75%; background: white; color: #333; white-space: pre-wrap; word-wrap: break-word; }
         .formato-impresion .firmas { margin-top: 20px; display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #e5e7eb; }
-        .formato-impresion .firma-item { text-align: center; width: 30%; }
+        .formato-impresion .firma-item { text-align: center; width: 45%; }
         .formato-impresion .firma-item .linea { border-top: 1px solid #333; width: 100%; margin: 25px 0 4px 0; }
         .formato-impresion .firma-item .firma-nombre { font-weight: 700; font-size: 9pt; color: #1a1a2e; }
         .formato-impresion .firma-item .firma-cargo { font-size: 8pt; color: #666; }
@@ -154,7 +154,6 @@
 <nav id="menuNavegacion" class="hidden bg-white shadow-sm border-b mb-6">
     <div class="container mx-auto px-4 py-2 flex flex-wrap gap-2 items-center">
         
-        <!-- MENÚ DE SOLICITUDES -->
         <div id="navSolicitudes" class="relative inline-block text-left hidden">
             <button onclick="toggleMenu('subMenuSolicitudes')" class="px-4 py-2 rounded bg-gray-100 hover:bg-colegio-azul hover:text-white flex items-center gap-2">
                 <i class="fas fa-list"></i> Solicitudes <i class="fas fa-chevron-down text-xs"></i>
@@ -173,7 +172,6 @@
             <i class="fas fa-clipboard-check"></i> Proyectos Generales
         </button>
 
-        <!-- BOTÓN DE MANTENIMIENTO (AL FINAL DE TODO) -->
         <div id="navMantenimiento" class="relative inline-block text-left hidden ml-auto">
             <button onclick="toggleMenu('subMenuMantenimiento')" class="px-4 py-2 rounded bg-colegio-verde text-white hover:bg-green-700 flex items-center gap-2">
                 <i class="fas fa-cogs"></i> Mantenimiento <i class="fas fa-chevron-down text-xs"></i>
@@ -192,7 +190,7 @@
                     <i class="fas fa-exclamation-triangle text-colegio-verde"></i> Incidencias
                 </button>
                 <button onclick="mostrarSeccion('panelCompras')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                    <i class="fas fa-shopping-cart text-colegio-verde"></i> Órdenes de Compra
+                    <i class="fas fa-shopping-cart text-colegio-verde"></i> Solicitudes de Compra
                 </button>
                 <button onclick="mostrarSeccion('panelSecciones')" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                     <i class="fas fa-building text-colegio-verde"></i> Secciones
@@ -260,6 +258,27 @@
 
     <section id="misSolicitudes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Mis Solicitudes</h2>
+        
+        <!-- FILTRO PARA TODOS LOS USUARIOS -->
+        <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
+            <h3 class="font-bold text-sm">🔍 Filtrar Mis Solicitudes</h3>
+            <div class="flex flex-wrap gap-3">
+                <div><label class="block text-xs font-semibold">Por fecha</label><input type="date" id="filtroFechaMis" class="border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()"></div>
+                <div><label class="block text-xs font-semibold">Por estado</label>
+                    <select id="filtroEstadoMis" class="border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()">
+                        <option value="">Todos</option>
+                        <option value="PENDIENTE_PROYECTOS">En Evaluación</option>
+                        <option value="PENDIENTE_MANTENIMIENTO">Pendiente</option>
+                        <option value="APROBADA">Autorizada</option>
+                        <option value="CONCLUIDO">Concluida</option>
+                        <option value="RECHAZADA">Rechazada</option>
+                        <option value="DESBLOQUEADA">Desbloqueada</option>
+                    </select>
+                </div>
+                <button onclick="limpiarFiltrosMis()" class="bg-gray-200 px-3 py-1 rounded self-end text-sm">Limpiar</button>
+            </div>
+        </div>
+        
         <div id="listaMisSolicitudes" class="space-y-3"></div>
     </section>
 
@@ -426,9 +445,9 @@
     </section>
 
     <section id="panelCompras" class="hidden">
-        <h2 class="text-xl font-bold mb-4 text-colegio-azul">🛒 Órdenes de Compra</h2>
+        <h2 class="text-xl font-bold mb-4 text-colegio-azul">🛒 Solicitudes de Compra</h2>
         <div class="bg-white rounded shadow p-4 mb-4">
-            <h3 class="font-bold mb-3">Nueva Orden de Compra</h3>
+            <h3 class="font-bold mb-3">Nueva Solicitud de Compra</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div><label class="font-semibold">Proveedor</label><select id="compraProveedor" class="w-full border rounded px-3 py-2"></select></div>
                 <div><label class="font-semibold">Solicitado por</label><input type="text" id="compraSolicitadoPor" class="w-full border rounded px-3 py-2" value="Mantenimiento"></div>
@@ -439,7 +458,7 @@
                 <button onclick="agregarArticuloCompra()" class="bg-gray-200 text-sm px-3 py-1 rounded">+ Agregar Artículo</button>
             </div>
             <div class="mb-3"><label class="font-semibold">Observaciones</label><textarea id="compraObservaciones" rows="2" class="w-full border rounded px-3 py-2"></textarea></div>
-            <button onclick="guardarOrdenCompra()" class="bg-colegio-azul text-white px-4 py-2 rounded">Generar Orden de Compra</button>
+            <button onclick="guardarOrdenCompra()" class="bg-colegio-azul text-white px-4 py-2 rounded">Generar Solicitud de Compra</button>
         </div>
         <div id="listaCompras" class="space-y-3"></div>
     </section>
@@ -681,17 +700,9 @@ function iniciarAutoRefresco() {
                 solicitudes = solicitudesData;
             }
 
-            // Refresco silencioso para Órdenes de Trabajo
-            if (seccionActiva && seccionActiva.id === 'panelOrdenes') {
-                await cargarOrdenesSilencioso();
-            }
+            if (seccionActiva && seccionActiva.id === 'panelOrdenes') await cargarOrdenesSilencioso();
+            if (seccionActiva && seccionActiva.id === 'panelCompras') await cargarComprasSilencioso();
 
-            // Refresco silencioso para Órdenes de Compra
-            if (seccionActiva && seccionActiva.id === 'panelCompras') {
-                await cargarComprasSilencioso();
-            }
-
-            // Refresco para las demás solicitudes
             if (huboCambios && seccionActiva) {
                 if (seccionActiva.id === 'misSolicitudes') cargarMisSolicitudes();
                 if (seccionActiva.id === 'bandaProyectos') cargarBandejaProyectos();
@@ -729,7 +740,7 @@ async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
     
-    // CORRECCIÓN DEFINITIVA: Se usa una variable temporal 'datosSolicitud' para que no haya conflicto
+    // CORRECCIÓN DEFINITIVA: Se usa 'datosSolicitud' para evitar cualquier error de variable constante
     const datosSolicitud = {
         tipo: tipo, 
         area: document.getElementById('areaSolicitante').value, 
@@ -750,7 +761,7 @@ async function guardarSolicitud() {
         if (idEditar > 0) {
             const solOriginal = solicitudes.find(x => x.id === idEditar); 
             
-            // Creamos un nuevo objeto para enviar al backend, sin modificar el original
+            // Creamos una copia segura para enviar
             const solicitudParaActualizar = {
                 ...datosSolicitud,
                 id: idEditar,
@@ -807,8 +818,18 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
 // ==================== MIS SOLICITUDES ====================
 function cargarMisSolicitudes() {
     const lista = document.getElementById('listaMisSolicitudes'); lista.innerHTML = '';
-    const misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre);
-    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas.</p>'; return; }
+    
+    // Filtros para el usuario
+    const fFecha = document.getElementById('filtroFechaMis').value;
+    const fEstado = document.getElementById('filtroEstadoMis').value;
+
+    let misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre);
+    
+    if (fFecha) misSolicitudes = misSolicitudes.filter(s => s.fechaSolicitud === fFecha);
+    if (fEstado) misSolicitudes = misSolicitudes.filter(s => s.estado === fEstado);
+
+    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con esos filtros.</p>'; return; }
+    
     misSolicitudes.forEach(s => {
         let est = '', claseExtra = '', badge = '';
         if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
@@ -834,6 +855,7 @@ function cargarMisSolicitudes() {
         </div>`;
     });
 }
+function limpiarFiltrosMis() { document.getElementById('filtroFechaMis').value = ''; document.getElementById('filtroEstadoMis').value = ''; cargarMisSolicitudes(); }
 
 // ==================== BANDEJA PROYECTOS ====================
 function cargarBandejaProyectos() {
@@ -850,12 +872,29 @@ function cargarBandejaProyectos() {
 
         let botones = '';
         if (s.estado === 'PENDIENTE_PROYECTOS') botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button><button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
-        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
-        if (s.estado === 'DESBLOQUEADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
-        if (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin') { botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button><button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`; }
+        
+        // BLOQUEO DE BOTONES SI YA ESTÁ AUTORIZADA
+        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
+            botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
+        }
+        if (s.estado === 'DESBLOQUEADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
+            botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
+        }
+        
+        // SOLO SI ESTÁ PENDIENTE O DESBLOQUEADA SE PUEDEN EDITAR/ELIMINAR/OBSERVAR
+        if ((usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin') && (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'DESBLOQUEADA')) { 
+            botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button><button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`; 
+        }
+        
         if (numeroWhatsAppDestino) botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
-        if (s.estado === 'APROBADA' && (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento')))) botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
-        botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button><button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
+        
+        // GENERAR ORDEN SOLO SI ES SERVICIO Y ESTÁ APROBADA
+        if (s.estado === 'APROBADA' && s.tipo === 'servicio' && (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento')))) {
+            botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
+        }
+        
+        // IMPRIMIR SIEMPRE
+        botones += `<button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
 
         let obsHTML = '';
         if (s.observaciones && s.observaciones.length > 0) {
@@ -983,7 +1022,9 @@ function filtrarSolicitudesCoordinacion() {
         let btnEliminar = (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'))) ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
         let btnObservacion = (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'))) ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
         let btnWhatsApp = numeroWhatsAppDestino ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
-        let btnGenerarOrden = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
+        
+        // GENERAR ORDEN SOLO SI ES SERVICIO
+        let btnGenerarOrden = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && s.tipo === 'servicio' && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
 
         let obsHTML = '';
         if (s.observaciones && s.observaciones.length > 0) {
@@ -1046,7 +1087,15 @@ async function agregarUsuario() {
 
     try {
         if (editando) {
-            await apiRequest(`/api/usuarios/${editando}`, 'PUT', { password: pass, nombre, rol, permisos });
+            // Si se edita al 'admin', se actualiza su usuario y contraseña
+            await apiRequest(`/api/usuarios/${editando}`, 'PUT', { usuario: user, password: pass, nombre, rol, permisos });
+            if (editando === 'admin' && user !== 'admin') {
+                // Si se le cambió el nombre de usuario al admin, actualizamos el localStorage si es el usuario activo
+                if (usuarioActivo.id === 'admin') {
+                    usuarioActivo.id = user;
+                    localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+                }
+            }
             document.getElementById('editandoUsuario').value = '';
             document.getElementById('btnAgregarUsuario').innerHTML = '💾 Guardar Usuario';
             document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
@@ -1262,13 +1311,13 @@ async function guardarOrdenCompra() {
     const proveedor_id = document.getElementById('compraProveedor').value; const solicitado_por = document.getElementById('compraSolicitadoPor').value; const observaciones = document.getElementById('compraObservaciones').value;
     const articulos = []; document.querySelectorAll('.articulo-row').forEach(row => { const a = row.querySelector('.articulo-nombre').value.trim(); const c = parseFloat(row.querySelector('.articulo-cantidad').value) || 0; if (a && c > 0) articulos.push({ articulo: a, cantidad: c }); });
     if (!proveedor_id || articulos.length === 0) { alert('Selecciona proveedor y artículos.'); return; }
-    try { await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos }); alert('✅ Orden generada'); cargarCompras(); document.getElementById('listaArticulosCompra').innerHTML = ''; document.getElementById('compraObservaciones').value = ''; } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos }); alert('✅ Solicitud generada'); cargarCompras(); document.getElementById('listaArticulosCompra').innerHTML = ''; document.getElementById('compraObservaciones').value = ''; } catch (error) { alert('❌ Error: ' + error.message); }
 }
 async function cargarCompras() {
     const lista = document.getElementById('listaCompras'); lista.innerHTML = 'Cargando...';
     try {
         const compras = await apiRequest('/api/compras');
-        if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes de compra.</p>'; return; }
+        if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes de compra.</p>'; return; }
         lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { lista.innerHTML = 'Error'; }
 }
@@ -1277,12 +1326,12 @@ async function cargarComprasSilencioso() {
     try {
         const compras = await apiRequest('/api/compras');
         const lista = document.getElementById('listaCompras');
-        if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes de compra.</p>'; return; }
+        if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes de compra.</p>'; return; }
         lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { console.log("Error en refresco silencioso de compras"); }
 }
 
-async function eliminarCompra(id) { if (!confirm('¿Eliminar orden de compra?')) return; try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (error) { alert(error.message); } }
+async function eliminarCompra(id) { if (!confirm('¿Eliminar solicitud de compra?')) return; try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (error) { alert(error.message); } }
 
 // ==================== IMPRESIONES ====================
 function imprimirSolicitud(id) {
@@ -1329,9 +1378,11 @@ async function imprimirOrdenCompra(id) {
     try {
         const compras = await apiRequest('/api/compras'); const c = compras.find(x => x.id === id); if (!c) return;
         const fechaActual = new Date().toLocaleDateString('es-MX');
-        let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">ORDEN DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">ORDEN DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
+        let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">SOLICITUD DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">SOLICITUD DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
         let filas = ''; if (c.articulos) c.articulos.forEach(art => { filas += `<tr><td>${art.articulo}</td><td>${art.cantidad}</td></tr>`; });
-        let html = `${headerHTML}<table><tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr><tr><td>Fecha</td><td>${c.fecha}</td></tr><tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr><tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr></table><h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4><table><thead><tr style="background: #f3f4f6;"><th style="text-align: left; padding: 8px; border: 1px solid #d1d5db;">Descripción del Artículo</th><th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 100px;">Cantidad</th></tr></thead><tbody>${filas}</tbody></table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${c.solicitado_por}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div><div class="firma-fecha">${c.fecha}</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Autorizó</div><div class="firma-fecha">Pendiente</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Recibió Proveedor</div><div class="firma-fecha">Pendiente</div></div></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        
+        // AQUI SE CAMBIA A 2 FIRMAS
+        let html = `${headerHTML}<table><tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr><tr><td>Fecha</td><td>${c.fecha}</td></tr><tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr><tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr></table><h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4><table><thead><tr style="background: #f3f4f6;"><th style="text-align: left; padding: 8px; border: 1px solid #d1d5db;">Descripción del Artículo</th><th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 100px;">Cantidad</th></tr></thead><tbody>${filas}</tbody></table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${c.solicitado_por}</div><div class="linea"></div><div class="firma-cargo">Solicita Coordinación de Mantenimiento</div><div class="firma-fecha">${c.fecha}</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Autoriza Administración</div><div class="firma-fecha">Pendiente</div></div></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
         const formato = document.getElementById('formatoImpresion'); formato.innerHTML = html; formato.style.display = 'block';
         setTimeout(() => { window.print(); setTimeout(() => { formato.style.display = 'none'; }, 500); }, 300);
     } catch (error) { alert('❌ Error: ' + error.message); }
@@ -1339,14 +1390,12 @@ async function imprimirOrdenCompra(id) {
 
 function mostrarCamposEvento() { document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento'); }
 
-// Se agrega un parámetro a la URL para forzar la recarga del script y evitar el caché
 document.addEventListener('DOMContentLoaded', () => {
     recuperarSesion();
     const campoFecha = document.getElementById('fechaSolicitud');
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<!-- Forzar recarga de caché -->
-<script>console.log("Script actualizado v2.0 - Sin errores de asignación");</script>
+<script>console.log("Script actualizado v4.0 - Correcciones aplicadas y filtros añadidos");</script>
 </body>
 </html>
