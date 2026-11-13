@@ -738,20 +738,13 @@ async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
     
-    // Se crea un objeto con los datos base
-    const datosSolicitud = {
-        tipo: tipo, 
-        area: document.getElementById('areaSolicitante').value, 
-        descripcion: document.getElementById('descripcionSol').value.trim(),
-        fechaSolicitud: document.getElementById('fechaSolicitud').value, 
-        fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
-        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '', 
-        lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
-        solicitante: document.getElementById('nombreSolicitante').value, 
-        fechaEnvio: new Date().toLocaleString('es-MX'), 
-        observaciones: []
+    let datosSolicitud = {
+        tipo: tipo, area: document.getElementById('areaSolicitante').value, descripcion: document.getElementById('descripcionSol').value.trim(),
+        fechaSolicitud: document.getElementById('fechaSolicitud').value, fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
+        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '', lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
+        solicitante: document.getElementById('nombreSolicitante').value, observaciones: []
     };
-
+    
     if (!datosSolicitud.descripcion || !datosSolicitud.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
     if (tipo === 'evento' && (!datosSolicitud.nombreEvento || !datosSolicitud.fechaEvento || !datosSolicitud.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
 
@@ -759,11 +752,18 @@ async function guardarSolicitud() {
         if (idEditar > 0) {
             const solOriginal = solicitudes.find(x => x.id === idEditar); 
             
-            // Se crea una COPIA independiente para actualizar, sin usar 'const' ni variables que puedan chocar
-            let solicitudParaActualizar = Object.assign({}, datosSolicitud);
-            solicitudParaActualizar.id = idEditar;
-            solicitudParaActualizar.estado = solOriginal.estado;
-            solicitudParaActualizar.observaciones = solOriginal.observaciones || [];
+            // REGLA: Si es operador, al guardar cambios regresa a PENDIENTE_PROYECTOS. Si es admin/proyectos se mantiene.
+            let nuevoEstado = solOriginal.estado;
+            if (usuarioActivo.rol === 'seccion') {
+                nuevoEstado = 'PENDIENTE_PROYECTOS'; 
+            }
+
+            let solicitudParaActualizar = {
+                ...datosSolicitud,
+                id: idEditar,
+                estado: nuevoEstado,
+                observaciones: solOriginal.observaciones || []
+            };
 
             await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', solicitudParaActualizar); 
             alert('✅ Solicitud actualizada');
@@ -847,6 +847,8 @@ function cargarMisSolicitudes() {
                 ${s.estado !== 'RECHAZADA' ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : ''}
                 ${(usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
             </div>
+            <!-- MOSTRAR OBSERVACIONES -->
+            ${s.observaciones && s.observaciones.length > 0 ? `<div class="mt-3">${s.observaciones.map(obs => `<div class="observacion-item"><div class="obs-autor">${obs.autor} (${obs.rol}) - ${obs.fecha}</div><div class="obs-texto">${obs.texto}</div></div>`).join('')}</div>` : ''}
         </div>`;
     });
 }
@@ -881,7 +883,6 @@ function cargarBandejaProyectos() {
         
         if (numeroWhatsAppDestino) botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
         
-        // GENERAR ORDEN SOLO SI ES SERVICIO Y ESTÁ APROBADA
         if (s.estado === 'APROBADA' && s.tipo === 'servicio' && (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento')))) {
             botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
         }
@@ -1339,7 +1340,14 @@ function imprimirSolicitud(id) {
     html += `<tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
     if (s.autorizadoPor) html += `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>`; else if (s.estado === 'PENDIENTE_MANTENIMIENTO') html += `<tr><td>Autorizado por</td><td>No requiere (Mantenimiento)</td></tr>`; else html += `<tr><td>Autorizado por</td><td>Pendiente</td></tr>`;
     if (s.estado === 'CONCLUIDO' && s.concluidoPor) html += `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>`;
-    if (s.observaciones && s.observaciones.length > 0) { let obsText = ''; s.observaciones.forEach(obs => { obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`; }); html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`; }
+    
+    // SE AGREGAN LAS OBSERVACIONES A LA IMPRESIÓN
+    if (s.observaciones && s.observaciones.length > 0) { 
+        let obsText = ''; 
+        s.observaciones.forEach(obs => { obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`; }); 
+        html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`; 
+    }
+    
     let firmaSolicitante = s.solicitante || '', firmaAutorizacion = s.autorizadoPor || '_________________________', firmaMantenimiento = (s.estado === 'CONCLUIDO') ? (s.concluidoPor || nombreResponsableMantenimiento) : (s.estado === 'DESBLOQUEADA' ? 'Pendiente de Vo.Bo.' : 'Pendiente');
     if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente';
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') firmaAutorizacion = 'No requiere';
@@ -1382,6 +1390,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v5.0 - 100% Libre de errores de asignación");</script>
+<script>console.log("Script actualizado v6.0 - Observaciones y Reglas de Operador corregidas");</script>
 </body>
 </html>
