@@ -296,7 +296,7 @@
             <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
                 <h3 class="font-bold">🔍 Filtrar Solicitudes</h3>
                 <div class="flex flex-wrap gap-3">
-                    <div><label class="block text-sm font-semibold">Por solicitante</label><input type="text" id="filtroSolicitante" placeholder="Nombre" class="border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
+                    <div><label class="block text-sm font-semibold">Por solicitante o evento</label><input type="text" id="filtroSolicitante" placeholder="Nombre o Evento" class="border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
                     <div><label class="block text-sm font-semibold">Por fecha</label><input type="date" id="filtroFecha" class="border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()"></div>
                     <button onclick="limpiarFiltros()" class="bg-gray-200 px-3 py-1 rounded self-end">Limpiar</button>
                 </div>
@@ -833,7 +833,6 @@ function cargarMisSolicitudes() {
         else if (s.estado === 'CONCLUIDO') est = '✅ Concluida';
         else if (s.estado === 'RECHAZADA') est = '🔴 Rechazada';
 
-        // REGLA: Si está aprobada o concluida, NO se puede modificar a menos que esté desbloqueada
         let botonModificar = '';
         if (s.estado !== 'RECHAZADA' && s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO') {
             botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
@@ -841,9 +840,13 @@ function cargarMisSolicitudes() {
             botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
         }
 
+        // AGREGADO: Nombre del evento en la tarjeta
+        let nombreEventoHTML = s.tipo === 'evento' && s.nombreEvento ? `<div class="text-sm font-semibold text-colegio-naranja mt-1"><i class="fas fa-star"></i> Evento: ${s.nombreEvento}</div>` : '';
+
         lista.innerHTML += `
         <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
+            ${nombreEventoHTML}
             <div class="text-sm text-gray-600">Fecha solicitud: ${s.fechaSolicitud}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
@@ -854,7 +857,6 @@ function cargarMisSolicitudes() {
                 ${botonModificar}
                 ${(usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir</button>` : ''}
             </div>
-            <!-- MOSTRAR OBSERVACIONES CON BOTONES -->
             ${s.observaciones && s.observaciones.length > 0 ? `<div class="mt-3">${s.observaciones.map((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
                 return `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) - ${obs.fecha}</div><div class="obs-texto">${obs.texto}</div></div>
@@ -888,7 +890,6 @@ function cargarBandejaProyectos() {
             botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
         }
         
-        // REGLA: Botones de modificar/eliminar/observar SOLO visibles si NO está aprobada/concluida, o si se desbloqueó.
         const puedeModificar = (s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO') || s.estado === 'DESBLOQUEADA';
         
         if (puedeModificar && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
@@ -916,9 +917,13 @@ function cargarBandejaProyectos() {
             obsHTML += `</div>`;
         }
 
+        // AGREGADO: Nombre del evento en la tarjeta
+        let nombreEventoHTML = s.tipo === 'evento' && s.nombreEvento ? `<div class="text-sm font-semibold text-colegio-naranja mt-1"><i class="fas fa-star"></i> Evento: ${s.nombreEvento}</div>` : '';
+
         lista.innerHTML += `
         <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
+            ${nombreEventoHTML}
             <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Fecha: ${s.fechaSolicitud}</div>
             <div class="text-sm mt-1">${s.descripcion}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
@@ -1017,7 +1022,13 @@ function filtrarSolicitudesCoordinacion() {
     const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim(); const ff = document.getElementById('filtroFecha').value;
     const lista = document.getElementById('listaCoordinacion'); lista.innerHTML = '';
     const filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'PENDIENTE_PROYECTOS')
-        .filter(s => { if(fs && !s.solicitante.toLowerCase().includes(fs)) return false; if(ff && s.fechaSolicitud !== ff) return false; return true; });
+        .filter(s => { 
+            // FILTRO ACTUALIZADO: Busca por solicitante O por nombre del evento
+            const coincideNombre = s.solicitante.toLowerCase().includes(fs) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fs));
+            if(fs && !coincideNombre) return false; 
+            if(ff && s.fechaSolicitud !== ff) return false; 
+            return true; 
+        });
     
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
     
@@ -1033,7 +1044,6 @@ function filtrarSolicitudesCoordinacion() {
         let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
         let btnBloquear = (s.estado === 'DESBLOQUEADA' && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
         
-        // REGLA: Botones de modificar/eliminar/observar SOLO visibles si NO está aprobada/concluida, o si se desbloqueó.
         const puedeModificar = (s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO') || s.estado === 'DESBLOQUEADA';
         
         let btnEliminar = (puedeModificar && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
@@ -1054,9 +1064,13 @@ function filtrarSolicitudesCoordinacion() {
             obsHTML += `</div>`;
         }
         
+        // AGREGADO: Nombre del evento en la tarjeta
+        let nombreEventoHTML = s.tipo === 'evento' && s.nombreEvento ? `<div class="text-sm font-semibold text-colegio-naranja mt-1"><i class="fas fa-star"></i> Evento: ${s.nombreEvento}</div>` : '';
+
         lista.innerHTML += `
         <div class="border rounded-lg p-4 ${clase} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
+            ${nombreEventoHTML}
             <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Fecha: ${s.fechaSolicitud}</div>
             <div class="text-sm mt-1">${s.descripcion}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
@@ -1111,8 +1125,10 @@ async function eliminarObservacion(solicitudId, index) {
 
 function enviarWhatsApp(id) {
     const s = solicitudes.find(x => x.id === id); if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
-    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n📌 Folio: #' + s.id + '\n👤 Solicitante: ' + s.solicitante + '\n🏫 Sección: ' + s.area + '\n📅 Fecha: ' + s.fechaSolicitud + '\n📝 Descripción: ' + s.descripcion + '\n';
-    if (s.tipo === 'evento') mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
+    let mensaje = '📋 *SOLICITUD DE ' + (s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO') + '*\n📌 Folio: #' + s.id + '\n';
+    if (s.tipo === 'evento') mensaje += '🎯 Evento: ' + (s.nombreEvento || 'N/A') + '\n';
+    mensaje += '👤 Solicitante: ' + s.solicitante + '\n🏫 Sección: ' + s.area + '\n📅 Fecha: ' + s.fechaSolicitud + '\n📝 Descripción: ' + s.descripcion + '\n';
+    if (s.tipo === 'evento') mensaje += '📅 Fecha evento: ' + (s.fechaEvento || 'N/A') + '\n📍 Lugar: ' + (s.lugarEvento || 'N/A') + '\n';
     mensaje += '\n📌 *Estado: ' + s.estado + '*';
     if (s.autorizadoPor) mensaje += '\n✅ Autorizado por: ' + s.autorizadoPor;
     if (s.concluidoPor) mensaje += '\n🔧 Concluido por: ' + s.concluidoPor;
@@ -1391,8 +1407,12 @@ function imprimirSolicitud(id) {
     const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }); const horaActual = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
     const c = document.getElementById('formatoImpresion');
     let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">${tipoEtiqueta}</div><div class="subtitulo-header">${s.area}</div><div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">${tipoEtiqueta}</div><div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
-    let html = `${headerHTML}<table><tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr><tr><td>Sección que solicita</td><td>${s.area}</td></tr><tr><td>Solicitante</td><td>${s.solicitante}</td></tr><tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
-    if (s.tipo === 'evento') html += `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
+    
+    let html = `${headerHTML}<table><tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr><tr><td>Sección que solicita</td><td>${s.area}</td></tr><tr><td>Solicitante</td><td>${s.solicitante}</td></tr>`;
+    if (s.tipo === 'evento' && s.nombreEvento) html += `<tr><td>Nombre del evento</td><td><b>${s.nombreEvento}</b></td></tr>`;
+    html += `<tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
+    if (s.tipo === 'evento') html += `<tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
+    
     html += `<tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
     if (s.autorizadoPor) html += `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>`; else if (s.estado === 'PENDIENTE_MANTENIMIENTO') html += `<tr><td>Autorizado por</td><td>No requiere (Mantenimiento)</td></tr>`; else html += `<tr><td>Autorizado por</td><td>Pendiente</td></tr>`;
     if (s.estado === 'CONCLUIDO' && s.concluidoPor) html += `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>`;
@@ -1445,6 +1465,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v7.0 - Reglas de edición y observaciones corregidas");</script>
+<script>console.log("Script actualizado v8.0 - Nombres de eventos y filtros añadidos");</script>
 </body>
 </html>
