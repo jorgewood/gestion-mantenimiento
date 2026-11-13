@@ -728,7 +728,7 @@ function nuevaSolicitud() {
 async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
-    const s = {
+    let s = {
         tipo: tipo, area: document.getElementById('areaSolicitante').value, descripcion: document.getElementById('descripcionSol').value.trim(),
         fechaSolicitud: document.getElementById('fechaSolicitud').value, fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
         nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '', lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
