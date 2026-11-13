@@ -1698,10 +1698,61 @@ async function imprimirOrdenCompra(id) {
     try {
         const compras = await apiRequest('/api/compras'); const c = compras.find(x => x.id === id); if (!c) return;
         const fechaActual = new Date().toLocaleDateString('es-MX');
-        let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">SOLICITUD DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">SOLICITUD DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
-        let filas = ''; if (c.articulos) c.articulos.forEach(art => { filas += `<tr><td>${art.articulo}</td><td>${art.cantidad}</td></tr>`; });
         
-        let html = `${headerHTML}<table><tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr><tr><td>Fecha</td><td>${c.fecha}</td></tr><tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr><tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr></table><h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4><table><thead><tr style="background: #f3f4f6;"><th style="text-align: left; padding: 8px; border: 1px solid #d1d5db;">Descripción del Artículo</th><th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 100px;">Cantidad</th></tr></thead><tbody>${filas}</tbody></table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${c.solicitado_por}</div><div class="linea"></div><div class="firma-cargo">Solicita Coordinación de Mantenimiento</div><div class="firma-fecha">${c.fecha}</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Autoriza Administración</div><div class="firma-fecha">Pendiente</div></div></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">SOLICITUD DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">SOLICITUD DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
+        
+        // Se invierte el orden: Cantidad a la izquierda, Descripción a la derecha
+        let filas = ''; 
+        if (c.articulos) {
+            c.articulos.forEach(art => { 
+                filas += `<tr>
+                    <td style="text-align: center; width: 20%;">${art.cantidad}</td>
+                    <td style="width: 80%;">${art.articulo}</td>
+                </tr>`; 
+            });
+        }
+        
+        let html = `${headerHTML}
+        <table>
+            <tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr>
+            <tr><td>Fecha</td><td>${c.fecha}</td></tr>
+            <tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr>
+            <tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr>
+        </table>
+        
+        <h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4>
+        <table style="table-layout: fixed;">
+            <thead>
+                <tr style="background: #f3f4f6;">
+                    <th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 20%;">Cantidad</th>
+                    <th style="text-align: left; padding: 8px; border: 1px solid #d1d5db; width: 80%;">Descripción del Artículo</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filas}
+            </tbody>
+        </table>
+        
+        <div class="firmas">
+            <div class="firma-item">
+                <div class="firma-nombre">${c.solicitado_por}</div>
+                <div class="linea"></div>
+                <div class="firma-cargo">Solicita Coordinación de Mantenimiento</div>
+                <div class="firma-fecha">${c.fecha}</div>
+            </div>
+            <div class="firma-item">
+                <div class="firma-nombre">_________________________</div>
+                <div class="linea"></div>
+                <div class="firma-cargo">Autoriza Administración</div>
+                <div class="firma-fecha">Pendiente</div>
+            </div>
+        </div>
+        <div class="pie-pagina">
+            <span>${fechaActual}</span>
+            <span>SISTEMA DE MANTENIMIENTO</span>
+            <span>v1.0</span>
+        </div>`;
+        
         const formato = document.getElementById('formatoImpresion'); formato.innerHTML = html; formato.style.display = 'block';
         setTimeout(() => { window.print(); setTimeout(() => { formato.style.display = 'none'; }, 500); }, 300);
     } catch (error) { alert('❌ Error: ' + error.message); }
@@ -1715,6 +1766,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v11.1 - Columnas corregidas en Solicitud de Compra");</script>
+<script>console.log("Script actualizado v12.0 - Columnas de compra corregidas (Cantidad izquierda, Descripción derecha)");</script>
 </body>
 </html>
