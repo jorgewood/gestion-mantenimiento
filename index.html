@@ -259,12 +259,19 @@
     <section id="misSolicitudes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Mis Solicitudes</h2>
         
+        <!-- TABS PARA MIS SOLICITUDES -->
+        <div class="flex border-b mb-4">
+            <button id="tabMisServicios" onclick="cambiarTabMis('servicio')" class="px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul">🛠️ Servicios</button>
+            <button id="tabMisEventos" onclick="cambiarTabMis('evento')" class="px-4 py-2 font-semibold text-gray-500 hover:text-colegio-azul">📅 Eventos</button>
+        </div>
+
         <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
-            <h3 class="font-bold text-sm">🔍 Filtrar Mis Solicitudes</h3>
-            <div class="flex flex-wrap gap-3">
-                <div><label class="block text-xs font-semibold">Por fecha</label><input type="date" id="filtroFechaMis" class="border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()"></div>
-                <div><label class="block text-xs font-semibold">Por estado</label>
-                    <select id="filtroEstadoMis" class="border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()">
+            <h3 class="font-bold text-sm">🔍 Filtrar</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div><label class="block text-xs font-semibold">Por Evento/Solicitante</label><input type="text" id="filtroMisBuscar" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarMisSolicitudes()" placeholder="Buscar..."></div>
+                <div><label class="block text-xs font-semibold">Por Fecha</label><input type="date" id="filtroMisFecha" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()"></div>
+                <div><label class="block text-xs font-semibold">Estado</label>
+                    <select id="filtroMisEstado" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()">
                         <option value="">Todos</option>
                         <option value="PENDIENTE_PROYECTOS">En Evaluación</option>
                         <option value="PENDIENTE_MANTENIMIENTO">Pendiente</option>
@@ -274,8 +281,8 @@
                         <option value="DESBLOQUEADA">Desbloqueada</option>
                     </select>
                 </div>
-                <button onclick="limpiarFiltrosMis()" class="bg-gray-200 px-3 py-1 rounded self-end text-sm">Limpiar</button>
             </div>
+            <button onclick="limpiarFiltrosMis()" class="bg-gray-200 px-3 py-1 rounded text-sm mt-2">Limpiar</button>
         </div>
         
         <div id="listaMisSolicitudes" class="space-y-3"></div>
@@ -283,7 +290,31 @@
 
     <section id="bandaProyectos" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-naranja">⚖️ Bandeja de Proyectos Generales</h2>
-        <p class="mb-4 text-gray-600">Solicitudes pendientes, autorizadas y concluidas:</p>
+        
+        <!-- TABS PARA PROYECTOS -->
+        <div class="flex border-b mb-4">
+            <button id="tabProyServicios" onclick="cambiarTabProy('servicio')" class="px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja">🛠️ Servicios</button>
+            <button id="tabProyEventos" onclick="cambiarTabProy('evento')" class="px-4 py-2 font-semibold text-gray-500 hover:text-colegio-naranja">📅 Eventos</button>
+        </div>
+
+        <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
+            <h3 class="font-bold text-sm">🔍 Filtrar</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div><label class="block text-xs font-semibold">Por Evento/Solicitante</label><input type="text" id="filtroProyBuscar" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarBandejaProyectos()" placeholder="Buscar..."></div>
+                <div><label class="block text-xs font-semibold">Por Fecha</label><input type="date" id="filtroProyFecha" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarBandejaProyectos()"></div>
+                <div><label class="block text-xs font-semibold">Estado</label>
+                    <select id="filtroProyEstado" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarBandejaProyectos()">
+                        <option value="">Todos</option>
+                        <option value="PENDIENTE_PROYECTOS">En Evaluación</option>
+                        <option value="APROBADA">Autorizada</option>
+                        <option value="CONCLUIDO">Concluida</option>
+                        <option value="DESBLOQUEADA">Desbloqueada</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="limpiarFiltrosProyectos()" class="bg-gray-200 px-3 py-1 rounded text-sm mt-2">Limpiar</button>
+        </div>
+        
         <div id="listaProyectos" class="space-y-3"></div>
     </section>
 
@@ -294,12 +325,26 @@
 
         <div id="adminSolicitudes">
             <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
-                <h3 class="font-bold">🔍 Filtrar Solicitudes</h3>
-                <div class="flex flex-wrap gap-3">
-                    <div><label class="block text-sm font-semibold">Por solicitante o evento</label><input type="text" id="filtroSolicitante" placeholder="Nombre o Evento" class="border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
-                    <div><label class="block text-sm font-semibold">Por fecha</label><input type="date" id="filtroFecha" class="border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()"></div>
-                    <button onclick="limpiarFiltros()" class="bg-gray-200 px-3 py-1 rounded self-end">Limpiar</button>
+                <h3 class="font-bold">🔍 Filtrar</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div><label class="block text-sm font-semibold">Solicitante/Evento</label><input type="text" id="filtroSolicitante" placeholder="Buscar..." class="w-full border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
+                    <div><label class="block text-sm font-semibold">Por Fecha</label><input type="date" id="filtroFecha" class="w-full border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()"></div>
+                    <div><label class="block text-sm font-semibold">Tipo/Estado</label>
+                        <select id="filtroTipo" class="w-full border rounded px-3 py-1 mb-1" onchange="filtrarSolicitudesCoordinacion()">
+                            <option value="">Todos los Tipos</option>
+                            <option value="servicio">Servicio</option>
+                            <option value="evento">Evento</option>
+                        </select>
+                        <select id="filtroEstado" class="w-full border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()">
+                            <option value="">Todos los Estados</option>
+                            <option value="PENDIENTE_MANTENIMIENTO">Pendiente</option>
+                            <option value="APROBADA">Autorizada</option>
+                            <option value="CONCLUIDO">Concluida</option>
+                            <option value="DESBLOQUEADA">Desbloqueada</option>
+                        </select>
+                    </div>
                 </div>
+                <button onclick="limpiarFiltros()" class="bg-gray-200 px-3 py-1 rounded mt-2">Limpiar</button>
             </div>
             <div id="listaCoordinacion" class="space-y-3"></div>
         </div>
@@ -321,7 +366,7 @@
                 </div>
                 
                 <div class="border p-3 rounded bg-gray-50 mt-2">
-                    <label class="font-bold text-sm block mb-2 text-colegio-azul"><i class="fas fa-shield-alt"></i> Permisos de Visibilidad (Opciones en el menú)</label>
+                    <label class="font-bold text-sm block mb-2 text-colegio-azul"><i class="fas fa-shield-alt"></i> Permisos de Visibilidad</label>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
                         <label class="flex items-center gap-2"><input type="checkbox" value="solicitudes" class="permiso-checkbox" checked> Solicitudes</label>
                         <label class="flex items-center gap-2"><input type="checkbox" value="proyectos" class="permiso-checkbox"> Proyectos Grales</label>
@@ -410,6 +455,23 @@
 
     <section id="panelOrdenes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Órdenes de Trabajo</h2>
+        
+        <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
+            <h3 class="font-bold text-sm">🔍 Filtrar Órdenes</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div><label class="block text-xs font-semibold">Por Empleado</label><input type="text" id="filtroOrdenEmpleado" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarOrdenes()" placeholder="Nombre..."></div>
+                <div><label class="block text-xs font-semibold">Por Solicitante</label><input type="text" id="filtroOrdenSolicitante" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarOrdenes()" placeholder="Nombre..."></div>
+                <div><label class="block text-xs font-semibold">Por Estado</label>
+                    <select id="filtroOrdenEstado" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarOrdenes()">
+                        <option value="">Todos los Estados</option>
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="CONCLUIDO">Concluida</option>
+                    </select>
+                </div>
+                <div class="flex items-end"><button onclick="limpiarFiltrosOrdenes()" class="bg-gray-200 px-3 py-1 rounded text-sm w-full">Limpiar</button></div>
+            </div>
+        </div>
+        
         <div id="listaOrdenes" class="space-y-3"></div>
     </section>
 
@@ -458,6 +520,17 @@
             <div class="mb-3"><label class="font-semibold">Observaciones</label><textarea id="compraObservaciones" rows="2" class="w-full border rounded px-3 py-2"></textarea></div>
             <button onclick="guardarOrdenCompra()" class="bg-colegio-azul text-white px-4 py-2 rounded">Generar Solicitud de Compra</button>
         </div>
+        
+        <div class="bg-white rounded shadow p-4 mb-4 space-y-2 mt-6">
+            <h3 class="font-bold text-sm">🔍 Filtrar Solicitudes de Compra</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div><label class="block text-xs font-semibold">Por Proveedor</label><input type="text" id="filtroCompraProveedor" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarCompras()" placeholder="Nombre..."></div>
+                <div><label class="block text-xs font-semibold">Por Solicitante</label><input type="text" id="filtroCompraSolicitante" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarCompras()" placeholder="Solicitado por..."></div>
+                <div><label class="block text-xs font-semibold">Por Fecha</label><input type="date" id="filtroCompraFecha" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarCompras()"></div>
+                <div class="flex items-end"><button onclick="limpiarFiltrosCompras()" class="bg-gray-200 px-3 py-1 rounded text-sm w-full">Limpiar</button></div>
+            </div>
+        </div>
+
         <div id="listaCompras" class="space-y-3"></div>
     </section>
 
@@ -532,6 +605,10 @@ let usuarios = {};
 let numeroWhatsAppDestino = '';
 let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
+
+// VARIABLES PARA PESTAÑAS (TABS)
+let tabMisActiva = 'servicio';
+let tabProyActiva = 'servicio';
 
 // ==================== MENÚS DESPLEGABLES ====================
 function toggleMenu(id) {
@@ -810,19 +887,67 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
     else if (id === 'panelProveedores') cargarListaProveedores();
 }
 
+// ==================== LÓGICA DE PESTAÑAS ====================
+function cambiarTabMis(tipo) {
+    tabMisActiva = tipo;
+    const btnServicio = document.getElementById('tabMisServicios');
+    const btnEvento = document.getElementById('tabMisEventos');
+    
+    if (tipo === 'servicio') {
+        btnServicio.className = 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul';
+        btnEvento.className = 'px-4 py-2 font-semibold text-gray-500 hover:text-colegio-azul';
+    } else {
+        btnEvento.className = 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul';
+        btnServicio.className = 'px-4 py-2 font-semibold text-gray-500 hover:text-colegio-azul';
+    }
+    cargarMisSolicitudes();
+}
+
+function cambiarTabProy(tipo) {
+    tabProyActiva = tipo;
+    const btnServicio = document.getElementById('tabProyServicios');
+    const btnEvento = document.getElementById('tabProyEventos');
+    
+    if (tipo === 'servicio') {
+        btnServicio.className = 'px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja';
+        btnEvento.className = 'px-4 py-2 font-semibold text-gray-500 hover:text-colegio-naranja';
+    } else {
+        btnEvento.className = 'px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja';
+        btnServicio.className = 'px-4 py-2 font-semibold text-gray-500 hover:text-colegio-naranja';
+    }
+    cargarBandejaProyectos();
+}
+
 // ==================== MIS SOLICITUDES ====================
 function cargarMisSolicitudes() {
     const lista = document.getElementById('listaMisSolicitudes'); lista.innerHTML = '';
     
-    const fFecha = document.getElementById('filtroFechaMis').value;
-    const fEstado = document.getElementById('filtroEstadoMis').value;
+    const fBuscar = document.getElementById('filtroMisBuscar').value.toLowerCase().trim();
+    const fFecha = document.getElementById('filtroMisFecha').value;
+    const fEstado = document.getElementById('filtroMisEstado').value;
 
-    let misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre);
+    // FILTRADO BASE: Por Solicitante y Pestaña Activa
+    let misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre && s.tipo === tabMisActiva);
     
+    if (fBuscar) {
+        misSolicitudes = misSolicitudes.filter(s => 
+            s.descripcion.toLowerCase().includes(fBuscar) || 
+            (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar))
+        );
+    }
     if (fFecha) misSolicitudes = misSolicitudes.filter(s => s.fechaSolicitud === fFecha);
     if (fEstado) misSolicitudes = misSolicitudes.filter(s => s.estado === fEstado);
 
-    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con esos filtros.</p>'; return; }
+    // ORDENAMIENTO: Eventos por fechaEvento, Servicios por fechaSolicitud
+    misSolicitudes.sort((a, b) => {
+        if (tabMisActiva === 'evento') {
+            return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
+        } else {
+            return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud); // Servicios: más recientes primero
+        }
+    });
+
+    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas en esta categoría.</p>'; return; }
     
     misSolicitudes.forEach(s => {
         let est = '', claseExtra = '', badge = '';
@@ -846,8 +971,8 @@ function cargarMisSolicitudes() {
         <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Fecha solicitud: ${s.fechaSolicitud}</div>
-            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
+            <div class="text-sm text-gray-600">Fecha de creación: ${s.fechaSolicitud}</div>
+            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 font-semibold">${est} ${badge}</div>
             ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
@@ -859,18 +984,48 @@ function cargarMisSolicitudes() {
             ${s.observaciones && s.observaciones.length > 0 ? `<div class="mt-3">${s.observaciones.map((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
                 return `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) - ${obs.fecha}</div><div class="obs-texto">${obs.texto}</div></div>
-                ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
+                ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="event.stopPropagation(); editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
             }).join('')}</div>` : ''}
         </div>`;
     });
 }
-function limpiarFiltrosMis() { document.getElementById('filtroFechaMis').value = ''; document.getElementById('filtroEstadoMis').value = ''; cargarMisSolicitudes(); }
+function limpiarFiltrosMis() { 
+    document.getElementById('filtroMisBuscar').value = '';
+    document.getElementById('filtroMisFecha').value = '';
+    document.getElementById('filtroMisEstado').value = '';
+    cargarMisSolicitudes(); 
+}
 
 // ==================== BANDEJA PROYECTOS ====================
 function cargarBandejaProyectos() {
     const lista = document.getElementById('listaProyectos'); lista.innerHTML = '';
-    const proyectos = solicitudes.filter(s => s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA');
-    if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes.</p>'; return; }
+    
+    const fBuscar = document.getElementById('filtroProyBuscar').value.toLowerCase().trim();
+    const fFecha = document.getElementById('filtroProyFecha').value;
+    const fEstado = document.getElementById('filtroProyEstado').value;
+
+    // FILTRADO BASE: Pestaña Activa y Estados válidos para Proyectos
+    let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva && (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA'));
+    
+    if (fBuscar) {
+        proyectos = proyectos.filter(s => 
+            s.solicitante.toLowerCase().includes(fBuscar) || 
+            (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar))
+        );
+    }
+    if (fFecha) proyectos = proyectos.filter(s => s.fechaSolicitud === fFecha);
+    if (fEstado) proyectos = proyectos.filter(s => s.estado === fEstado);
+
+    // ORDENAMIENTO: Eventos por fechaEvento, Servicios por fechaSolicitud
+    proyectos.sort((a, b) => {
+        if (tabProyActiva === 'evento') {
+            return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
+        } else {
+            return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
+        }
+    });
+
+    if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes en esta categoría.</p>'; return; }
     
     proyectos.forEach(s => {
         let etiquetaEstado = '', colorFila = '', badge = '';
@@ -911,7 +1066,7 @@ function cargarBandejaProyectos() {
             s.observaciones.forEach((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
                 obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div><div class="obs-texto">${obs.texto}</div></div>
-                ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
+                ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="event.stopPropagation(); editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
             });
             obsHTML += `</div>`;
         }
@@ -922,15 +1077,21 @@ function cargarBandejaProyectos() {
         <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Fecha: ${s.fechaSolicitud}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${s.fechaSolicitud}</div>
+            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
-            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="mt-2 font-semibold">${etiquetaEstado} ${badge}</div>
             ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
             ${obsHTML}
             <div class="mt-3 flex flex-wrap gap-2">${botones}</div>
         </div>`;
     });
+}
+function limpiarFiltrosProyectos() {
+    document.getElementById('filtroProyBuscar').value = '';
+    document.getElementById('filtroProyFecha').value = '';
+    document.getElementById('filtroProyEstado').value = '';
+    cargarBandejaProyectos();
 }
 
 // ==================== AUTORIZAR, ELIMINAR, ETC ====================
@@ -1017,16 +1178,32 @@ function cancelarEdicionSol() {
 }
 
 function filtrarSolicitudesCoordinacion() {
-    const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim(); const ff = document.getElementById('filtroFecha').value;
+    const fs = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
+    const ff = document.getElementById('filtroFecha').value;
+    const ft = document.getElementById('filtroTipo').value;
+    const fest = document.getElementById('filtroEstado').value;
+
     const lista = document.getElementById('listaCoordinacion'); lista.innerHTML = '';
-    const filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'PENDIENTE_PROYECTOS')
-        .filter(s => { 
-            const coincideNombre = s.solicitante.toLowerCase().includes(fs) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fs));
-            if(fs && !coincideNombre) return false; 
-            if(ff && s.fechaSolicitud !== ff) return false; 
-            return true; 
-        });
     
+    let filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'PENDIENTE_PROYECTOS');
+    
+    if (fs) {
+        filtradas = filtradas.filter(s => 
+            s.solicitante.toLowerCase().includes(fs) || 
+            (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fs))
+        );
+    }
+    if (ff) filtradas = filtradas.filter(s => s.fechaSolicitud === ff);
+    if (ft) filtradas = filtradas.filter(s => s.tipo === ft);
+    if (fest) filtradas = filtradas.filter(s => s.estado === fest);
+    
+    // ORDENAMIENTO GENERAL: Eventos por fechaEvento, Servicios por fechaSolicitud
+    filtradas.sort((a, b) => {
+        if (a.tipo === 'evento' && b.tipo === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
+        if (a.tipo === 'servicio' && b.tipo === 'servicio') return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
+        return 0; // Si son mixtos, mantener orden
+    });
+
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
     
     filtradas.forEach(s => {
@@ -1056,7 +1233,7 @@ function filtrarSolicitudesCoordinacion() {
             s.observaciones.forEach((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
                 obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div><div class="obs-texto">${obs.texto}</div></div>
-                ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
+                ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="event.stopPropagation(); editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
             });
             obsHTML += `</div>`;
         }
@@ -1067,9 +1244,9 @@ function filtrarSolicitudesCoordinacion() {
         <div class="border rounded-lg p-4 ${clase} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Fecha: ${s.fechaSolicitud}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${s.fechaSolicitud}</div>
+            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
-            ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja mt-1">📅 Requerido: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="mt-2 flex flex-wrap gap-2 items-center">
                 <span class="font-semibold text-sm">${est} ${badge}</span>
                 <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
@@ -1081,7 +1258,13 @@ function filtrarSolicitudesCoordinacion() {
     });
 }
 
-function limpiarFiltros() { document.getElementById('filtroSolicitante').value=''; document.getElementById('filtroFecha').value=''; filtrarSolicitudesCoordinacion(); }
+function limpiarFiltros() {
+    document.getElementById('filtroSolicitante').value = '';
+    document.getElementById('filtroFecha').value = '';
+    document.getElementById('filtroTipo').value = '';
+    document.getElementById('filtroEstado').value = '';
+    filtrarSolicitudesCoordinacion();
+}
 
 async function agregarObservacion(id) {
     const s = solicitudes.find(x => x.id === id);
@@ -1264,13 +1447,34 @@ function cancelarEdicionEmpleado() { document.getElementById('idEditarEmpleado')
 async function eliminarEmpleado(id) { if (!confirm('⚠️ ¿Eliminar empleado?')) return; try { await apiRequest(`/api/empleados/${id}`, 'DELETE'); cargarEmpleados(); } catch (error) { alert('❌ Error: ' + error.message); } }
 
 // ==================== ÓRDENES ====================
-async function cargarOrdenes() {
+function cargarOrdenes() {
     const lista = document.getElementById('listaOrdenes'); lista.innerHTML = 'Cargando...';
-    try {
-        const ordenes = await apiRequest('/api/ordenes');
+    
+    const fEmpleado = document.getElementById('filtroOrdenEmpleado').value.toLowerCase().trim();
+    const fSolicitante = document.getElementById('filtroOrdenSolicitante').value.toLowerCase().trim();
+    const fEstado = document.getElementById('filtroOrdenEstado').value;
+
+    apiRequest('/api/ordenes').then(ordenes => {
         if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
-        lista.innerHTML = ordenes.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
-    } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
+        
+        let filtradas = ordenes;
+        if (fEmpleado) filtradas = filtradas.filter(o => o.empleado_nombre && o.empleado_nombre.toLowerCase().includes(fEmpleado));
+        if (fSolicitante) filtradas = filtradas.filter(o => o.solicitante && o.solicitante.toLowerCase().includes(fSolicitante));
+        if (fEstado) filtradas = filtradas.filter(o => o.estado === fEstado);
+
+        // ORDENAMIENTO: Órdenes de trabajo por fecha de creación
+        filtradas.sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
+
+        if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes con esos filtros.</p>'; return; }
+
+        lista.innerHTML = filtradas.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Solicitante: ${o.solicitante} | Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+    }).catch(error => { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; });
+}
+function limpiarFiltrosOrdenes() {
+    document.getElementById('filtroOrdenEmpleado').value = '';
+    document.getElementById('filtroOrdenSolicitante').value = '';
+    document.getElementById('filtroOrdenEstado').value = '';
+    cargarOrdenes();
 }
 
 async function cargarOrdenesSilencioso() {
@@ -1369,13 +1573,35 @@ async function guardarOrdenCompra() {
     if (!proveedor_id || articulos.length === 0) { alert('Selecciona proveedor y artículos.'); return; }
     try { await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos }); alert('✅ Solicitud generada'); cargarCompras(); document.getElementById('listaArticulosCompra').innerHTML = ''; document.getElementById('compraObservaciones').value = ''; } catch (error) { alert('❌ Error: ' + error.message); }
 }
-async function cargarCompras() {
+
+function cargarCompras() {
     const lista = document.getElementById('listaCompras'); lista.innerHTML = 'Cargando...';
-    try {
-        const compras = await apiRequest('/api/compras');
+    
+    const fProveedor = document.getElementById('filtroCompraProveedor').value.toLowerCase().trim();
+    const fSolicitante = document.getElementById('filtroCompraSolicitante').value.toLowerCase().trim();
+    const fFecha = document.getElementById('filtroCompraFecha').value;
+
+    apiRequest('/api/compras').then(compras => {
         if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes de compra.</p>'; return; }
-        lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
-    } catch (error) { lista.innerHTML = 'Error'; }
+        
+        let filtradas = compras;
+        if (fProveedor) filtradas = filtradas.filter(c => c.proveedor_nombre && c.proveedor_nombre.toLowerCase().includes(fProveedor));
+        if (fSolicitante) filtradas = filtradas.filter(c => c.solicitado_por && c.solicitado_por.toLowerCase().includes(fSolicitante));
+        if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
+
+        // ORDENAMIENTO: Solicitudes de compra por fecha de creación
+        filtradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+        if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes con esos filtros.</p>'; return; }
+
+        lista.innerHTML = filtradas.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+    }).catch(error => { lista.innerHTML = 'Error'; });
+}
+function limpiarFiltrosCompras() {
+    document.getElementById('filtroCompraProveedor').value = '';
+    document.getElementById('filtroCompraSolicitante').value = '';
+    document.getElementById('filtroCompraFecha').value = '';
+    cargarCompras();
 }
 
 async function cargarComprasSilencioso() {
@@ -1461,6 +1687,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v8.1 - Error de eliminación de observaciones corregido");</script>
+<script>console.log("Script actualizado v10.0 - Pestañas de Servicios/Eventos y ordenamientos por fecha aplicados");</script>
 </body>
 </html>
