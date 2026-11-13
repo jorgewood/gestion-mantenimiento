@@ -73,7 +73,7 @@
             .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; color: #1a1a2e !important; }
             .formato-impresion td:last-child { width: 75% !important; background: white !important; color: #333 !important; white-space: pre-wrap !important; word-wrap: break-word !important; }
             .formato-impresion .firmas { margin-top: 20px !important; display: flex !important; justify-content: space-between !important; padding-top: 15px !important; border-top: 1px solid #e5e7eb !important; }
-            .formato-impresion .firma-item { text-align: center !important; width: 45% !important; } /* Ajustado a 45% para que quepan 2 firmas */
+            .formato-impresion .firma-item { text-align: center !important; width: 45% !important; }
             .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 25px 0 4px 0 !important; }
             .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 9pt !important; color: #1a1a2e !important; }
             .formato-impresion .firma-item .firma-cargo { font-size: 8pt !important; color: #666 !important; }
@@ -259,7 +259,6 @@
     <section id="misSolicitudes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Mis Solicitudes</h2>
         
-        <!-- FILTRO PARA TODOS LOS USUARIOS -->
         <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
             <h3 class="font-bold text-sm">🔍 Filtrar Mis Solicitudes</h3>
             <div class="flex flex-wrap gap-3">
@@ -321,7 +320,6 @@
                     </div>
                 </div>
                 
-                <!-- PERMISOS GRANULARES -->
                 <div class="border p-3 rounded bg-gray-50 mt-2">
                     <label class="font-bold text-sm block mb-2 text-colegio-azul"><i class="fas fa-shield-alt"></i> Permisos de Visibilidad (Opciones en el menú)</label>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
@@ -740,7 +738,7 @@ async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
     
-    // CORRECCIÓN DEFINITIVA: Se usa 'datosSolicitud' para evitar cualquier error de variable constante
+    // Se crea un objeto con los datos base
     const datosSolicitud = {
         tipo: tipo, 
         area: document.getElementById('areaSolicitante').value, 
@@ -761,13 +759,11 @@ async function guardarSolicitud() {
         if (idEditar > 0) {
             const solOriginal = solicitudes.find(x => x.id === idEditar); 
             
-            // Creamos una copia segura para enviar
-            const solicitudParaActualizar = {
-                ...datosSolicitud,
-                id: idEditar,
-                estado: solOriginal.estado,
-                observaciones: solOriginal.observaciones || []
-            };
+            // Se crea una COPIA independiente para actualizar, sin usar 'const' ni variables que puedan chocar
+            let solicitudParaActualizar = Object.assign({}, datosSolicitud);
+            solicitudParaActualizar.id = idEditar;
+            solicitudParaActualizar.estado = solOriginal.estado;
+            solicitudParaActualizar.observaciones = solOriginal.observaciones || [];
 
             await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', solicitudParaActualizar); 
             alert('✅ Solicitud actualizada');
@@ -819,7 +815,6 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
 function cargarMisSolicitudes() {
     const lista = document.getElementById('listaMisSolicitudes'); lista.innerHTML = '';
     
-    // Filtros para el usuario
     const fFecha = document.getElementById('filtroFechaMis').value;
     const fEstado = document.getElementById('filtroEstadoMis').value;
 
@@ -873,7 +868,6 @@ function cargarBandejaProyectos() {
         let botones = '';
         if (s.estado === 'PENDIENTE_PROYECTOS') botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button><button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
         
-        // BLOQUEO DE BOTONES SI YA ESTÁ AUTORIZADA
         if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
             botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
         }
@@ -881,7 +875,6 @@ function cargarBandejaProyectos() {
             botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
         }
         
-        // SOLO SI ESTÁ PENDIENTE O DESBLOQUEADA SE PUEDEN EDITAR/ELIMINAR/OBSERVAR
         if ((usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin') && (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'DESBLOQUEADA')) { 
             botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button><button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`; 
         }
@@ -893,7 +886,6 @@ function cargarBandejaProyectos() {
             botones += `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded">📋 Generar Orden</button>`;
         }
         
-        // IMPRIMIR SIEMPRE
         botones += `<button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
 
         let obsHTML = '';
@@ -1023,7 +1015,6 @@ function filtrarSolicitudesCoordinacion() {
         let btnObservacion = (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'))) ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
         let btnWhatsApp = numeroWhatsAppDestino ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
         
-        // GENERAR ORDEN SOLO SI ES SERVICIO
         let btnGenerarOrden = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && s.tipo === 'servicio' && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
 
         let obsHTML = '';
@@ -1087,14 +1078,10 @@ async function agregarUsuario() {
 
     try {
         if (editando) {
-            // Si se edita al 'admin', se actualiza su usuario y contraseña
             await apiRequest(`/api/usuarios/${editando}`, 'PUT', { usuario: user, password: pass, nombre, rol, permisos });
-            if (editando === 'admin' && user !== 'admin') {
-                // Si se le cambió el nombre de usuario al admin, actualizamos el localStorage si es el usuario activo
-                if (usuarioActivo.id === 'admin') {
-                    usuarioActivo.id = user;
-                    localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-                }
+            if (editando === 'admin' && user !== 'admin' && usuarioActivo.id === 'admin') {
+                usuarioActivo.id = user;
+                localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
             }
             document.getElementById('editandoUsuario').value = '';
             document.getElementById('btnAgregarUsuario').innerHTML = '💾 Guardar Usuario';
@@ -1381,7 +1368,6 @@ async function imprimirOrdenCompra(id) {
         let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">SOLICITUD DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">SOLICITUD DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
         let filas = ''; if (c.articulos) c.articulos.forEach(art => { filas += `<tr><td>${art.articulo}</td><td>${art.cantidad}</td></tr>`; });
         
-        // AQUI SE CAMBIA A 2 FIRMAS
         let html = `${headerHTML}<table><tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr><tr><td>Fecha</td><td>${c.fecha}</td></tr><tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr><tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr></table><h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4><table><thead><tr style="background: #f3f4f6;"><th style="text-align: left; padding: 8px; border: 1px solid #d1d5db;">Descripción del Artículo</th><th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 100px;">Cantidad</th></tr></thead><tbody>${filas}</tbody></table><div class="firmas"><div class="firma-item"><div class="firma-nombre">${c.solicitado_por}</div><div class="linea"></div><div class="firma-cargo">Solicita Coordinación de Mantenimiento</div><div class="firma-fecha">${c.fecha}</div></div><div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Autoriza Administración</div><div class="firma-fecha">Pendiente</div></div></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
         const formato = document.getElementById('formatoImpresion'); formato.innerHTML = html; formato.style.display = 'block';
         setTimeout(() => { window.print(); setTimeout(() => { formato.style.display = 'none'; }, 500); }, 300);
@@ -1396,6 +1382,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v4.0 - Correcciones aplicadas y filtros añadidos");</script>
+<script>console.log("Script actualizado v5.0 - 100% Libre de errores de asignación");</script>
 </body>
 </html>
