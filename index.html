@@ -728,6 +728,8 @@ function nuevaSolicitud() {
 async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
+    
+    // CORRECCIÓN: Se declara con 'let' para poder modificar el ID y estado al editar
     let s = {
         tipo: tipo, area: document.getElementById('areaSolicitante').value, descripcion: document.getElementById('descripcionSol').value.trim(),
         fechaSolicitud: document.getElementById('fechaSolicitud').value, fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
