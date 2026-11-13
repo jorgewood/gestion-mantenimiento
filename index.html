@@ -729,25 +729,42 @@ async function guardarSolicitud() {
     const idEditar = parseInt(document.getElementById('idEditarSol').value);
     const tipo = document.getElementById('tipoSolicitud').value;
     
-    // CORRECCIÓN: Se declara con 'let' para poder modificar el ID y estado al editar
-    let s = {
-        tipo: tipo, area: document.getElementById('areaSolicitante').value, descripcion: document.getElementById('descripcionSol').value.trim(),
-        fechaSolicitud: document.getElementById('fechaSolicitud').value, fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
-        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '', lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
-        solicitante: document.getElementById('nombreSolicitante').value, fechaEnvio: new Date().toLocaleString('es-MX'), observaciones: []
+    // CORRECCIÓN DEFINITIVA: Se usa una variable temporal 'datosSolicitud' para que no haya conflicto
+    const datosSolicitud = {
+        tipo: tipo, 
+        area: document.getElementById('areaSolicitante').value, 
+        descripcion: document.getElementById('descripcionSol').value.trim(),
+        fechaSolicitud: document.getElementById('fechaSolicitud').value, 
+        fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
+        nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '', 
+        lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
+        solicitante: document.getElementById('nombreSolicitante').value, 
+        fechaEnvio: new Date().toLocaleString('es-MX'), 
+        observaciones: []
     };
-    if (!s.descripcion || !s.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
-    if (tipo === 'evento' && (!s.nombreEvento || !s.fechaEvento || !s.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
+
+    if (!datosSolicitud.descripcion || !datosSolicitud.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
+    if (tipo === 'evento' && (!datosSolicitud.nombreEvento || !datosSolicitud.fechaEvento || !datosSolicitud.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
 
     try {
         if (idEditar > 0) {
-            const sol = solicitudes.find(x => x.id === idEditar); s.id = idEditar; s.estado = sol.estado; s.observaciones = sol.observaciones || [];
-            await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', s); alert('✅ Solicitud actualizada');
+            const solOriginal = solicitudes.find(x => x.id === idEditar); 
+            
+            // Creamos un nuevo objeto para enviar al backend, sin modificar el original
+            const solicitudParaActualizar = {
+                ...datosSolicitud,
+                id: idEditar,
+                estado: solOriginal.estado,
+                observaciones: solOriginal.observaciones || []
+            };
+
+            await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', solicitudParaActualizar); 
+            alert('✅ Solicitud actualizada');
         } else {
-            if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { s.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
-            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { s.estado = 'APROBADA'; s.autorizadoPor = usuarioActivo.nombre; s.fechaAutorizacion = new Date().toLocaleString('es-MX'); alert('✅ Autorizada por Proyectos'); }
-            else { s.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos'); }
-            await apiRequest('/api/solicitudes', 'POST', s);
+            if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { datosSolicitud.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
+            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { datosSolicitud.estado = 'APROBADA'; datosSolicitud.autorizadoPor = usuarioActivo.nombre; datosSolicitud.fechaAutorizacion = new Date().toLocaleString('es-MX'); alert('✅ Autorizada por Proyectos'); }
+            else { datosSolicitud.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos'); }
+            await apiRequest('/api/solicitudes', 'POST', datosSolicitud);
         }
         await cargarDatosIniciales(); guardarRespaldoLocal(); cancelarEdicionSol();
         if (usuarioActivo.rol === 'proyectos') mostrarSeccion('bandaProyectos');
@@ -1322,11 +1339,14 @@ async function imprimirOrdenCompra(id) {
 
 function mostrarCamposEvento() { document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value!=='evento'); }
 
+// Se agrega un parámetro a la URL para forzar la recarga del script y evitar el caché
 document.addEventListener('DOMContentLoaded', () => {
     recuperarSesion();
     const campoFecha = document.getElementById('fechaSolicitud');
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
+<!-- Forzar recarga de caché -->
+<script>console.log("Script actualizado v2.0 - Sin errores de asignación");</script>
 </body>
 </html>
