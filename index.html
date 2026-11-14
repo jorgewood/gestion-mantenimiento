@@ -55,26 +55,54 @@
         .storage-status.error { background: #EF4444; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
+        /* ==========================================
+           ESTILOS DE IMPRESIÓN CORREGIDOS (1 SOLA HOJA)
+           ========================================== */
         @media print {
+            @page {
+                size: Letter portrait;
+                margin: 10mm 12mm !important;
+            }
             body * { visibility: hidden !important; }
             #formatoImpresion, #formatoImpresion * { visibility: visible !important; }
-            #formatoImpresion { position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; z-index: 9999 !important; display: block !important; overflow: hidden !important; }
-            .formato-impresion { display: block !important; width: 100% !important; max-width: 210mm !important; min-height: 100% !important; padding: 12mm 15mm !important; margin: 0 auto !important; border: none !important; box-sizing: border-box !important; background: white !important; font-family: 'Segoe UI', Arial, sans-serif !important; font-size: 10pt !important; line-height: 1.5 !important; }
+            #formatoImpresion { 
+                position: absolute !important; 
+                left: 0; 
+                top: 0; 
+                width: 100% !important; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                background: white !important; 
+                z-index: 9999 !important; 
+                display: block !important; 
+            }
+            .formato-impresion { 
+                display: block !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                border: none !important; 
+                background: white !important; 
+                font-family: 'Segoe UI', Arial, sans-serif !important; 
+                font-size: 10pt !important; 
+                line-height: 1.4 !important; 
+            }
             .formato-impresion .header-impresion { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 15px !important; border-bottom: 3px solid #165DFF !important; padding-bottom: 10px !important; }
-            .formato-impresion .logo-impresion { max-height: 70px !important; max-width: 130px !important; object-fit: contain !important; }
-            .formato-impresion .header-text { text-align: right !important; line-height: 1.4 !important; }
+            .formato-impresion .logo-impresion { max-height: 65px !important; max-width: 120px !important; object-fit: contain !important; }
+            .formato-impresion .header-text { text-align: right !important; line-height: 1.3 !important; }
             .formato-impresion .header-text .titulo-principal { font-size: 14pt !important; font-weight: 800 !important; color: #165DFF !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
             .formato-impresion .header-text .subtitulo-header { font-size: 9pt !important; color: #555 !important; font-weight: 500 !important; }
             .formato-impresion .header-text .folio-header { font-size: 10pt !important; color: #333 !important; font-weight: 700 !important; }
             .formato-impresion .titulo-central { text-align: center !important; font-size: 16pt !important; font-weight: 800 !important; color: #1a1a2e !important; margin: 5px 0 3px 0 !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
             .formato-impresion .subtitulo-central { text-align: center !important; font-size: 10pt !important; color: #666 !important; margin-bottom: 12px !important; border-bottom: 2px solid #e5e7eb !important; padding-bottom: 8px !important; }
             .formato-impresion table { width: 100% !important; border-collapse: collapse !important; margin-top: 8px !important; font-size: 10pt !important; border: 1px solid #d1d5db !important; }
-            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 6px 10px !important; vertical-align: top !important; font-size: 10pt !important; }
+            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 5px 8px !important; vertical-align: top !important; font-size: 10pt !important; }
             .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; color: #1a1a2e !important; }
             .formato-impresion td:last-child { width: 75% !important; background: white !important; color: #333 !important; white-space: pre-wrap !important; word-wrap: break-word !important; }
-            .formato-impresion .firmas { margin-top: 20px !important; display: flex !important; justify-content: space-between !important; padding-top: 15px !important; border-top: 1px solid #e5e7eb !important; }
+            .formato-impresion .firmas { margin-top: 25px !important; display: flex !important; justify-content: space-between !important; padding-top: 15px !important; border-top: 1px solid #e5e7eb !important; }
             .formato-impresion .firma-item { text-align: center !important; width: 45% !important; }
-            .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 25px 0 4px 0 !important; }
+            .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 30px 0 4px 0 !important; }
             .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 9pt !important; color: #1a1a2e !important; }
             .formato-impresion .firma-item .firma-cargo { font-size: 8pt !important; color: #666 !important; }
             .formato-impresion .firma-item .firma-fecha { font-size: 7.5pt !important; color: #999 !important; }
@@ -86,9 +114,10 @@
             .formato-impresion .badge-concluida { background: #dbeafe !important; color: #165DFF !important; }
             .formato-impresion .badge-rechazada { background: #fee2e2 !important; color: #F53F3F !important; }
             .formato-impresion .badge-desbloqueada { background: #ede9fe !important; color: #722ED1 !important; }
-            @page { size: Letter !important; margin: 8mm 10mm !important; }
             .formato-impresion * { page-break-inside: avoid !important; page-break-after: avoid !important; }
         }
+        
+        /* ESTILOS DE PANTALLA (PREVISUALIZACIÓN) */
         .formato-impresion { display: none; background: white; padding: 25px 30px; border: 1px solid #e5e7eb; border-radius: 12px; max-width: 210mm; margin: 20px auto; font-family: 'Segoe UI', Arial, sans-serif; box-shadow: 0 4px 20px rgba(0,0,0,0.08); font-size: 10pt; line-height: 1.5; }
         .formato-impresion .header-impresion { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 3px solid #165DFF; padding-bottom: 10px; }
         .formato-impresion .logo-impresion { max-height: 70px; max-width: 130px; object-fit: contain; }
@@ -259,7 +288,6 @@
     <section id="misSolicitudes" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-azul">📋 Mis Solicitudes</h2>
         
-        <!-- TABS PARA MIS SOLICITUDES -->
         <div class="flex border-b mb-4">
             <button id="tabMisServicios" onclick="cambiarTabMis('servicio')" class="px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul">🛠️ Servicios</button>
             <button id="tabMisEventos" onclick="cambiarTabMis('evento')" class="px-4 py-2 font-semibold text-gray-500 hover:text-colegio-azul">📅 Eventos</button>
@@ -291,7 +319,6 @@
     <section id="bandaProyectos" class="hidden">
         <h2 class="text-xl font-bold mb-4 text-colegio-naranja">⚖️ Bandeja de Proyectos Generales</h2>
         
-        <!-- TABS PARA PROYECTOS -->
         <div class="flex border-b mb-4">
             <button id="tabProyServicios" onclick="cambiarTabProy('servicio')" class="px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja">🛠️ Servicios</button>
             <button id="tabProyEventos" onclick="cambiarTabProy('evento')" class="px-4 py-2 font-semibold text-gray-500 hover:text-colegio-naranja">📅 Eventos</button>
@@ -598,6 +625,20 @@
 // ==================== CONFIGURACIÓN DE API ====================
 const API_URL = 'https://api-mantenimiento.teresianos.workers.dev';
 
+// ==================== UTILERÍAS ====================
+// Convierte fecha UTC de la DB a hora local del navegador
+function formatearFechaLocal(fechaString) {
+    if (!fechaString) return '';
+    try {
+        const fecha = new Date(fechaString);
+        if (isNaN(fecha.getTime())) return fechaString; // Si es texto (ej. "2026-11-13"), lo deja igual
+        return fecha.toLocaleString('es-MX', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: true
+        });
+    } catch (e) { return fechaString; }
+}
+
 // ==================== VARIABLES GLOBALES ====================
 let usuarioActivo = null;
 let solicitudes = [];
@@ -844,7 +885,7 @@ async function guardarSolicitud() {
             alert('✅ Solicitud actualizada');
         } else {
             if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { datosSolicitud.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
-            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { datosSolicitud.estado = 'APROBADA'; datosSolicitud.autorizadoPor = usuarioActivo.nombre; datosSolicitud.fechaAutorizacion = new Date().toLocaleString('es-MX'); alert('✅ Autorizada por Proyectos'); }
+            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { datosSolicitud.estado = 'APROBADA'; datosSolicitud.autorizadoPor = usuarioActivo.nombre; datosSolicitud.fechaAutorizacion = new Date().toISOString(); alert('✅ Autorizada por Proyectos'); }
             else { datosSolicitud.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos'); }
             await apiRequest('/api/solicitudes', 'POST', datosSolicitud);
         }
@@ -968,7 +1009,7 @@ function cargarMisSolicitudes() {
         <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Fecha de creación: ${s.fechaSolicitud}</div>
+            <div class="text-sm text-gray-600">Fecha de creación: ${formatearFechaLocal(s.fechaSolicitud)}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 font-semibold">${est} ${badge}</div>
@@ -980,7 +1021,7 @@ function cargarMisSolicitudes() {
             </div>
             ${s.observaciones && s.observaciones.length > 0 ? `<div class="mt-3">${s.observaciones.map((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
-                return `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) - ${obs.fecha}</div><div class="obs-texto">${obs.texto}</div></div>
+                return `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) - ${formatearFechaLocal(obs.fecha)}</div><div class="obs-texto">${obs.texto}</div></div>
                 ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="event.stopPropagation(); editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
             }).join('')}</div>` : ''}
         </div>`;
@@ -1060,7 +1101,7 @@ function cargarBandejaProyectos() {
             obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
             s.observaciones.forEach((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
-                obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div><div class="obs-texto">${obs.texto}</div></div>
+                obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div><div class="obs-texto">${obs.texto}</div></div>
                 ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="event.stopPropagation(); editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
             });
             obsHTML += `</div>`;
@@ -1072,7 +1113,7 @@ function cargarBandejaProyectos() {
         <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${s.fechaSolicitud}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fechaSolicitud)}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 font-semibold">${etiquetaEstado} ${badge}</div>
@@ -1093,15 +1134,15 @@ function limpiarFiltrosProyectos() {
 async function autorizar(id) {
     const s = solicitudes.find(x => x.id === id);
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') { alert('⚠️ No necesita autorización.'); return; }
-    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'APROBADA', autorizadoPor: usuarioActivo.nombre, fechaAutorizacion: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('✅ Autorizada'); cargarBandejaProyectos(); } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'APROBADA', autorizadoPor: usuarioActivo.nombre, fechaAutorizacion: new Date().toISOString() }); await cargarDatosIniciales(); alert('✅ Autorizada'); cargarBandejaProyectos(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 async function rechazar(id) {
     if(!confirm('¿Rechazar esta solicitud?')) return;
-    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'RECHAZADA', rechazadoPor: usuarioActivo.nombre, fechaRechazo: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('🔴 Rechazada'); cargarBandejaProyectos(); } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'RECHAZADA', rechazadoPor: usuarioActivo.nombre, fechaRechazo: new Date().toISOString() }); await cargarDatosIniciales(); alert('🔴 Rechazada'); cargarBandejaProyectos(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 async function marcarConcluida(id) {
     if(!confirm('¿Marcar como CONCLUIDA?')) return;
-    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('✅ Concluida'); filtrarSolicitudesCoordinacion(); } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() }); await cargarDatosIniciales(); alert('✅ Concluida'); filtrarSolicitudesCoordinacion(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 async function concluirDirecto(id) { if (confirm('✅ ¿Concluir directamente?')) await marcarConcluida(id); }
 
@@ -1116,13 +1157,13 @@ async function eliminarSolicitud(id) {
 
 async function desbloquearSolicitud(id) {
     if (!confirm('⚠️ ¿Desbloquear?')) return;
-    try { const s = solicitudes.find(x => x.id === id); await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'DESBLOQUEADA', estadoAnterior: s.estado, desbloqueadoPor: usuarioActivo.nombre, fechaDesbloqueo: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('🔓 Desbloqueada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
+    try { const s = solicitudes.find(x => x.id === id); await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'DESBLOQUEADA', estadoAnterior: s.estado, desbloqueadoPor: usuarioActivo.nombre, fechaDesbloqueo: new Date().toISOString() }); await cargarDatosIniciales(); alert('🔓 Desbloqueada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 async function bloquearSolicitud(id) {
     const s = solicitudes.find(x => x.id === id);
     if (!confirm('🔒 ¿Bloquear?')) return;
-    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS', estadoAnterior: undefined, bloqueadoPor: usuarioActivo.nombre, fechaBloqueo: new Date().toLocaleString('es-MX') }); await cargarDatosIniciales(); alert('🔒 Bloqueada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
+    try { await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS', estadoAnterior: undefined, bloqueadoPor: usuarioActivo.nombre, fechaBloqueo: new Date().toISOString() }); await cargarDatosIniciales(); alert('🔒 Bloqueada'); recargarVistaActual(); } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
 function recargarVistaActual() {
@@ -1226,7 +1267,7 @@ function filtrarSolicitudesCoordinacion() {
             obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
             s.observaciones.forEach((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
-                obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${obs.fecha}</span></div><div class="obs-texto">${obs.texto}</div></div>
+                obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div><div class="obs-texto">${obs.texto}</div></div>
                 ${puedeEditar ? `<div class="flex gap-1 ml-2"><button onclick="event.stopPropagation(); editarObservacion(${s.id}, ${i}, '${obs.texto.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500" title="Editar"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); eliminarObservacion(${s.id}, ${i})" class="text-gray-400 hover:text-red-500" title="Eliminar"><i class="fas fa-trash"></i></button></div>` : ''}</div>`;
             });
             obsHTML += `</div>`;
@@ -1238,7 +1279,7 @@ function filtrarSolicitudesCoordinacion() {
         <div class="border rounded-lg p-4 ${clase} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${s.fechaSolicitud}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fechaSolicitud)}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 flex flex-wrap gap-2 items-center">
@@ -1319,7 +1360,7 @@ async function agregarUsuario() {
     const checkboxes = document.querySelectorAll('.permiso-checkbox:checked');
     const permisos = Array.from(checkboxes).map(cb => cb.value);
 
-    if (!user || !nombre || (!editando && !pass)) { alert('⚠️ Complete los campos (contraseña solo al crear)'); return; }
+    if (!user || !nombre || (!editando && !pass)) { alert('⚠️ Complete los campos (La contraseña es obligatoria solo al crear un usuario nuevo)'); return; }
     if (pass && pass.length < 6) { alert('⚠️ La contraseña debe tener al menos 6 caracteres'); return; }
 
     try {
@@ -1345,7 +1386,7 @@ function editarUsuario(username) {
     const user = usuarios[username];
     if (!user) return;
     document.getElementById('nuevoUsuario').value = username;
-    document.getElementById('nuevoPass').value = user.password || '';
+    document.getElementById('nuevoPass').value = ''; // SEGURIDAD: No mostrar contraseña encriptada
     document.getElementById('nombreCompletoUsuario').value = user.nombre;
     document.getElementById('rolUsuario').value = user.rol;
     document.getElementById('editandoUsuario').value = username;
@@ -1460,7 +1501,7 @@ function cargarOrdenes() {
 
         if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes con esos filtros.</p>'; return; }
 
-        lista.innerHTML = filtradas.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Solicitante: ${o.solicitante} | Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+        lista.innerHTML = filtradas.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Solicitante: ${o.solicitante} | Creada el: ${formatearFechaLocal(o.fecha_creacion)}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     }).catch(error => { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; });
 }
 function limpiarFiltrosOrdenes() {
@@ -1475,7 +1516,7 @@ async function cargarOrdenesSilencioso() {
         const ordenes = await apiRequest('/api/ordenes');
         const lista = document.getElementById('listaOrdenes');
         if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
-        lista.innerHTML = ordenes.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Creada el: ${o.fecha_creacion}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+        lista.innerHTML = ordenes.map(o => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div><div class="text-sm text-gray-600">Asignado a: <b>${o.empleado_nombre || 'No asignado'}</b></div><div class="text-sm mt-1">${o.descripcion} (${o.area})</div><div class="mt-2 text-xs text-gray-500">Creada el: ${formatearFechaLocal(o.fecha_creacion)}</div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}<button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { console.log("Error en refresco silencioso de órdenes"); }
 }
 
@@ -1504,7 +1545,7 @@ async function cargarIncidencias() {
         const empleados = await apiRequest('/api/empleados'); selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
         const incidencias = await apiRequest('/api/incidencias');
         if (incidencias.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>'; return; }
-        lista.innerHTML = incidencias.map(i => `<div class="border rounded p-3 bg-white shadow-sm flex justify-between"><div><b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${i.fecha})</span><br><span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span></div></div>`).join('');
+        lista.innerHTML = incidencias.map(i => `<div class="border rounded p-3 bg-white shadow-sm flex justify-between"><div><b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${formatearFechaLocal(i.fecha)})</span><br><span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span></div></div>`).join('');
     } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 function cambiarCamposIncidencia() {
@@ -1586,7 +1627,7 @@ function cargarCompras() {
 
         if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes con esos filtros.</p>'; return; }
 
-        lista.innerHTML = filtradas.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+        lista.innerHTML = filtradas.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     }).catch(error => { lista.innerHTML = 'Error'; });
 }
 function limpiarFiltrosCompras() {
@@ -1601,7 +1642,7 @@ async function cargarComprasSilencioso() {
         const compras = await apiRequest('/api/compras');
         const lista = document.getElementById('listaCompras');
         if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay solicitudes de compra.</p>'; return; }
-        lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${c.fecha} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
+        lista.innerHTML = compras.map(c => `<div class="border rounded p-4 bg-white shadow-sm"><div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div><div class="text-xs text-gray-500 mt-1">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitó: ${c.solicitado_por}</div><div class="mt-2 flex gap-2"><button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button><button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`).join('');
     } catch (error) { console.log("Error en refresco silencioso de compras"); }
 }
 
@@ -1611,7 +1652,6 @@ async function eliminarCompra(id) { if (!confirm('¿Eliminar solicitud de compra
 async function imprimirSolicitud(id) {
     const s = solicitudes.find(x => x.id === id); if (!s) return;
     
-    // Obtenemos el nombre del empleado si es un servicio y tiene orden
     let empleadoAtendio = 'No asignado';
     if (s.tipo === 'servicio') {
         try {
@@ -1631,6 +1671,7 @@ async function imprimirSolicitud(id) {
     else if (s.estado === 'APROBADA') { estadoClase = 'badge-aprobada'; estadoTexto = 'AUTORIZADA'; }
     else if (s.estado === 'CONCLUIDO') { estadoClase = 'badge-concluida'; estadoTexto = 'CONCLUIDA'; }
     else if (s.estado === 'RECHAZADA') { estadoClase = 'badge-rechazada'; estadoTexto = 'RECHAZADA'; }
+    
     const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }); const horaActual = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
     const c = document.getElementById('formatoImpresion');
     let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">${tipoEtiqueta}</div><div class="subtitulo-header">${s.area}</div><div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">${tipoEtiqueta}</div><div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
@@ -1640,7 +1681,6 @@ async function imprimirSolicitud(id) {
     html += `<tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
     if (s.tipo === 'evento') html += `<tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
     
-    // AGREGAMOS EL EMPLEADO SI ES SERVICIO
     if (s.tipo === 'servicio') {
         html += `<tr><td>Empleado Asignado</td><td><b>${empleadoAtendio}</b></td></tr>`;
     }
@@ -1651,15 +1691,14 @@ async function imprimirSolicitud(id) {
     
     if (s.observaciones && s.observaciones.length > 0) { 
         let obsText = ''; 
-        s.observaciones.forEach(obs => { obsText += `${obs.autor} (${obs.rol}) - ${obs.fecha}: ${obs.texto}\n`; }); 
+        s.observaciones.forEach(obs => { obsText += `${obs.autor} (${obs.rol}) - ${formatearFechaLocal(obs.fecha)}: ${obs.texto}\n`; }); 
         html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`; 
     }
     
-    let firmaSolicitante = s.solicitante || '', firmaAutorizacion = s.autorizadoPor || '_________________________', firmaMantenimiento = (s.estado === 'CONCLUIDO') ? (s.concluidoPor || nombreResponsableMantenimiento) : (s.estado === 'DESBLOQUEADA' ? 'Pendiente de Vo.Bo.' : 'Pendiente');
+    let firmaSolicitante = s.solicitante || '', firmaAutorizacion = s.autorizadoPor || '_________________________';
     if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente';
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') firmaAutorizacion = 'No requiere';
     
-    // CORRECCIÓN DE FIRMAS: Solo 2 firmas claras
     html += `</table>
     <div class="firmas">
         <div class="firma-item">
@@ -1672,7 +1711,7 @@ async function imprimirSolicitud(id) {
             <div class="firma-nombre">${s.tipo === 'servicio' ? empleadoAtendio : firmaAutorizacion}</div>
             <div class="linea"></div>
             <div class="firma-cargo">${s.tipo === 'servicio' ? 'Atendido por' : 'Autorizado por'}</div>
-            <div class="firma-fecha">${s.tipo === 'servicio' ? (s.fechaConclusion || 'Pendiente') : (s.fechaAutorizacion || 'Pendiente')}</div>
+            <div class="firma-fecha">${s.tipo === 'servicio' ? (s.fechaConclusion ? formatearFechaLocal(s.fechaConclusion) : 'Pendiente') : (s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : 'Pendiente')}</div>
         </div>
     </div>
     <div class="pie-pagina"><span>${fechaActual} ${horaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
@@ -1688,7 +1727,7 @@ async function imprimirOrdenTrabajo(ordenId) {
         let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">ORDEN DE TRABAJO</div><div class="subtitulo-header">${o.area}</div><div class="folio-header">Orden: #${String(o.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">ORDEN DE TRABAJO</div><div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
         let fechaAtencion = '_________________________________', horaInicio = '_________________________________', horaFin = '_________________________________', recibidoPor = '_________________________________', tituloSeccion = 'PARA LLENAR AL MOMENTO DE ATENDER', colorBorde = '#999';
         if (o.estado === 'CONCLUIDO') { fechaAtencion = `<b>${o.fechaAtencion || ''}</b>`; horaInicio = `<b>${o.horaInicio || ''}</b>`; horaFin = `<b>${o.horaFin || ''}</b>`; recibidoPor = `<b>${o.recibidoPor || ''}</b>`; tituloSeccion = 'DATOS DE ATENCIÓN'; colorBorde = '#00B42A'; }
-        let html = `${headerHTML}<table><tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr><tr><td>Fecha de solicitud</td><td>${o.fecha_creacion.split(',')[0]}</td></tr><tr><td>Solicitante</td><td>${o.solicitante}</td></tr><tr><td>Sección</td><td>${o.area}</td></tr><tr><td>Descripción</td><td>${o.descripcion}</td></tr><tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr></table><div style="margin-top: 20px; border: 2px dashed ${colorBorde}; padding: 15px; border-radius: 8px;"><h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4><table style="border: none;"><tr><td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td><td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td></tr><tr><td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br>${horaFin}</td><td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad:</b><br><br>${recibidoPor}</td></tr></table></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        let html = `${headerHTML}<table><tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr><tr><td>Fecha de solicitud</td><td>${formatearFechaLocal(o.fecha_creacion)}</td></tr><tr><td>Solicitante</td><td>${o.solicitante}</td></tr><tr><td>Sección</td><td>${o.area}</td></tr><tr><td>Descripción</td><td>${o.descripcion}</td></tr><tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr></table><div style="margin-top: 20px; border: 2px dashed ${colorBorde}; padding: 15px; border-radius: 8px;"><h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4><table style="border: none;"><tr><td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td><td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td></tr><tr><td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br>${horaFin}</td><td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad:</b><br><br>${recibidoPor}</td></tr></table></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
         const c = document.getElementById('formatoImpresion'); c.innerHTML = html; c.style.display = 'block';
         setTimeout(() => { window.print(); setTimeout(() => { c.style.display = 'none'; }, 500); }, 300);
     } catch (error) { alert('❌ Error: ' + error.message); }
@@ -1701,7 +1740,6 @@ async function imprimirOrdenCompra(id) {
         
         let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">SOLICITUD DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>` : `<div class="titulo-central">SOLICITUD DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
         
-        // Se invierte el orden: Cantidad a la izquierda, Descripción a la derecha
         let filas = ''; 
         if (c.articulos) {
             c.articulos.forEach(art => { 
@@ -1715,7 +1753,7 @@ async function imprimirOrdenCompra(id) {
         let html = `${headerHTML}
         <table>
             <tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr>
-            <tr><td>Fecha</td><td>${c.fecha}</td></tr>
+            <tr><td>Fecha</td><td>${formatearFechaLocal(c.fecha)}</td></tr>
             <tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr>
             <tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr>
         </table>
@@ -1738,7 +1776,7 @@ async function imprimirOrdenCompra(id) {
                 <div class="firma-nombre">${c.solicitado_por}</div>
                 <div class="linea"></div>
                 <div class="firma-cargo">Solicita Coordinación de Mantenimiento</div>
-                <div class="firma-fecha">${c.fecha}</div>
+                <div class="firma-fecha">${formatearFechaLocal(c.fecha)}</div>
             </div>
             <div class="firma-item">
                 <div class="firma-nombre">_________________________</div>
@@ -1766,6 +1804,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v12.0 - Columnas de compra corregidas (Cantidad izquierda, Descripción derecha)");</script>
+<script>console.log("Script actualizado v14.0 - Impresión en 1 hoja, Zona horaria y Encriptación de contraseñas");</script>
 </body>
 </html>
