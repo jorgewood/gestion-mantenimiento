@@ -56,39 +56,28 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
         /* ==========================================
-           ESTILOS DE IMPRESIÓN FORZADOS A 1 SOLA HOJA (CARTA)
+           ESTILOS DE IMPRESIÓN DEFINITIVOS (1 SOLA HOJA CARTA)
            ========================================== */
         @media print {
-            /* 1. Forzar tamaño Carta y márgenes seguros */
             @page {
                 size: Letter portrait !important;
-                margin: 10mm 12mm !important;
+                margin: 0 !important;
             }
-
-            /* 2. Ocultar todo el cuerpo de la página */
             body { margin: 0 !important; padding: 0 !important; background: white !important; }
             body * { visibility: hidden !important; }
-
-            /* 3. Hacer visible SOLO el contenedor de impresión */
             #formatoImpresion, #formatoImpresion * { visibility: visible !important; }
-
-            /* 4. Posicionar el contenedor arriba a la izquierda y quitarle límites de altura */
             #formatoImpresion { 
                 position: absolute !important; 
                 left: 0 !important; 
                 top: 0 !important; 
                 width: 100% !important; 
+                height: auto !important;
                 margin: 0 !important; 
-                padding: 0 !important; 
+                padding: 10mm 12mm !important;
                 background: white !important; 
                 display: block !important;
-                /* Evitar que el navegador cree páginas extra */
-                height: auto !important;
-                min-height: 0 !important;
-                max-height: none !important;
+                box-sizing: border-box !important;
             }
-
-            /* 5. Estilos del contenedor interno */
             .formato-impresion { 
                 display: block !important; 
                 width: 100% !important; 
@@ -98,57 +87,45 @@
                 border: none !important; 
                 background: white !important; 
                 font-family: 'Segoe UI', Arial, sans-serif !important; 
-                font-size: 9.5pt !important; /* Fuente un poco más pequeña para asegurar que quepa */
+                font-size: 9.5pt !important; 
                 line-height: 1.3 !important; 
             }
-
-            /* 6. Estilos internos compactados para que quepa en 1 hoja */
+            .formato-impresion table, 
+            .formato-impresion .firmas,
+            .formato-impresion .pie-pagina,
+            .formato-impresion .header-impresion { 
+                page-break-inside: avoid !important; 
+                break-inside: avoid !important;
+            }
             .formato-impresion .header-impresion { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 10px !important; border-bottom: 2px solid #165DFF !important; padding-bottom: 8px !important; }
             .formato-impresion .logo-impresion { max-height: 55px !important; max-width: 100px !important; object-fit: contain !important; }
-            .formato-impresion .header-text { text-align: right !important; line-height: 1.2 !important; }
-            .formato-impresion .header-text .titulo-principal { font-size: 12pt !important; font-weight: 800 !important; color: #165DFF !important; text-transform: uppercase !important; }
-            .formato-impresion .header-text .subtitulo-header { font-size: 8.5pt !important; color: #555 !important; }
-            .formato-impresion .header-text .folio-header { font-size: 9pt !important; color: #333 !important; font-weight: 700 !important; }
-            .formato-impresion .titulo-central { text-align: center !important; font-size: 13pt !important; font-weight: 800 !important; color: #1a1a2e !important; margin: 5px 0 !important; text-transform: uppercase !important; }
+            .formato-impresion .header-text { text-align: right !important; }
+            .formato-impresion .titulo-principal { font-size: 12pt !important; font-weight: 800 !important; color: #165DFF !important; text-transform: uppercase !important; }
+            .formato-impresion .subtitulo-header { font-size: 8.5pt !important; color: #555 !important; }
+            .formato-impresion .folio-header { font-size: 9pt !important; font-weight: 700 !important; }
+            .formato-impresion .titulo-central { text-align: center !important; font-size: 13pt !important; font-weight: 800 !important; text-transform: uppercase !important; }
             .formato-impresion .subtitulo-central { text-align: center !important; font-size: 9pt !important; color: #666 !important; margin-bottom: 10px !important; border-bottom: 1px solid #e5e7eb !important; padding-bottom: 5px !important; }
-            
-            .formato-impresion table { width: 100% !important; border-collapse: collapse !important; margin-top: 5px !important; font-size: 9pt !important; border: 1px solid #d1d5db !important; }
-            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 4px 6px !important; vertical-align: top !important; font-size: 9pt !important; }
-            .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; color: #1a1a2e !important; }
-            .formato-impresion td:last-child { width: 75% !important; background: white !important; color: #333 !important; white-space: pre-wrap !important; word-wrap: break-word !important; }
-
-            /* 7. Firmas compactas */
-            .formato-impresion .firmas { margin-top: 15px !important; display: flex !important; justify-content: space-between !important; padding-top: 8px !important; border-top: 1px solid #e5e7eb !important; }
+            .formato-impresion table { width: 100% !important; border-collapse: collapse !important; margin-top: 5px !important; font-size: 9pt !important; }
+            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 4px 6px !important; vertical-align: top !important; }
+            .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; }
+            .formato-impresion td:last-child { width: 75% !important; background: white !important; }
+            .formato-impresion .firmas { margin-top: 15px !important; display: flex !important; justify-content: space-between !important; padding-top: 8px !important; }
             .formato-impresion .firma-item { text-align: center !important; width: 45% !important; }
             .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 20px 0 3px 0 !important; }
-            .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 8.5pt !important; color: #1a1a2e !important; }
+            .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 8.5pt !important; }
             .formato-impresion .firma-item .firma-cargo { font-size: 7.5pt !important; color: #666 !important; }
-            .formato-impresion .firma-item .firma-fecha { font-size: 7pt !important; color: #999 !important; }
-            
-            /* 8. Pie de página */
-            .formato-impresion .pie-pagina { margin-top: 10px !important; text-align: center !important; font-size: 7pt !important; color: #9ca3af !important; border-top: 1px solid #e5e7eb !important; padding-top: 5px !important; display: flex !important; justify-content: space-between !important; }
-            .formato-impresion .pie-pagina span { color: #9ca3af !important; }
-            
-            /* 9. Badges de estado */
+            .formato-impresion .pie-pagina { margin-top: 10px !important; font-size: 7pt !important; color: #9ca3af !important; border-top: 1px solid #e5e7eb !important; padding-top: 5px !important; display: flex !important; justify-content: space-between !important; }
             .formato-impresion .badge-estado { display: inline-block !important; padding: 2px 10px !important; border-radius: 20px !important; font-size: 8pt !important; font-weight: 700 !important; text-transform: uppercase !important; }
             .formato-impresion .badge-aprobada { background: #dcfce7 !important; color: #00B42A !important; }
             .formato-impresion .badge-pendiente { background: #fef3c7 !important; color: #FF7D00 !important; }
             .formato-impresion .badge-concluida { background: #dbeafe !important; color: #165DFF !important; }
             .formato-impresion .badge-rechazada { background: #fee2e2 !important; color: #F53F3F !important; }
             .formato-impresion .badge-desbloqueada { background: #ede9fe !important; color: #722ED1 !important; }
-
-            /* 10. Evitar cortes en tablas y firmas */
-            .formato-impresion table, 
-            .formato-impresion .firmas,
-            .formato-impresion .pie-pagina { 
-                page-break-inside: avoid !important; 
-            }
         }
 
-        /* ESTILOS DE PANTALLA (PREVISUALIZACIÓN) - Oculto por defecto */
+        /* ESTILOS DE PANTALLA (PREVISUALIZACIÓN) */
         #formatoImpresion { display: none; }
         .formato-impresion { background: white; padding: 25px 30px; border: 1px solid #e5e7eb; border-radius: 12px; max-width: 210mm; margin: 20px auto; font-family: 'Segoe UI', Arial, sans-serif; box-shadow: 0 4px 20px rgba(0,0,0,0.08); font-size: 10pt; line-height: 1.5; }
-        /* ... (El resto de tus estilos de pantalla se mantienen igual) ... */
         .formato-impresion .header-impresion { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 3px solid #165DFF; padding-bottom: 10px; }
         .formato-impresion .logo-impresion { max-height: 70px; max-width: 130px; object-fit: contain; }
         .formato-impresion .header-text { text-align: right; line-height: 1.4; }
@@ -324,9 +301,15 @@
         </div>
 
         <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
-            <h3 class="font-bold text-sm">🔍 Filtrar</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div><label class="block text-xs font-semibold">Por Evento/Solicitante</label><input type="text" id="filtroMisBuscar" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarMisSolicitudes()" placeholder="Buscar..."></div>
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-sm">🔍 Filtrar</h3>
+                <label class="flex items-center gap-2 text-sm font-semibold cursor-pointer">
+                    <input type="checkbox" id="toggleConcluidasMis" onchange="cargarMisSolicitudes()" class="w-4 h-4">
+                    Mostrar Concluidas
+                </label>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div><label class="block text-xs font-semibold">Buscar (Solicitante/Evento)</label><input type="text" id="filtroMisBuscar" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarMisSolicitudes()" placeholder="Nombre..."></div>
                 <div><label class="block text-xs font-semibold">Por Fecha</label><input type="date" id="filtroMisFecha" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()"></div>
                 <div><label class="block text-xs font-semibold">Estado</label>
                     <select id="filtroMisEstado" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarMisSolicitudes()">
@@ -334,13 +317,13 @@
                         <option value="PENDIENTE_PROYECTOS">En Evaluación</option>
                         <option value="PENDIENTE_MANTENIMIENTO">Pendiente</option>
                         <option value="APROBADA">Autorizada</option>
-                        <option value="CONCLUIDO">Concluida</option>
-                        <option value="RECHAZADA">Rechazada</option>
                         <option value="DESBLOQUEADA">Desbloqueada</option>
+                        <option value="RECHAZADA">Rechazada</option>
+                        <option value="CONCLUIDO">Concluida</option>
                     </select>
                 </div>
+                <div class="flex items-end"><button onclick="limpiarFiltrosMis()" class="bg-gray-200 px-3 py-1 rounded text-sm w-full">Limpiar</button></div>
             </div>
-            <button onclick="limpiarFiltrosMis()" class="bg-gray-200 px-3 py-1 rounded text-sm mt-2">Limpiar</button>
         </div>
         
         <div id="listaMisSolicitudes" class="space-y-3"></div>
@@ -355,21 +338,29 @@
         </div>
 
         <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
-            <h3 class="font-bold text-sm">🔍 Filtrar</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div><label class="block text-xs font-semibold">Por Evento/Solicitante</label><input type="text" id="filtroProyBuscar" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarBandejaProyectos()" placeholder="Buscar..."></div>
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-sm">🔍 Filtrar</h3>
+                <label class="flex items-center gap-2 text-sm font-semibold cursor-pointer">
+                    <input type="checkbox" id="toggleConcluidasProyectos" onchange="cargarBandejaProyectos()" class="w-4 h-4">
+                    Mostrar Concluidas
+                </label>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div><label class="block text-xs font-semibold">Buscar (Solicitante/Evento)</label><input type="text" id="filtroProyBuscar" class="w-full border rounded px-3 py-1 text-sm" oninput="cargarBandejaProyectos()" placeholder="Nombre..."></div>
                 <div><label class="block text-xs font-semibold">Por Fecha</label><input type="date" id="filtroProyFecha" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarBandejaProyectos()"></div>
                 <div><label class="block text-xs font-semibold">Estado</label>
                     <select id="filtroProyEstado" class="w-full border rounded px-3 py-1 text-sm" onchange="cargarBandejaProyectos()">
                         <option value="">Todos</option>
                         <option value="PENDIENTE_PROYECTOS">En Evaluación</option>
+                        <option value="PENDIENTE_MANTENIMIENTO">Pendiente</option>
                         <option value="APROBADA">Autorizada</option>
-                        <option value="CONCLUIDO">Concluida</option>
                         <option value="DESBLOQUEADA">Desbloqueada</option>
+                        <option value="RECHAZADA">Rechazada</option>
+                        <option value="CONCLUIDO">Concluida</option>
                     </select>
                 </div>
+                <div class="flex items-end"><button onclick="limpiarFiltrosProyectos()" class="bg-gray-200 px-3 py-1 rounded text-sm w-full">Limpiar</button></div>
             </div>
-            <button onclick="limpiarFiltrosProyectos()" class="bg-gray-200 px-3 py-1 rounded text-sm mt-2">Limpiar</button>
         </div>
         
         <div id="listaProyectos" class="space-y-3"></div>
@@ -382,22 +373,31 @@
 
         <div id="adminSolicitudes">
             <div class="bg-white rounded shadow p-4 mb-4 space-y-2">
-                <h3 class="font-bold">🔍 Filtrar</h3>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold">🔍 Filtrar</h3>
+                    <label class="flex items-center gap-2 text-sm font-semibold cursor-pointer">
+                        <input type="checkbox" id="toggleConcluidasCoordinacion" onchange="filtrarSolicitudesCoordinacion()" class="w-4 h-4">
+                        Mostrar Concluidas
+                    </label>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                    <div><label class="block text-sm font-semibold">Solicitante/Evento</label><input type="text" id="filtroSolicitante" placeholder="Buscar..." class="w-full border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
+                    <div><label class="block text-sm font-semibold">Buscar (Solicitante/Evento)</label><input type="text" id="filtroSolicitante" placeholder="Nombre..." class="w-full border rounded px-3 py-1" oninput="filtrarSolicitudesCoordinacion()"></div>
                     <div><label class="block text-sm font-semibold">Por Fecha</label><input type="date" id="filtroFecha" class="w-full border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()"></div>
-                    <div><label class="block text-sm font-semibold">Tipo/Estado</label>
+                    <div><label class="block text-sm font-semibold">Tipo</label>
                         <select id="filtroTipo" class="w-full border rounded px-3 py-1 mb-1" onchange="filtrarSolicitudesCoordinacion()">
-                            <option value="">Todos los Tipos</option>
+                            <option value="">Todos</option>
                             <option value="servicio">Servicio</option>
                             <option value="evento">Evento</option>
                         </select>
+                    </div>
+                    <div><label class="block text-sm font-semibold">Estado</label>
                         <select id="filtroEstado" class="w-full border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()">
-                            <option value="">Todos los Estados</option>
+                            <option value="">Todos</option>
                             <option value="PENDIENTE_MANTENIMIENTO">Pendiente</option>
                             <option value="APROBADA">Autorizada</option>
-                            <option value="CONCLUIDO">Concluida</option>
                             <option value="DESBLOQUEADA">Desbloqueada</option>
+                            <option value="RECHAZADA">Rechazada</option>
+                            <option value="CONCLUIDO">Concluida</option>
                         </select>
                     </div>
                 </div>
@@ -995,8 +995,13 @@ function cargarMisSolicitudes() {
     const fBuscar = document.getElementById('filtroMisBuscar').value.toLowerCase().trim();
     const fFecha = document.getElementById('filtroMisFecha').value;
     const fEstado = document.getElementById('filtroMisEstado').value;
+    const mostrarConcluidas = document.getElementById('toggleConcluidasMis').checked;
 
     let misSolicitudes = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre && s.tipo === tabMisActiva);
+    
+    if (!mostrarConcluidas && !fEstado) {
+        misSolicitudes = misSolicitudes.filter(s => s.estado !== 'CONCLUIDO');
+    }
     
     if (fBuscar) {
         misSolicitudes = misSolicitudes.filter(s => 
@@ -1004,7 +1009,7 @@ function cargarMisSolicitudes() {
             (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar))
         );
     }
-    if (fFecha) misSolicitudes = misSolicitudes.filter(s => s.fechaSolicitud === fFecha);
+    if (fFecha) misSolicitudes = misSolicitudes.filter(s => s.fechaSolicitud === fFecha || s.fechaEvento === fFecha);
     if (fEstado) misSolicitudes = misSolicitudes.filter(s => s.estado === fEstado);
 
     misSolicitudes.sort((a, b) => {
@@ -1015,7 +1020,7 @@ function cargarMisSolicitudes() {
         }
     });
 
-    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas en esta categoría.</p>'; return; }
+    if (misSolicitudes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con estos filtros.</p>'; return; }
     
     misSolicitudes.forEach(s => {
         let est = '', claseExtra = '', badge = '';
@@ -1061,6 +1066,7 @@ function limpiarFiltrosMis() {
     document.getElementById('filtroMisBuscar').value = '';
     document.getElementById('filtroMisFecha').value = '';
     document.getElementById('filtroMisEstado').value = '';
+    document.getElementById('toggleConcluidasMis').checked = false;
     cargarMisSolicitudes(); 
 }
 
@@ -1071,16 +1077,21 @@ function cargarBandejaProyectos() {
     const fBuscar = document.getElementById('filtroProyBuscar').value.toLowerCase().trim();
     const fFecha = document.getElementById('filtroProyFecha').value;
     const fEstado = document.getElementById('filtroProyEstado').value;
+    const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
 
-    let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva && (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA'));
+    let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
     
+    if (!mostrarConcluidas && !fEstado) {
+        proyectos = proyectos.filter(s => s.estado !== 'CONCLUIDO');
+    }
+
     if (fBuscar) {
         proyectos = proyectos.filter(s => 
             s.solicitante.toLowerCase().includes(fBuscar) || 
             (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar))
         );
     }
-    if (fFecha) proyectos = proyectos.filter(s => s.fechaSolicitud === fFecha);
+    if (fFecha) proyectos = proyectos.filter(s => s.fechaEvento === fFecha || s.fechaSolicitud === fFecha);
     if (fEstado) proyectos = proyectos.filter(s => s.estado === fEstado);
 
     proyectos.sort((a, b) => {
@@ -1091,14 +1102,15 @@ function cargarBandejaProyectos() {
         }
     });
 
-    if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes en esta categoría.</p>'; return; }
+    if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes con estos filtros.</p>'; return; }
     
     proyectos.forEach(s => {
         let etiquetaEstado = '', colorFila = '', badge = '';
         if (s.estado === 'DESBLOQUEADA') { etiquetaEstado = '🔓 Desbloqueada'; colorFila = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
         else if (s.estado === 'PENDIENTE_PROYECTOS') { etiquetaEstado = '🟡 En evaluación'; colorFila = 'bg-yellow-50'; }
         else if (s.estado === 'APROBADA') { etiquetaEstado = '🟢 Autorizada'; colorFila = 'bg-green-50'; }
-        else if (s.estado === 'CONCLUIDO') { etiquetaEstado = '✅ Concluida'; colorFila = 'bg-gray-100'; }
+        else if (s.estado === 'CONCLUIDO') { etiquetaEstado = '✅ Concluida'; colorFila = 'bg-gray-100 opacity-75'; }
+        else if (s.estado === 'RECHAZADA') { etiquetaEstado = '🔴 Rechazada'; colorFila = 'bg-red-50'; }
 
         let botones = '';
         if (s.estado === 'PENDIENTE_PROYECTOS') botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button><button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
@@ -1157,6 +1169,7 @@ function limpiarFiltrosProyectos() {
     document.getElementById('filtroProyBuscar').value = '';
     document.getElementById('filtroProyFecha').value = '';
     document.getElementById('filtroProyEstado').value = '';
+    document.getElementById('toggleConcluidasProyectos').checked = false;
     cargarBandejaProyectos();
 }
 
@@ -1248,10 +1261,15 @@ function filtrarSolicitudesCoordinacion() {
     const ff = document.getElementById('filtroFecha').value;
     const ft = document.getElementById('filtroTipo').value;
     const fest = document.getElementById('filtroEstado').value;
+    const mostrarConcluidas = document.getElementById('toggleConcluidasCoordinacion').checked;
 
     const lista = document.getElementById('listaCoordinacion'); lista.innerHTML = '';
     
-    let filtradas = solicitudes.filter(s => s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'DESBLOQUEADA' || s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'PENDIENTE_PROYECTOS');
+    let filtradas = solicitudes;
+    
+    if (!mostrarConcluidas && !fest) {
+        filtradas = filtradas.filter(s => s.estado !== 'CONCLUIDO');
+    }
     
     if (fs) {
         filtradas = filtradas.filter(s => 
@@ -1259,7 +1277,7 @@ function filtrarSolicitudesCoordinacion() {
             (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fs))
         );
     }
-    if (ff) filtradas = filtradas.filter(s => s.fechaSolicitud === ff);
+    if (ff) filtradas = filtradas.filter(s => s.fechaSolicitud === ff || s.fechaEvento === ff);
     if (ft) filtradas = filtradas.filter(s => s.tipo === ft);
     if (fest) filtradas = filtradas.filter(s => s.estado === fest);
     
@@ -1277,7 +1295,8 @@ function filtrarSolicitudesCoordinacion() {
         else if(s.estado === 'PENDIENTE_MANTENIMIENTO'){ est='🟡 Pendiente'; clase='bg-yellow-50'; badge='<span class="badge-pendiente-mantenimiento">🟡 PENDIENTE</span>'; }
         else if(s.estado === 'PENDIENTE_PROYECTOS'){ est='🟡 En evaluación'; clase='bg-yellow-50'; badge='<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>'; }
         else if(s.estado === 'APROBADA'){ est='🟢 Autorizada'; clase='bg-green-50'; }
-        else if(s.estado === 'CONCLUIDO'){ est='✅ Concluida'; clase='bg-gray-100'; }
+        else if(s.estado === 'CONCLUIDO'){ est='✅ Concluida'; clase='bg-gray-100 opacity-75'; }
+        else if(s.estado === 'RECHAZADA'){ est='🔴 Rechazada'; clase='bg-red-50'; }
 
         let btnConcluir = ((s.estado === 'APROBADA' || s.estado === 'PENDIENTE_MANTENIMIENTO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="marcarConcluida(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>` : '';
         let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
@@ -1328,6 +1347,7 @@ function limpiarFiltros() {
     document.getElementById('filtroFecha').value = '';
     document.getElementById('filtroTipo').value = '';
     document.getElementById('filtroEstado').value = '';
+    document.getElementById('toggleConcluidasCoordinacion').checked = false;
     filtrarSolicitudesCoordinacion();
 }
 
@@ -1834,6 +1854,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v14.0 - Impresión en 1 hoja, Zona horaria y Encriptación de contraseñas");</script>
+<script>console.log("Script actualizado v15.0 - Impresión 1 hoja, Filtros avanzados y apartado de Concluidas");</script>
 </body>
 </html>
