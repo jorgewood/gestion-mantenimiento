@@ -661,7 +661,7 @@ function formatearFechaLocal(fechaString) {
     if (!fechaString) return '';
     try {
         const fecha = new Date(fechaString);
-        if (isNaN(fecha.getTime())) return fechaString; // Si es texto (ej. "2026-11-13"), lo deja igual
+        if (isNaN(fecha.getTime())) return fechaString; 
         return fecha.toLocaleString('es-MX', {
             year: 'numeric', month: '2-digit', day: '2-digit',
             hour: '2-digit', minute: '2-digit', hour12: true
@@ -1044,7 +1044,7 @@ function cargarMisSolicitudes() {
         <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Fecha de creación: ${formatearFechaLocal(s.fechaSolicitud)}</div>
+            <div class="text-sm text-gray-600">Fecha de creación: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 font-semibold">${est} ${badge}</div>
@@ -1155,7 +1155,7 @@ function cargarBandejaProyectos() {
         <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fechaSolicitud)}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 font-semibold">${etiquetaEstado} ${badge}</div>
@@ -1328,7 +1328,7 @@ function filtrarSolicitudesCoordinacion() {
         <div class="border rounded-lg p-4 ${clase} shadow-sm">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
             ${nombreEventoHTML}
-            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fechaSolicitud)}</div>
+            <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
             ${s.tipo==='evento'?`<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>`:''}
             <div class="text-sm mt-1">${s.descripcion}</div>
             <div class="mt-2 flex flex-wrap gap-2 items-center">
@@ -1726,7 +1726,7 @@ async function imprimirSolicitud(id) {
     const c = document.getElementById('formatoImpresion');
     let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">${tipoEtiqueta}</div><div class="subtitulo-header">${s.area}</div><div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">${tipoEtiqueta}</div><div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
     
-    let html = `${headerHTML}<table><tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr><tr><td>Sección que solicita</td><td>${s.area}</td></tr><tr><td>Solicitante</td><td>${s.solicitante}</td></tr>`;
+    let html = `${headerHTML}<table><tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud} <br><small style="color:#777">Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</small></td></tr><tr><td>Sección que solicita</td><td>${s.area}</td></tr><tr><td>Solicitante</td><td>${s.solicitante}</td></tr>`;
     if (s.tipo === 'evento' && s.nombreEvento) html += `<tr><td>Nombre del evento</td><td><b>${s.nombreEvento}</b></td></tr>`;
     html += `<tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
     if (s.tipo === 'evento') html += `<tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
@@ -1854,6 +1854,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v15.0 - Impresión 1 hoja, Filtros avanzados y apartado de Concluidas");</script>
+<script>console.log("Script actualizado v16.0 - Corrección de fechas exactas y nuevos filtros");</script>
 </body>
 </html>
