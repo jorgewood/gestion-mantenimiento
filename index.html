@@ -916,7 +916,7 @@ async function guardarSolicitud() {
             await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', solicitudParaActualizar); 
             alert('✅ Solicitud actualizada');
         } else {
-            // CORRECCIÓN: Si es supervisor (proyectos), se guarda su nombre como autorizadoPor, y el solicitante ya viene del form
+            // CORRECCIÓN: Si es supervisor (proyectos) o admin, se guarda su nombre como autorizadoPor, pero respetando el solicitante que viene del formulario
             if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { 
                 datosSolicitud.estado = 'PENDIENTE_MANTENIMIENTO'; 
                 datosSolicitud.autorizadoPor = usuarioActivo.nombre; 
