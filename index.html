@@ -112,7 +112,7 @@
             
             /* AJUSTE PARA 3 FIRMAS */
             .formato-impresion .firmas { margin-top: 15px !important; display: flex !important; justify-content: space-between !important; padding-top: 8px !important; gap: 10px !important; }
-            .formato-impresion .firma-item { text-align: center !important; width: 31% !important; } /* Reducido a 31% para 3 firmas */
+            .formato-impresion .firma-item { text-align: center !important; width: 31% !important; }
             .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 25px 0 3px 0 !important; }
             .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 8pt !important; }
             .formato-impresion .firma-item .firma-cargo { font-size: 7pt !important; color: #666 !important; }
@@ -141,7 +141,7 @@
         .formato-impresion td:first-child { width: 25%; font-weight: 700; background: #f3f4f6; color: #1a1a2e; }
         .formato-impresion td:last-child { width: 75%; background: white; color: #333; white-space: pre-wrap; word-wrap: break-word; }
         .formato-impresion .firmas { margin-top: 20px; display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #e5e7eb; }
-        .formato-impresion .firma-item { text-align: center; width: 31%; } /* 3 Firmas */
+        .formato-impresion .firma-item { text-align: center; width: 31%; }
         .formato-impresion .firma-item .linea { border-top: 1px solid #333; width: 100%; margin: 25px 0 4px 0; }
         .formato-impresion .firma-item .firma-nombre { font-weight: 700; font-size: 9pt; color: #1a1a2e; }
         .formato-impresion .firma-item .firma-cargo { font-size: 8pt; color: #666; }
@@ -1775,10 +1775,10 @@ async function imprimirSolicitud(id) {
             <div class="firma-fecha">${s.fechaSolicitud}</div>
         </div>
         <div class="firma-item">
-            <div class="firma-nombre">${s.tipo === 'servicio' ? empleadoAtendio : firmaAutorizacion}</div>
+            <div class="firma-nombre">${s.tipo === 'servicio' ? firmaAutorizacion : firmaAutorizacion}</div>
             <div class="linea"></div>
-            <div class="firma-cargo">${s.tipo === 'servicio' ? 'Atendido por' : 'Autorizado por'}</div>
-            <div class="firma-fecha">${s.tipo === 'servicio' ? (s.fechaConclusion ? formatearFechaLocal(s.fechaConclusion) : 'Pendiente') : (s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : 'Pendiente')}</div>
+            <div class="firma-cargo">${s.tipo === 'servicio' ? 'Autorizado por' : 'Autorizado por'}</div>
+            <div class="firma-fecha">${s.tipo === 'servicio' ? (s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : 'Pendiente') : (s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : 'Pendiente')}</div>
         </div>
         <div class="firma-item">
             <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
@@ -1896,6 +1896,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v17.0 - 3 Firmas en todos los formatos, supervisor corregido");</script>
+<script>console.log("Script actualizado v18.0 - Firma de autorización corregida, 3 firmas en todos los formatos");</script>
 </body>
 </html>
