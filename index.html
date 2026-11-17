@@ -56,7 +56,7 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
         /* ==========================================
-           ESTILOS DE IMPRESIÓN DEFINITIVOS (1 SOLA HOJA CARTA)
+           ESTILOS DE IMPRESIÓN DEFINITIVOS (1 SOLA HOJA CARTA CON 3 FIRMAS)
            ========================================== */
         @media print {
             @page {
@@ -73,7 +73,7 @@
                 width: 100% !important; 
                 height: auto !important;
                 margin: 0 !important; 
-                padding: 10mm 12mm !important;
+                padding: 8mm 10mm !important;
                 background: white !important; 
                 display: block !important;
                 box-sizing: border-box !important;
@@ -87,8 +87,8 @@
                 border: none !important; 
                 background: white !important; 
                 font-family: 'Segoe UI', Arial, sans-serif !important; 
-                font-size: 9.5pt !important; 
-                line-height: 1.3 !important; 
+                font-size: 9pt !important; 
+                line-height: 1.25 !important; 
             }
             .formato-impresion table, 
             .formato-impresion .firmas,
@@ -97,24 +97,26 @@
                 page-break-inside: avoid !important; 
                 break-inside: avoid !important;
             }
-            .formato-impresion .header-impresion { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 10px !important; border-bottom: 2px solid #165DFF !important; padding-bottom: 8px !important; }
-            .formato-impresion .logo-impresion { max-height: 55px !important; max-width: 100px !important; object-fit: contain !important; }
+            .formato-impresion .header-impresion { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 8px !important; border-bottom: 2px solid #165DFF !important; padding-bottom: 6px !important; }
+            .formato-impresion .logo-impresion { max-height: 50px !important; max-width: 90px !important; object-fit: contain !important; }
             .formato-impresion .header-text { text-align: right !important; }
             .formato-impresion .titulo-principal { font-size: 12pt !important; font-weight: 800 !important; color: #165DFF !important; text-transform: uppercase !important; }
             .formato-impresion .subtitulo-header { font-size: 8.5pt !important; color: #555 !important; }
             .formato-impresion .folio-header { font-size: 9pt !important; font-weight: 700 !important; }
             .formato-impresion .titulo-central { text-align: center !important; font-size: 13pt !important; font-weight: 800 !important; text-transform: uppercase !important; }
-            .formato-impresion .subtitulo-central { text-align: center !important; font-size: 9pt !important; color: #666 !important; margin-bottom: 10px !important; border-bottom: 1px solid #e5e7eb !important; padding-bottom: 5px !important; }
+            .formato-impresion .subtitulo-central { text-align: center !important; font-size: 9pt !important; color: #666 !important; margin-bottom: 8px !important; border-bottom: 1px solid #e5e7eb !important; padding-bottom: 4px !important; }
             .formato-impresion table { width: 100% !important; border-collapse: collapse !important; margin-top: 5px !important; font-size: 9pt !important; }
-            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 4px 6px !important; vertical-align: top !important; }
+            .formato-impresion td { border: 1px solid #d1d5db !important; padding: 3px 6px !important; vertical-align: top !important; }
             .formato-impresion td:first-child { width: 25% !important; font-weight: 700 !important; background: #f3f4f6 !important; }
             .formato-impresion td:last-child { width: 75% !important; background: white !important; }
-            .formato-impresion .firmas { margin-top: 15px !important; display: flex !important; justify-content: space-between !important; padding-top: 8px !important; }
-            .formato-impresion .firma-item { text-align: center !important; width: 45% !important; }
-            .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 20px 0 3px 0 !important; }
-            .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 8.5pt !important; }
-            .formato-impresion .firma-item .firma-cargo { font-size: 7.5pt !important; color: #666 !important; }
-            .formato-impresion .pie-pagina { margin-top: 10px !important; font-size: 7pt !important; color: #9ca3af !important; border-top: 1px solid #e5e7eb !important; padding-top: 5px !important; display: flex !important; justify-content: space-between !important; }
+            
+            /* AJUSTE PARA 3 FIRMAS */
+            .formato-impresion .firmas { margin-top: 15px !important; display: flex !important; justify-content: space-between !important; padding-top: 8px !important; gap: 10px !important; }
+            .formato-impresion .firma-item { text-align: center !important; width: 31% !important; } /* Reducido a 31% para 3 firmas */
+            .formato-impresion .firma-item .linea { border-top: 1px solid #333 !important; width: 100% !important; margin: 25px 0 3px 0 !important; }
+            .formato-impresion .firma-item .firma-nombre { font-weight: 700 !important; font-size: 8pt !important; }
+            .formato-impresion .firma-item .firma-cargo { font-size: 7pt !important; color: #666 !important; }
+            .formato-impresion .pie-pagina { margin-top: 8px !important; font-size: 7pt !important; color: #9ca3af !important; border-top: 1px solid #e5e7eb !important; padding-top: 4px !important; display: flex !important; justify-content: space-between !important; }
             .formato-impresion .badge-estado { display: inline-block !important; padding: 2px 10px !important; border-radius: 20px !important; font-size: 8pt !important; font-weight: 700 !important; text-transform: uppercase !important; }
             .formato-impresion .badge-aprobada { background: #dcfce7 !important; color: #00B42A !important; }
             .formato-impresion .badge-pendiente { background: #fef3c7 !important; color: #FF7D00 !important; }
@@ -139,7 +141,7 @@
         .formato-impresion td:first-child { width: 25%; font-weight: 700; background: #f3f4f6; color: #1a1a2e; }
         .formato-impresion td:last-child { width: 75%; background: white; color: #333; white-space: pre-wrap; word-wrap: break-word; }
         .formato-impresion .firmas { margin-top: 20px; display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #e5e7eb; }
-        .formato-impresion .firma-item { text-align: center; width: 45%; }
+        .formato-impresion .firma-item { text-align: center; width: 31%; } /* 3 Firmas */
         .formato-impresion .firma-item .linea { border-top: 1px solid #333; width: 100%; margin: 25px 0 4px 0; }
         .formato-impresion .firma-item .firma-nombre { font-weight: 700; font-size: 9pt; color: #1a1a2e; }
         .formato-impresion .firma-item .firma-cargo { font-size: 8pt; color: #666; }
@@ -914,9 +916,23 @@ async function guardarSolicitud() {
             await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', solicitudParaActualizar); 
             alert('✅ Solicitud actualizada');
         } else {
-            if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { datosSolicitud.estado = 'PENDIENTE_MANTENIMIENTO'; alert('✅ Creada por Mantenimiento'); }
-            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { datosSolicitud.estado = 'APROBADA'; datosSolicitud.autorizadoPor = usuarioActivo.nombre; datosSolicitud.fechaAutorizacion = new Date().toISOString(); alert('✅ Autorizada por Proyectos'); }
-            else { datosSolicitud.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos'); }
+            // CORRECCIÓN: Si es supervisor (proyectos), se guarda su nombre como autorizadoPor, y el solicitante ya viene del form
+            if (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) { 
+                datosSolicitud.estado = 'PENDIENTE_MANTENIMIENTO'; 
+                datosSolicitud.autorizadoPor = usuarioActivo.nombre; 
+                datosSolicitud.fechaAutorizacion = new Date().toISOString();
+                alert('✅ Creada por Mantenimiento'); 
+            }
+            else if (usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos'))) { 
+                datosSolicitud.estado = 'APROBADA'; 
+                datosSolicitud.autorizadoPor = usuarioActivo.nombre; 
+                datosSolicitud.fechaAutorizacion = new Date().toISOString(); 
+                alert('✅ Autorizada por Proyectos'); 
+            }
+            else { 
+                datosSolicitud.estado = 'PENDIENTE_PROYECTOS'; 
+                alert('✅ Enviada a Proyectos'); 
+            }
             await apiRequest('/api/solicitudes', 'POST', datosSolicitud);
         }
         await cargarDatosIniciales(); guardarRespaldoLocal(); cancelarEdicionSol();
@@ -1749,6 +1765,7 @@ async function imprimirSolicitud(id) {
     if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente';
     if (s.estado === 'PENDIENTE_MANTENIMIENTO') firmaAutorizacion = 'No requiere';
     
+    // AQUI SE AGREGA LA TERCERA FIRMA DE COORDINACION DE MANTENIMIENTO
     html += `</table>
     <div class="firmas">
         <div class="firma-item">
@@ -1762,6 +1779,12 @@ async function imprimirSolicitud(id) {
             <div class="linea"></div>
             <div class="firma-cargo">${s.tipo === 'servicio' ? 'Atendido por' : 'Autorizado por'}</div>
             <div class="firma-fecha">${s.tipo === 'servicio' ? (s.fechaConclusion ? formatearFechaLocal(s.fechaConclusion) : 'Pendiente') : (s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : 'Pendiente')}</div>
+        </div>
+        <div class="firma-item">
+            <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
+            <div class="linea"></div>
+            <div class="firma-cargo">Coordinación de Mantenimiento</div>
+            <div class="firma-fecha">${s.fechaConclusion ? formatearFechaLocal(s.fechaConclusion) : 'Pendiente'}</div>
         </div>
     </div>
     <div class="pie-pagina"><span>${fechaActual} ${horaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
@@ -1777,7 +1800,20 @@ async function imprimirOrdenTrabajo(ordenId) {
         let headerHTML = logoDataURL ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">ORDEN DE TRABAJO</div><div class="subtitulo-header">${o.area}</div><div class="folio-header">Orden: #${String(o.id).padStart(4, '0')}</div></div></div>` : `<div class="titulo-central">ORDEN DE TRABAJO</div><div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
         let fechaAtencion = '_________________________________', horaInicio = '_________________________________', horaFin = '_________________________________', recibidoPor = '_________________________________', tituloSeccion = 'PARA LLENAR AL MOMENTO DE ATENDER', colorBorde = '#999';
         if (o.estado === 'CONCLUIDO') { fechaAtencion = `<b>${o.fechaAtencion || ''}</b>`; horaInicio = `<b>${o.horaInicio || ''}</b>`; horaFin = `<b>${o.horaFin || ''}</b>`; recibidoPor = `<b>${o.recibidoPor || ''}</b>`; tituloSeccion = 'DATOS DE ATENCIÓN'; colorBorde = '#00B42A'; }
-        let html = `${headerHTML}<table><tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr><tr><td>Fecha de solicitud</td><td>${formatearFechaLocal(o.fecha_creacion)}</td></tr><tr><td>Solicitante</td><td>${o.solicitante}</td></tr><tr><td>Sección</td><td>${o.area}</td></tr><tr><td>Descripción</td><td>${o.descripcion}</td></tr><tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr></table><div style="margin-top: 20px; border: 2px dashed ${colorBorde}; padding: 15px; border-radius: 8px;"><h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4><table style="border: none;"><tr><td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td><td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td></tr><tr><td style="border: none; background: transparent; padding-top: 15px;"><b>Hora de finalización:</b><br><br>${horaFin}</td><td style="border: none; background: transparent; padding-top: 15px;"><b>Firma de conformidad:</b><br><br>${recibidoPor}</td></tr></table></div><div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        
+        // AQUI SE AGREGA LA TERCERA FIRMA DE COORDINACION DE MANTENIMIENTO
+        let html = `${headerHTML}<table><tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr><tr><td>Fecha de solicitud</td><td>${formatearFechaLocal(o.fecha_creacion)}</td></tr><tr><td>Solicitante</td><td>${o.solicitante}</td></tr><tr><td>Sección</td><td>${o.area}</td></tr><tr><td>Descripción</td><td>${o.descripcion}</td></tr><tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr></table>
+        <div style="margin-top: 15px; border: 2px dashed ${colorBorde}; padding: 10px; border-radius: 8px;">
+            <h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4>
+            <table style="border: none;"><tr><td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td><td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td></tr><tr><td style="border: none; background: transparent; padding-top: 10px;"><b>Hora de finalización:</b><br><br>${horaFin}</td><td style="border: none; background: transparent; padding-top: 10px;"><b>Firma de conformidad:</b><br><br>${recibidoPor}</td></tr></table>
+        </div>
+        <div class="firmas">
+            <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Recibió (Solicitante)</div></div>
+            <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Atendió (Empleado)</div></div>
+            <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Coordinación de Mantenimiento</div></div>
+        </div>
+        <div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+        
         const c = document.getElementById('formatoImpresion'); c.innerHTML = html; c.style.display = 'block';
         setTimeout(() => { window.print(); setTimeout(() => { c.style.display = 'none'; }, 500); }, 300);
     } catch (error) { alert('❌ Error: ' + error.message); }
@@ -1808,12 +1844,12 @@ async function imprimirOrdenCompra(id) {
             <tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr>
         </table>
         
-        <h4 style="margin-top: 25px; margin-bottom: 5px;">Artículos solicitados:</h4>
+        <h4 style="margin-top: 20px; margin-bottom: 5px;">Artículos solicitados:</h4>
         <table style="table-layout: fixed;">
             <thead>
                 <tr style="background: #f3f4f6;">
-                    <th style="text-align: center; padding: 8px; border: 1px solid #d1d5db; width: 20%;">Cantidad</th>
-                    <th style="text-align: left; padding: 8px; border: 1px solid #d1d5db; width: 80%;">Descripción del Artículo</th>
+                    <th style="text-align: center; padding: 5px; border: 1px solid #d1d5db; width: 20%;">Cantidad</th>
+                    <th style="text-align: left; padding: 5px; border: 1px solid #d1d5db; width: 80%;">Descripción del Artículo</th>
                 </tr>
             </thead>
             <tbody>
@@ -1825,7 +1861,13 @@ async function imprimirOrdenCompra(id) {
             <div class="firma-item">
                 <div class="firma-nombre">${c.solicitado_por}</div>
                 <div class="linea"></div>
-                <div class="firma-cargo">Solicita Coordinación de Mantenimiento</div>
+                <div class="firma-cargo">Solicita</div>
+                <div class="firma-fecha">${formatearFechaLocal(c.fecha)}</div>
+            </div>
+            <div class="firma-item">
+                <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
+                <div class="linea"></div>
+                <div class="firma-cargo">Coordinación de Mantenimiento</div>
                 <div class="firma-fecha">${formatearFechaLocal(c.fecha)}</div>
             </div>
             <div class="firma-item">
@@ -1854,6 +1896,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v16.0 - Corrección de fechas exactas y nuevos filtros");</script>
+<script>console.log("Script actualizado v17.0 - 3 Firmas en todos los formatos, supervisor corregido");</script>
 </body>
 </html>
