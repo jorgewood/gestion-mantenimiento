@@ -1710,29 +1710,189 @@ async function guardarCapturaOrden() {
 }
 
 // ==================== INCIDENCIAS ====================
-async function cargarIncidencias() {
-    const lista = document.getElementById('listaIncidencias'); const selectEmp = document.getElementById('incidenciaEmpleado');
-    try {
-        const empleados = await apiRequest('/api/empleados'); selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        const incidencias = await apiRequest('/api/incidencias');
-        if (incidencias.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>'; return; }
-        lista.innerHTML = incidencias.map(i => `<div class="border rounded p-3 bg-white shadow-sm flex justify-between"><div><b>${i.empleado_nombre}</b> - ${i.tipo} <span class="text-sm text-gray-500">(${formatearFechaLocal(i.fecha)})</span><br><span class="text-sm text-gray-600">${i.horas || ''} - ${i.motivo}</span></div></div>`).join('');
-    } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
-}
-function cambiarCamposIncidencia() {
-    const tipo = document.getElementById('incidenciaTipo').value; document.getElementById('camposFechas').classList.add('hidden'); document.getElementById('camposHoras').classList.add('hidden');
-    if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') document.getElementById('camposFechas').classList.remove('hidden');
-    else if (tipo === 'Permiso por horas') document.getElementById('camposHoras').classList.remove('hidden');
-}
-async function guardarIncidencia() {
-    const empleado_id = document.getElementById('incidenciaEmpleado').value; const tipo = document.getElementById('incidenciaTipo').value; const fecha = document.getElementById('incidenciaFecha').value; const motivo = document.getElementById('incidenciaMotivo').value.trim();
-    if (!empleado_id || !fecha) { alert('Selecciona empleado y fecha'); return; }
-    const datos = { empleado_id, tipo, fecha, motivo };
-    if (tipo === 'Permiso por horas') { datos.hora_llegada = document.getElementById('incidenciaHoraLlegada').value; datos.hora_salida = document.getElementById('incidenciaHoraSalida').value; }
-    else { datos.fecha_inicio = document.getElementById('incidenciaFechaInicio').value; datos.fecha_fin = document.getElementById('incidenciaFechaFin').value; }
-    try { await apiRequest('/api/incidencias', 'POST', datos); alert('✅ Incidencia registrada'); document.getElementById('incidenciaMotivo').value = ''; cargarIncidencias(); } catch (error) { alert('❌ Error: ' + error.message); }
+let incidenciasCache = [];
+
+function formatearHora(hora){
+  if(!hora) return '';
+  // Viene como "08:00" -> "08:00 AM"
+  const [h,m] = hora.split(':');
+  let hh = parseInt(h); const ampm = hh >= 12 ? 'PM' : 'AM';
+  hh = hh % 12 || 12;
+  return `${String(hh).padStart(2,'0')}:${m} ${ampm}`;
 }
 
+function textoHorarioReal(i){
+  if(i.tipo === 'Permiso por horas'){
+    if(i.hora_llegada || i.hora_salida){
+      return `⏰ ${formatearHora(i.hora_llegada) || '--:--'} a ${formatearHora(i.hora_salida) || '--:--'}`;
+    }
+    return '⏰ Sin hora capturada';
+  }
+  if(i.fecha_inicio || i.fecha_fin){
+    return `📅 ${i.fecha_inicio || '--'} al ${i.fecha_fin || '--'}`;
+  }
+  return 'Sin fecha de permiso';
+}
+
+async function cargarIncidencias() {
+    const lista = document.getElementById('listaIncidencias');
+    const selectEmp = document.getElementById('incidenciaEmpleado');
+    try {
+        const empleados = await apiRequest('/api/empleados');
+        selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+        const incidencias = await apiRequest('/api/incidencias');
+        incidenciasCache = incidencias;
+        if (incidencias.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>'; return; }
+        lista.innerHTML = incidencias.map(i => `
+        <div class="border rounded p-4 bg-white shadow-sm">
+            <div class="flex justify-between items-start flex-wrap gap-2">
+                <div>
+                    <b>${i.empleado_nombre || 'Sin empleado'}</b> - ${i.tipo}
+                    <span class="text-sm text-gray-500"> | Registro: ${i.fecha || ''}</span>
+                    <div class="mt-1 font-semibold text-colegio-azul">${textoHorarioReal(i)}</div>
+                    <div class="text-sm text-gray-600 mt-1">${i.motivo || 'Sin motivo'}</div>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="imprimirIncidencia(${i.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+                    <button onclick="editarIncidencia(${i.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>
+                    <button onclick="eliminarIncidencia(${i.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+                </div>
+            </div>
+        </div>`).join('');
+    } catch (error) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
+}
+
+function cambiarCamposIncidencia() {
+    const tipo = document.getElementById('incidenciaTipo').value;
+    document.getElementById('camposFechas').classList.add('hidden');
+    document.getElementById('camposHoras').classList.add('hidden');
+    if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
+        document.getElementById('camposFechas').classList.remove('hidden');
+    } else if (tipo === 'Permiso por horas') {
+        document.getElementById('camposHoras').classList.remove('hidden');
+    }
+    // Al editar, siempre permitir capturar horas aunque sea permiso por días
+    if(document.getElementById('idEditarIncidencia').value){
+        document.getElementById('camposHoras').classList.remove('hidden');
+    }
+}
+
+async function guardarIncidencia() {
+    const idEditar = document.getElementById('idEditarIncidencia').value;
+    const empleado_id = document.getElementById('incidenciaEmpleado').value;
+    const tipo = document.getElementById('incidenciaTipo').value;
+    const fecha = document.getElementById('incidenciaFecha').value;
+    const motivo = document.getElementById('incidenciaMotivo').value.trim();
+    if (!empleado_id || !fecha) { alert('Selecciona empleado y fecha'); return; }
+    const datos = {
+        empleado_id, tipo, fecha, motivo,
+        fecha_inicio: document.getElementById('incidenciaFechaInicio').value,
+        fecha_fin: document.getElementById('incidenciaFechaFin').value,
+        hora_llegada: document.getElementById('incidenciaHoraLlegada').value,
+        hora_salida: document.getElementById('incidenciaHoraSalida').value
+    };
+    try {
+        if(idEditar){
+            await apiRequest(`/api/incidencias/${idEditar}`, 'PUT', datos);
+            alert('✅ Incidencia actualizada');
+        } else {
+            await apiRequest('/api/incidencias', 'POST', datos);
+            alert('✅ Incidencia registrada');
+        }
+        cancelarEdicionIncidencia();
+        cargarIncidencias();
+    } catch (error) { alert('❌ Error: ' + error.message); }
+}
+
+function editarIncidencia(id){
+    const i = incidenciasCache.find(x => x.id === id);
+    if(!i) return;
+    document.getElementById('idEditarIncidencia').value = i.id;
+    document.getElementById('tituloFormIncidencia').textContent = '✏️ Editando Incidencia - ' + (i.empleado_nombre || '');
+    document.getElementById('incidenciaEmpleado').value = i.empleado_id;
+    document.getElementById('incidenciaTipo').value = i.tipo;
+    document.getElementById('incidenciaFecha').value = i.fecha || '';
+    document.getElementById('incidenciaFechaInicio').value = i.fecha_inicio || '';
+    document.getElementById('incidenciaFechaFin').value = i.fecha_fin || '';
+    document.getElementById('incidenciaHoraLlegada').value = i.hora_llegada || '';
+    document.getElementById('incidenciaHoraSalida').value = i.hora_salida || '';
+    document.getElementById('incidenciaMotivo').value = i.motivo || '';
+    document.getElementById('btnGuardarIncidencia').textContent = '💾 Guardar Cambios';
+    document.getElementById('btnCancelarIncidencia').classList.remove('hidden');
+    cambiarCamposIncidencia();
+    // En edición siempre mostrar horas para poder agregar entrada/salida
+    document.getElementById('camposHoras').classList.remove('hidden');
+    document.getElementById('panelIncidencias').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelarEdicionIncidencia(){
+    document.getElementById('idEditarIncidencia').value = '';
+    document.getElementById('tituloFormIncidencia').textContent = 'Nueva Incidencia';
+    document.getElementById('incidenciaMotivo').value = '';
+    document.getElementById('incidenciaFechaInicio').value = '';
+    document.getElementById('incidenciaFechaFin').value = '';
+    document.getElementById('incidenciaHoraLlegada').value = '';
+    document.getElementById('incidenciaHoraSalida').value = '';
+    document.getElementById('btnGuardarIncidencia').textContent = 'Agregar Incidencia';
+    document.getElementById('btnCancelarIncidencia').classList.add('hidden');
+    cambiarCamposIncidencia();
+}
+
+async function eliminarIncidencia(id){
+    if(!confirm('⚠️ ¿Eliminar este permiso? Si se canceló el permiso, se eliminará de forma permanente.')) return;
+    try{
+        await apiRequest(`/api/incidencias/${id}`, 'DELETE');
+        alert('🗑️ Permiso eliminado');
+        cargarIncidencias();
+    }catch(e){ alert('❌ Error: ' + e.message); }
+}
+
+function imprimirIncidencia(id){
+    const i = incidenciasCache.find(x => x.id === id);
+    if(!i) return;
+    const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+    const headerHTML = logoDataURL
+        ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">PERMISO / INCIDENCIA</div><div class="subtitulo-header">${i.empleado_nombre || ''}</div><div class="folio-header">Folio: #${String(i.id).padStart(4,'0')}</div></div></div>`
+        : `<div class="titulo-central">PERMISO / INCIDENCIA</div><div class="subtitulo-central">Folio: #${String(i.id).padStart(4,'0')} | ${fechaActual}</div>`;
+
+    let html = `${headerHTML}<table>
+        <tr><td>Empleado</td><td><b>${i.empleado_nombre || ''}</b></td></tr>
+        <tr><td>Tipo de permiso</td><td>${i.tipo}</td></tr>
+        <tr><td>Fecha de registro</td><td>${i.fecha || ''}</td></tr>
+        <tr><td>Horario real del permiso</td><td><b>${textoHorarioReal(i)}</b></td></tr>
+        <tr><td>Hora de entrada</td><td>${formatearHora(i.hora_llegada) || '_______________'}</td></tr>
+        <tr><td>Hora de salida</td><td>${formatearHora(i.hora_salida) || '_______________'}</td></tr>
+        <tr><td>Fecha de inicio</td><td>${i.fecha_inicio || '_______________'}</td></tr>
+        <tr><td>Fecha de término</td><td>${i.fecha_fin || '_______________'}</td></tr>
+        <tr><td>Motivo / Observaciones</td><td>${i.motivo || ''}</td></tr>
+    </table>
+    <div class="firmas">
+        <div class="firma-item">
+            <div class="firma-nombre">${i.empleado_nombre || '__________________'}</div>
+            <div class="linea"></div>
+            <div class="firma-cargo">Solicitante</div>
+            <div class="firma-fecha">${i.fecha || ''}</div>
+        </div>
+        <div class="firma-item">
+            <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
+            <div class="linea"></div>
+            <div class="firma-cargo">Administrador - VoBo (Jefe de Empleados)</div>
+            <div class="firma-fecha">VoBo</div>
+        </div>
+        <div class="firma-item">
+            <div class="firma-nombre">_________________________</div>
+            <div class="linea"></div>
+            <div class="firma-cargo">Administración - Autoriza el Permiso</div>
+            <div class="firma-fecha">Autorización</div>
+        </div>
+    </div>
+    <div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
+
+    const c = document.getElementById('formatoImpresion');
+    c.innerHTML = html; c.style.display = 'block';
+    setTimeout(() => { window.print(); setTimeout(() => { c.style.display = 'none'; }, 500); }, 300);
+}
+    
 // ==================== SECCIONES Y PROVEEDORES ====================
 async function cargarSecciones() {
     try { const secciones = await apiRequest('/api/secciones'); document.getElementById('areaSolicitante').innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join(''); } catch (error) { }
