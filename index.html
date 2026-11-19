@@ -395,6 +395,7 @@
                     <div><label class="block text-sm font-semibold">Estado</label>
                         <select id="filtroEstado" class="w-full border rounded px-3 py-1" onchange="filtrarSolicitudesCoordinacion()">
                             <option value="">Todos</option>
+                            <option value="PENDIENTE_PROYECTOS">En Evaluación</option> <!-- NUEVO FILTRO AGREGADO -->
                             <option value="APROBADA">Autorizada</option>
                             <option value="DESBLOQUEADA">Desbloqueada</option>
                             <option value="RECHAZADA">Rechazada</option>
@@ -1069,6 +1070,9 @@ function cargarMisSolicitudes() {
 
         let nombreEventoHTML = s.tipo === 'evento' && s.nombreEvento ? `<div class="text-sm font-semibold text-colegio-naranja mt-1"><i class="fas fa-star"></i> Evento: ${s.nombreEvento}</div>` : '';
 
+        // VALIDACION: Concluir directo SOLO para SERVICIOS
+        let btnConcluirDirecto = (s.tipo === 'servicio' && (usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA')) ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir Directo</button>` : '';
+
         lista.innerHTML += `
         <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
             <div class="font-bold">${s.tipo==='servicio'?'🛠️ Servicio':'📅 Evento'} — ${s.area}</div>
@@ -1081,7 +1085,7 @@ function cargarMisSolicitudes() {
             <div class="mt-2 flex gap-2 flex-wrap">
                 <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
                 ${botonModificar}
-                ${(usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'))) && (s.estado === 'PENDIENTE_MANTENIMIENTO' || s.estado === 'APROBADA') ? `<button onclick="concluirDirecto(${s.id})" class="btn-concluir-directo">✅ Concluir Directo</button>` : ''}
+                ${btnConcluirDirecto}
             </div>
             ${s.observaciones && s.observaciones.length > 0 ? `<div class="mt-3">${s.observaciones.map((obs, i) => {
                 const puedeEditar = usuarioActivo.rol === 'admin' || (usuarioActivo.rol === 'proyectos' && obs.autor === usuarioActivo.nombre);
@@ -1342,6 +1346,7 @@ function filtrarSolicitudesCoordinacion() {
     
     let filtradas = solicitudes;
     
+    // CORRECCIÓN: Si NO se marca el checkbox y NO se filtra por un estado específico, ocultar SOLO las concluidas
     if (!mostrarConcluidas && !fest) {
         filtradas = filtradas.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
     }
@@ -1373,7 +1378,9 @@ function filtrarSolicitudesCoordinacion() {
         else if(s.estado === 'CONCLUIDO_DIRECTO'){ est='✅ Concluida (Directo)'; clase='bg-gray-100 opacity-75'; }
         else if(s.estado === 'RECHAZADA'){ est='🔴 Rechazada'; clase='bg-red-50'; }
 
-        let btnConcluir = ((s.estado === 'APROBADA') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="marcarConcluidaDirecto(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Directo</button>` : '';
+        // VALIDACION: Concluir directo SOLO para SERVICIOS
+        let btnConcluir = ((s.tipo === 'servicio') && (s.estado === 'APROBADA') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="marcarConcluidaDirecto(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Directo</button>` : '';
+        
         let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
         let btnBloquear = (s.estado === 'DESBLOQUEADA' && (usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento')))) ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
         
@@ -1969,6 +1976,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v19.0 - Conclusión Directa con identificador, WhatsApp condicional, permisos manuales y filtros limpios");</script>
+<script>console.log("Script actualizado v20.0 - Concluir directo solo en servicios, Filtro En Evaluación en Coordinación");</script>
 </body>
 </html>
