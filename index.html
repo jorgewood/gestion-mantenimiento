@@ -779,8 +779,14 @@ function aplicarPermisosUI() {
 
     const p = usuarioActivo.permisos || [];
 
-    if (p.includes('solicitudes') || p.includes('configuracion') || usuarioActivo.rol === 'admin') document.getElementById('navSolicitudes').classList.remove('hidden');
-    if (p.includes('proyectos') || usuarioActivo.rol === 'proyectos') document.getElementById('btnProyectos').classList.remove('hidden');
+    if (p.includes('solicitudes') || usuarioActivo.rol === 'admin') {
+        document.getElementById('navSolicitudes').classList.remove('hidden');
+    }
+    
+    // Mostrar botón de Proyectos Generales SOLO si tiene el permiso marcado
+    if (p.includes('proyectos')) {
+        document.getElementById('btnProyectos').classList.remove('hidden');
+    }
     
     const permisosMantenimiento = ['mantenimiento', 'empleados', 'ordenes', 'incidencias', 'compras', 'secciones', 'proveedores', 'configuracion'];
     if (permisosMantenimiento.some(perm => p.includes(perm)) || usuarioActivo.rol === 'admin') {
@@ -1097,6 +1103,13 @@ function limpiarFiltrosMis() {
 function cargarBandejaProyectos() {
     const lista = document.getElementById('listaProyectos'); lista.innerHTML = '';
     
+    const tienePermisoProyectos = (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')) || usuarioActivo.rol === 'proyectos';
+    
+    if (!tienePermisoProyectos) {
+        lista.innerHTML = '<p class="text-red-500 font-bold p-4 bg-red-50 rounded">⛔ Acceso Denegado. No tienes permiso para ver la Bandeja de Proyectos.</p>';
+        return;
+    }
+
     const fBuscar = document.getElementById('filtroProyBuscar').value.toLowerCase().trim();
     const fFecha = document.getElementById('filtroProyFecha').value;
     const fEstado = document.getElementById('filtroProyEstado').value;
@@ -1139,16 +1152,16 @@ function cargarBandejaProyectos() {
         let botones = '';
         if (s.estado === 'PENDIENTE_PROYECTOS') botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button><button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
         
-        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
+        if ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')))) {
             botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
         }
-        if (s.estado === 'DESBLOQUEADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
+        if (s.estado === 'DESBLOQUEADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')))) {
             botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
         }
         
         const puedeModificar = (s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') || s.estado === 'DESBLOQUEADA';
         
-        if (puedeModificar && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
+        if (puedeModificar && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')))) {
             botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button>`;
             botones += `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>`;
             botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
@@ -1498,14 +1511,14 @@ function editarUsuario(username) {
     const user = usuarios[username];
     if (!user) return;
     document.getElementById('nuevoUsuario').value = username;
-    document.getElementById('nuevoPass').value = ''; // SEGURIDAD: No mostrar contraseña encriptada
+    document.getElementById('nuevoPass').value = ''; 
     document.getElementById('nombreCompletoUsuario').value = user.nombre;
     document.getElementById('rolUsuario').value = user.rol;
     document.getElementById('editandoUsuario').value = username;
     document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
     document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
     
-    // CORRECCIÓN: NO auto-marcar permisos, solo respetar los que ya tenia guardados
+    // NO auto-marcar permisos, solo respetar los que ya tenia guardados
     document.querySelectorAll('.permiso-checkbox').forEach(cb => { 
         cb.checked = (user.permisos || []).includes(cb.value); 
     });
@@ -1523,7 +1536,6 @@ function limpiarFormularioUsuario() {
     document.getElementById('nuevoPass').value = ''; 
     document.getElementById('nombreCompletoUsuario').value = ''; 
     document.getElementById('rolUsuario').value = 'seccion'; 
-    // CORRECCIÓN: Desmarcar TODOS los checkboxes al limpiar el formulario
     document.querySelectorAll('.permiso-checkbox').forEach(cb => cb.checked = false); 
 }
 
