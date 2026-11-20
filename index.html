@@ -1044,7 +1044,6 @@ async function guardarSolicitud() {
         datos.estado = 'APROBADA';
         datos.autorizadoPor = usuarioActivo.nombre;
         datos.fechaAutorizacion = new Date().toISOString();
-        datos.solicitante = '';
         alert('✅ Solicitud creada y autorizada automáticamente');
       } else {
         datos.estado = 'PENDIENTE_PROYECTOS';
