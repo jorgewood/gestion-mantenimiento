@@ -418,17 +418,46 @@
         <input id="nombreEmpleado" placeholder="Nombre" class="border rounded px-3 py-2">
         <input id="puestoEmpleado" placeholder="Puesto" class="border rounded px-3 py-2">
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Hora de entrada (jornada)</label>
-          <input type="time" id="horaEntradaEmpleado" class="w-full border rounded px-3 py-2">
+
+      <!-- Horarios por día -->
+      <div class="mb-3">
+        <p class="font-semibold text-sm mb-2">🕐 Horario por día (deja vacío si no trabaja ese día)</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div class="border rounded p-2">
+            <p class="font-semibold text-xs mb-1">Lunes</p>
+            <input type="time" id="lunesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1" placeholder="Entrada">
+            <input type="time" id="lunesSalida" class="w-full border rounded px-2 py-1 text-sm" placeholder="Salida">
+          </div>
+          <div class="border rounded p-2">
+            <p class="font-semibold text-xs mb-1">Martes</p>
+            <input type="time" id="martesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
+            <input type="time" id="martesSalida" class="w-full border rounded px-2 py-1 text-sm">
+          </div>
+          <div class="border rounded p-2">
+            <p class="font-semibold text-xs mb-1">Miércoles</p>
+            <input type="time" id="miercolesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
+            <input type="time" id="miercolesSalida" class="w-full border rounded px-2 py-1 text-sm">
+          </div>
+          <div class="border rounded p-2">
+            <p class="font-semibold text-xs mb-1">Jueves</p>
+            <input type="time" id="juevesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
+            <input type="time" id="juevesSalida" class="w-full border rounded px-2 py-1 text-sm">
+          </div>
+          <div class="border rounded p-2">
+            <p class="font-semibold text-xs mb-1">Viernes</p>
+            <input type="time" id="viernesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
+            <input type="time" id="viernesSalida" class="w-full border rounded px-2 py-1 text-sm">
+          </div>
+          <div class="border rounded p-2">
+            <p class="font-semibold text-xs mb-1">Sábado</p>
+            <input type="time" id="sabadoEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
+            <input type="time" id="sabadoSalida" class="w-full border rounded px-2 py-1 text-sm">
+          </div>
         </div>
-        <div>
-          <label class="font-semibold text-sm">Hora de salida (jornada)</label>
-          <input type="time" id="horaSalidaEmpleado" class="w-full border rounded px-3 py-2">
-        </div>
-        <label class="flex items-center gap-2 text-sm self-end mb-2"><input type="checkbox" id="activoEmpleado" checked> Activo</label>
       </div>
+
+      <label class="flex items-center gap-2 text-sm mb-3"><input type="checkbox" id="activoEmpleado" checked> Activo</label>
+
       <div class="flex gap-2">
         <button id="btnGuardarEmpleado" onclick="guardarEmpleado()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Empleado</button>
         <button id="btnCancelarEmpleado" onclick="cancelarEdicionEmpleado()" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
@@ -650,6 +679,7 @@ let tabMisActiva = 'servicio';
 let tabProyActiva = 'servicio';
 let intervaloRefresco = null;
 let incidenciasCache = [];
+let empleadosCache = [];
 
 /* ============================================================
    UTILIDADES
@@ -690,7 +720,6 @@ function textoHorarioReal(i) {
     if (i.modalidad_horas === 'jornada') {
       return `⏰ Sale: ${formatearHora(i.hora_salida) || '--:--'} | Regresa: ${formatearHora(i.hora_regreso) || '--:--'}`;
     }
-    // Compatibilidad con datos viejos
     if (i.hora_llegada || i.hora_salida) {
       return `⏰ ${formatearHora(i.hora_llegada) || '--:--'} a ${formatearHora(i.hora_salida) || '--:--'}`;
     }
@@ -700,6 +729,74 @@ function textoHorarioReal(i) {
     return `📅 ${i.fecha_inicio || '--'} al ${i.fecha_fin || '--'}`;
   }
   return 'Sin fecha de permiso';
+}
+
+/* ============================================================
+   CÁLCULO DE DURACIÓN DE PERMISOS
+============================================================ */
+function minutosEntre(horaInicio, horaFin) {
+  if (!horaInicio || !horaFin) return 0;
+  const [h1, m1] = horaInicio.split(':').map(Number);
+  const [h2, m2] = horaFin.split(':').map(Number);
+  return (h2 * 60 + m2) - (h1 * 60 + m1);
+}
+
+function formatearDuracion(minutos) {
+  if (!minutos || minutos <= 0) return '0 min';
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h} h`;
+  return `${h} h ${m} min`;
+}
+
+function obtenerHorarioDelDia(empleado, fechaStr) {
+  if (!empleado || !fechaStr) return null;
+  const dias = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+  const [y, mo, d] = fechaStr.split('-').map(Number);
+  const dia = dias[new Date(y, mo - 1, d).getDay()];
+  if (dia === 'domingo') return null;
+  const entrada = empleado[`${dia}_entrada`];
+  const salida = empleado[`${dia}_salida`];
+  if (!entrada || !salida) return null;
+  return { entrada, salida, dia };
+}
+
+function calcularDuracionPermiso(incidencia, empleado) {
+  const tipo = incidencia.tipo;
+
+  if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
+    if (!incidencia.fecha_inicio || !incidencia.fecha_fin) {
+      return { minutos: 0, texto: 'Sin fechas' };
+    }
+    const inicio = new Date(incidencia.fecha_inicio);
+    const fin = new Date(incidencia.fecha_fin);
+    const dias = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1;
+    return { minutos: 0, texto: `${dias} día(s)` };
+  }
+
+  if (tipo === 'Permiso por horas' && empleado) {
+    const horario = obtenerHorarioDelDia(empleado, incidencia.fecha);
+    if (!horario) {
+      return { minutos: 0, texto: 'Día no laboral' };
+    }
+
+    let minutos = 0;
+    if (incidencia.modalidad_horas === 'entrada' && incidencia.hora_llegada) {
+      minutos = minutosEntre(horario.entrada, incidencia.hora_llegada);
+    } else if (incidencia.modalidad_horas === 'salida' && incidencia.hora_salida) {
+      minutos = minutosEntre(incidencia.hora_salida, horario.salida);
+    } else if (incidencia.modalidad_horas === 'jornada' && incidencia.hora_salida && incidencia.hora_regreso) {
+      minutos = minutosEntre(incidencia.hora_salida, incidencia.hora_regreso);
+    } else if (incidencia.hora_llegada && incidencia.hora_salida) {
+      minutos = minutosEntre(incidencia.hora_llegada, incidencia.hora_salida);
+    }
+
+    if (minutos < 0) minutos = 0;
+    return { minutos, texto: formatearDuracion(minutos) };
+  }
+
+  return { minutos: 0, texto: '—' };
 }
 
 /* ============================================================
@@ -1294,9 +1391,7 @@ function limpiarFiltrosProyectos() {
   document.getElementById('toggleConcluidasProyectos').checked = false;
   cargarBandejaProyectos();
 }
-</script>
 
-<script>
 /* ============================================================
    AUTORIZAR / RECHAZAR / CONCLUIR / ELIMINAR / DESBLOQUEAR
 ============================================================ */
@@ -1902,11 +1997,12 @@ async function actualizarWhatsApp() {
 ============================================================ */
 async function exportarExcelAnalisis() {
   try {
-    const [sols, ordenes, compras, incidencias] = await Promise.all([
+    const [sols, ordenes, compras, incidencias, empleados] = await Promise.all([
       apiRequest('/api/solicitudes'),
       apiRequest('/api/ordenes'),
       apiRequest('/api/compras'),
-      apiRequest('/api/incidencias')
+      apiRequest('/api/incidencias'),
+      apiRequest('/api/empleados')
     ]);
 
     const contar = (arr, key) => {
@@ -1981,18 +2077,43 @@ async function exportarExcelAnalisis() {
       Articulos: (c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ')
     }));
 
-    const hojaIncidencias = incidencias.map(i => ({
-      Folio: i.id,
-      Empleado: i.empleado_nombre || '',
-      Tipo: i.tipo,
-      Modalidad_Horas: i.modalidad_horas || '',
-      Fecha_Registro: i.fecha,
-      Fecha_Inicio: i.fecha_inicio || '',
-      Fecha_Fin: i.fecha_fin || '',
-      Hora_Llegada: i.hora_llegada || '',
-      Hora_Salida: i.hora_salida || '',
-      Hora_Regreso: i.hora_regreso || '',
-      Motivo: i.motivo || ''
+    const hojaIncidencias = incidencias.map(i => {
+      const emp = empleados.find(e => e.id === i.empleado_id);
+      const dur = calcularDuracionPermiso(i, emp);
+      return {
+        Folio: i.id,
+        Empleado: i.empleado_nombre || '',
+        Tipo: i.tipo,
+        Modalidad_Horas: i.modalidad_horas || '',
+        Fecha_Registro: i.fecha,
+        Fecha_Inicio: i.fecha_inicio || '',
+        Fecha_Fin: i.fecha_fin || '',
+        Hora_Llegada: i.hora_llegada || '',
+        Hora_Salida: i.hora_salida || '',
+        Hora_Regreso: i.hora_regreso || '',
+        Duracion_Minutos: dur.minutos,
+        Duracion_Texto: dur.texto,
+        Motivo: i.motivo || ''
+      };
+    });
+
+    const hojaEmpleados = empleados.map(e => ({
+      ID: e.id,
+      Nombre: e.nombre,
+      Puesto: e.puesto || '',
+      Lunes_Entrada: e.lunes_entrada || '',
+      Lunes_Salida: e.lunes_salida || '',
+      Martes_Entrada: e.martes_entrada || '',
+      Martes_Salida: e.martes_salida || '',
+      Miercoles_Entrada: e.miercoles_entrada || '',
+      Miercoles_Salida: e.miercoles_salida || '',
+      Jueves_Entrada: e.jueves_entrada || '',
+      Jueves_Salida: e.jueves_salida || '',
+      Viernes_Entrada: e.viernes_entrada || '',
+      Viernes_Salida: e.viernes_salida || '',
+      Sabado_Entrada: e.sabado_entrada || '',
+      Sabado_Salida: e.sabado_salida || '',
+      Activo: e.activo
     }));
 
     const wb = XLSX.utils.book_new();
@@ -2006,10 +2127,11 @@ async function exportarExcelAnalisis() {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaOrdenes), "Ordenes_Trabajo");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaCompras), "Compras");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaIncidencias), "Incidencias");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaEmpleados), "Empleados");
 
     const nombre = `Analisis_Ciclo_${new Date().toISOString().slice(0, 10)}.xlsx`;
     XLSX.writeFile(wb, nombre);
-    alert('✅ Excel descargado. Ya puedes hacer tablas y gráficos en Excel con las hojas Por_Estado, Por_Area y Por_Mes.');
+    alert('✅ Excel descargado.');
   } catch (e) {
     alert('❌ Error al exportar: ' + e.message);
   }
@@ -2089,36 +2211,51 @@ async function restaurarRespaldo(input) {
   };
   lector.readAsText(archivo);
 }
-</script>
 
-<script>
 /* ============================================================
-   EMPLEADOS (con jornada laboral)
+   EMPLEADOS (con horarios por día)
 ============================================================ */
 async function cargarEmpleados() {
   const lista = document.getElementById('listaEmpleados');
   lista.innerHTML = 'Cargando...';
   try {
     const empleados = await apiRequest('/api/empleados');
+    empleadosCache = empleados;
     if (empleados.length === 0) {
       lista.innerHTML = '<p class="text-gray-500">No hay empleados.</p>';
       return;
     }
-    lista.innerHTML = empleados.map(e => `
-      <div class="border rounded p-3 bg-white flex justify-between items-center ${e.activo ? '' : 'opacity-50'}">
-        <div>
-          <b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'}
-          ${e.hora_entrada || e.hora_salida ? `<span class="text-xs text-gray-600 ml-2">🕐 ${e.hora_entrada || '--:--'} a ${e.hora_salida || '--:--'}</span>` : ''}
-          ${e.activo
-            ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>'
-            : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
-        </div>
-        <div class="flex gap-2">
-          <button onclick='editarEmpleado(${JSON.stringify(e)})' class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">✏️ Editar</button>
-          <button onclick="eliminarEmpleado(${e.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+    const dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];
+    const nombresDias = {lunes:'Lun',martes:'Mar',miercoles:'Mié',jueves:'Jue',viernes:'Vie',sabado:'Sáb'};
+
+    lista.innerHTML = empleados.map(e => {
+      let horariosHTML = '';
+      dias.forEach(d => {
+        const ent = e[`${d}_entrada`];
+        const sal = e[`${d}_salida`];
+        if (ent || sal) {
+          horariosHTML += `<span class="text-xs bg-blue-50 text-blue-800 px-2 py-1 rounded mr-1 mb-1 inline-block">${nombresDias[d]}: ${ent || '--:--'}-${sal || '--:--'}</span>`;
+        }
+      });
+
+      return `
+      <div class="border rounded p-3 bg-white ${e.activo ? '' : 'opacity-50'}">
+        <div class="flex justify-between items-start flex-wrap gap-2">
+          <div class="flex-1">
+            <div><b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'}
+              ${e.activo
+                ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>'
+                : '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
+            </div>
+            <div class="mt-2">${horariosHTML || '<span class="text-xs text-gray-400">Sin horarios configurados</span>'}</div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick='editarEmpleado(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">✏️ Editar</button>
+            <button onclick="eliminarEmpleado(${e.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+          </div>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   } catch (e) {
     lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
   }
@@ -2128,17 +2265,34 @@ async function guardarEmpleado() {
   const id = document.getElementById('idEditarEmpleado').value;
   const nombre = document.getElementById('nombreEmpleado').value.trim();
   const puesto = document.getElementById('puestoEmpleado').value.trim();
-  const hora_entrada = document.getElementById('horaEntradaEmpleado').value;
-  const hora_salida = document.getElementById('horaSalidaEmpleado').value;
   const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
-  if (!nombre) return;
+
+  const horarios = {
+    lunes_entrada: document.getElementById('lunesEntrada').value,
+    lunes_salida: document.getElementById('lunesSalida').value,
+    martes_entrada: document.getElementById('martesEntrada').value,
+    martes_salida: document.getElementById('martesSalida').value,
+    miercoles_entrada: document.getElementById('miercolesEntrada').value,
+    miercoles_salida: document.getElementById('miercolesSalida').value,
+    jueves_entrada: document.getElementById('juevesEntrada').value,
+    jueves_salida: document.getElementById('juevesSalida').value,
+    viernes_entrada: document.getElementById('viernesEntrada').value,
+    viernes_salida: document.getElementById('viernesSalida').value,
+    sabado_entrada: document.getElementById('sabadoEntrada').value,
+    sabado_salida: document.getElementById('sabadoSalida').value,
+  };
+
+  if (!nombre) {
+    alert('⚠️ El nombre es obligatorio');
+    return;
+  }
 
   try {
     if (id) {
-      await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, hora_entrada, hora_salida, activo });
+      await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo, ...horarios });
       alert('✅ Actualizado');
     } else {
-      await apiRequest('/api/empleados', 'POST', { nombre, puesto, hora_entrada, hora_salida, activo });
+      await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo, ...horarios });
       alert('✅ Agregado');
     }
     cancelarEdicionEmpleado();
@@ -2152,9 +2306,21 @@ function editarEmpleado(emp) {
   document.getElementById('idEditarEmpleado').value = emp.id;
   document.getElementById('nombreEmpleado').value = emp.nombre;
   document.getElementById('puestoEmpleado').value = emp.puesto || '';
-  document.getElementById('horaEntradaEmpleado').value = emp.hora_entrada || '';
-  document.getElementById('horaSalidaEmpleado').value = emp.hora_salida || '';
   document.getElementById('activoEmpleado').checked = emp.activo === 1;
+
+  document.getElementById('lunesEntrada').value = emp.lunes_entrada || '';
+  document.getElementById('lunesSalida').value = emp.lunes_salida || '';
+  document.getElementById('martesEntrada').value = emp.martes_entrada || '';
+  document.getElementById('martesSalida').value = emp.martes_salida || '';
+  document.getElementById('miercolesEntrada').value = emp.miercoles_entrada || '';
+  document.getElementById('miercolesSalida').value = emp.miercoles_salida || '';
+  document.getElementById('juevesEntrada').value = emp.jueves_entrada || '';
+  document.getElementById('juevesSalida').value = emp.jueves_salida || '';
+  document.getElementById('viernesEntrada').value = emp.viernes_entrada || '';
+  document.getElementById('viernesSalida').value = emp.viernes_salida || '';
+  document.getElementById('sabadoEntrada').value = emp.sabado_entrada || '';
+  document.getElementById('sabadoSalida').value = emp.sabado_salida || '';
+
   document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar';
   document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
 }
@@ -2163,9 +2329,13 @@ function cancelarEdicionEmpleado() {
   document.getElementById('idEditarEmpleado').value = '';
   document.getElementById('nombreEmpleado').value = '';
   document.getElementById('puestoEmpleado').value = '';
-  document.getElementById('horaEntradaEmpleado').value = '';
-  document.getElementById('horaSalidaEmpleado').value = '';
   document.getElementById('activoEmpleado').checked = true;
+
+  ['lunesEntrada','lunesSalida','martesEntrada','martesSalida',
+   'miercolesEntrada','miercolesSalida','juevesEntrada','juevesSalida',
+   'viernesEntrada','viernesSalida','sabadoEntrada','sabadoSalida']
+   .forEach(id => document.getElementById(id).value = '');
+
   document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado';
   document.getElementById('btnCancelarEmpleado').classList.add('hidden');
 }
@@ -2361,7 +2531,7 @@ async function guardarCapturaOrden() {
 }
 
 /* ============================================================
-   INCIDENCIAS / PERMISOS - CON MODALIDAD DE HORAS
+   INCIDENCIAS / PERMISOS - CON MODALIDAD DE HORAS Y DURACIÓN
 ============================================================ */
 async function cargarIncidencias() {
   const lista = document.getElementById('listaIncidencias');
@@ -2369,6 +2539,7 @@ async function cargarIncidencias() {
 
   try {
     const empleados = await apiRequest('/api/empleados');
+    empleadosCache = empleados;
     selectEmp.innerHTML = '<option value="">Selecciona...</option>' +
       empleados.filter(e => e.activo === 1)
         .map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
@@ -2381,13 +2552,17 @@ async function cargarIncidencias() {
       return;
     }
 
-    lista.innerHTML = incidencias.map(i => `
+    lista.innerHTML = incidencias.map(i => {
+      const emp = empleados.find(e => e.id === i.empleado_id);
+      const dur = calcularDuracionPermiso(i, emp);
+      return `
       <div class="border rounded p-4 bg-white shadow-sm">
         <div class="flex justify-between items-start flex-wrap gap-2">
-          <div>
+          <div class="flex-1">
             <b>${i.empleado_nombre || 'Sin empleado'}</b> - ${i.tipo}
             <span class="text-sm text-gray-500"> | Registro: ${i.fecha || ''}</span>
             <div class="mt-1 font-semibold text-colegio-azul">${textoHorarioReal(i)}</div>
+            <div class="mt-1 text-sm font-bold text-colegio-naranja">⏱️ Duración del permiso: ${dur.texto}</div>
             <div class="text-sm text-gray-600 mt-1">${i.motivo || 'Sin motivo'}</div>
           </div>
           <div class="flex gap-2 flex-wrap">
@@ -2397,7 +2572,7 @@ async function cargarIncidencias() {
           </div>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   } catch (e) {
     lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
   }
@@ -2436,70 +2611,52 @@ function cambiarModalidadHoras() {
 
 async function guardarIncidencia() {
   const idEditar = document.getElementById('idEditarIncidencia').value;
-  const empleado_id = document.getElementById('incidenciaEmpleado').value;
+  const empleado_id = parseInt(document.getElementById('incidenciaEmpleado').value);
   const tipo = document.getElementById('incidenciaTipo').value;
   const fecha = document.getElementById('incidenciaFecha').value;
+  const fecha_inicio = document.getElementById('incidenciaFechaInicio').value;
+  const fecha_fin = document.getElementById('incidenciaFechaFin').value;
+  const modalidad_horas = document.getElementById('incidenciaModalidadHoras').value;
+  const hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
+  const hora_salida = document.getElementById('incidenciaHoraSalida').value;
+  const hora_salida_jornada = document.getElementById('incidenciaHoraSalidaJornada').value;
+  const hora_regreso = document.getElementById('incidenciaHoraRegreso').value;
   const motivo = document.getElementById('incidenciaMotivo').value.trim();
 
-  if (!empleado_id || !fecha) {
-    alert('Selecciona empleado y fecha');
+  if (!empleado_id || !tipo || !fecha) {
+    alert('⚠️ Completa empleado, tipo y fecha de registro');
     return;
   }
 
-  const modalidad_horas = document.getElementById('incidenciaModalidadHoras').value;
-
-  if (tipo === 'Permiso por horas' && !modalidad_horas) {
-    alert('⚠️ Selecciona la modalidad del permiso por horas');
-    return;
-  }
-
-  let hora_llegada = '';
-  let hora_salida = '';
-  let hora_regreso = '';
-
-  if (tipo === 'Permiso por horas') {
-    if (modalidad_horas === 'entrada') {
-      hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
-      if (!hora_llegada) {
-        alert('⚠️ Captura la hora de llegada');
-        return;
-      }
-    } else if (modalidad_horas === 'salida') {
-      hora_salida = document.getElementById('incidenciaHoraSalida').value;
-      if (!hora_salida) {
-        alert('⚠️ Captura la hora de salida');
-        return;
-      }
-    } else if (modalidad_horas === 'jornada') {
-      hora_salida = document.getElementById('incidenciaHoraSalidaJornada').value;
-      hora_regreso = document.getElementById('incidenciaHoraRegreso').value;
-      if (!hora_salida || !hora_regreso) {
-        alert('⚠️ Captura la hora de salida y la hora de regreso');
-        return;
-      }
-    }
-  }
-
-  const datos = {
-    empleado_id,
-    tipo,
-    fecha,
-    motivo,
+  // Calcular duración
+  const emp = empleadosCache.find(e => e.id === empleado_id);
+  const incidenciaTemp = {
+    tipo, fecha, fecha_inicio, fecha_fin,
     modalidad_horas,
-    fecha_inicio: document.getElementById('incidenciaFechaInicio').value,
-    fecha_fin: document.getElementById('incidenciaFechaFin').value,
     hora_llegada,
-    hora_salida,
+    hora_salida: modalidad_horas === 'jornada' ? hora_salida_jornada : hora_salida,
     hora_regreso
+  };
+  const dur = calcularDuracionPermiso(incidenciaTemp, emp);
+
+  const payload = {
+    empleado_id, tipo, fecha, fecha_inicio, fecha_fin,
+    modalidad_horas,
+    hora_llegada,
+    hora_salida: modalidad_horas === 'jornada' ? hora_salida_jornada : hora_salida,
+    hora_regreso,
+    motivo,
+    duracion_minutos: dur.minutos,
+    duracion_texto: dur.texto
   };
 
   try {
     if (idEditar) {
-      await apiRequest(`/api/incidencias/${idEditar}`, 'PUT', datos);
+      await apiRequest(`/api/incidencias/${idEditar}`, 'PUT', payload);
       alert('✅ Incidencia actualizada');
     } else {
-      await apiRequest('/api/incidencias', 'POST', datos);
-      alert('✅ Incidencia registrada');
+      await apiRequest('/api/incidencias', 'POST', payload);
+      alert('✅ Incidencia agregada');
     }
     cancelarEdicionIncidencia();
     cargarIncidencias();
@@ -2513,82 +2670,265 @@ function editarIncidencia(id) {
   if (!i) return;
 
   document.getElementById('idEditarIncidencia').value = i.id;
-  document.getElementById('tituloFormIncidencia').textContent = '✏️ Editando Incidencia - ' + (i.empleado_nombre || '');
+  document.getElementById('tituloFormIncidencia').textContent = 'Editar Incidencia #' + i.id;
   document.getElementById('incidenciaEmpleado').value = i.empleado_id;
   document.getElementById('incidenciaTipo').value = i.tipo;
   document.getElementById('incidenciaFecha').value = i.fecha || '';
   document.getElementById('incidenciaFechaInicio').value = i.fecha_inicio || '';
   document.getElementById('incidenciaFechaFin').value = i.fecha_fin || '';
+  document.getElementById('incidenciaModalidadHoras').value = i.modalidad_horas || '';
+  document.getElementById('incidenciaHoraLlegada').value = i.hora_llegada || '';
+  document.getElementById('incidenciaHoraSalida').value = i.hora_salida || '';
+  document.getElementById('incidenciaHoraSalidaJornada').value = i.modalidad_horas === 'jornada' ? i.hora_salida : '';
+  document.getElementById('incidenciaHoraRegreso').value = i.hora_regreso || '';
   document.getElementById('incidenciaMotivo').value = i.motivo || '';
 
-  document.getElementById('incidenciaHoraLlegada').value = '';
-  document.getElementById('incidenciaHoraSalida').value = '';
-  document.getElementById('incidenciaHoraSalidaJornada').value = '';
-  document.getElementById('incidenciaHoraRegreso').value = '';
-
-  document.getElementById('btnGuardarIncidencia').textContent = '💾 Guardar Cambios';
-  document.getElementById('btnCancelarIncidencia').classList.remove('hidden');
-
   cambiarCamposIncidencia();
+  if (i.tipo === 'Permiso por horas') cambiarModalidadHoras();
 
-  if (i.tipo === 'Permiso por horas') {
-    let modalidad = i.modalidad_horas;
-    if (!modalidad) {
-      if (i.hora_llegada && i.hora_salida) modalidad = 'jornada';
-      else if (i.hora_llegada) modalidad = 'entrada';
-      else if (i.hora_salida) modalidad = 'salida';
-    }
-    document.getElementById('incidenciaModalidadHoras').value = modalidad || '';
-    cambiarModalidadHoras();
-
-    if (modalidad === 'entrada') {
-      document.getElementById('incidenciaHoraLlegada').value = i.hora_llegada || '';
-    } else if (modalidad === 'salida') {
-      document.getElementById('incidenciaHoraSalida').value = i.hora_salida || '';
-    } else if (modalidad === 'jornada') {
-      document.getElementById('incidenciaHoraSalidaJornada').value = i.hora_salida || '';
-      document.getElementById('incidenciaHoraRegreso').value = i.hora_regreso || '';
-    }
-  }
-
+  document.getElementById('btnGuardarIncidencia').textContent = '💾 Actualizar Incidencia';
+  document.getElementById('btnCancelarIncidencia').classList.remove('hidden');
   document.getElementById('panelIncidencias').scrollIntoView({ behavior: 'smooth' });
 }
 
 function cancelarEdicionIncidencia() {
   document.getElementById('idEditarIncidencia').value = '';
   document.getElementById('tituloFormIncidencia').textContent = 'Nueva Incidencia';
-  document.getElementById('incidenciaMotivo').value = '';
+  document.getElementById('incidenciaEmpleado').value = '';
+  document.getElementById('incidenciaTipo').value = 'Vacaciones';
+  document.getElementById('incidenciaFecha').value = '';
   document.getElementById('incidenciaFechaInicio').value = '';
   document.getElementById('incidenciaFechaFin').value = '';
+  document.getElementById('incidenciaModalidadHoras').value = '';
   document.getElementById('incidenciaHoraLlegada').value = '';
   document.getElementById('incidenciaHoraSalida').value = '';
   document.getElementById('incidenciaHoraSalidaJornada').value = '';
   document.getElementById('incidenciaHoraRegreso').value = '';
-  document.getElementById('incidenciaModalidadHoras').value = '';
+  document.getElementById('incidenciaMotivo').value = '';
+  cambiarCamposIncidencia();
   document.getElementById('btnGuardarIncidencia').textContent = 'Agregar Incidencia';
   document.getElementById('btnCancelarIncidencia').classList.add('hidden');
-  cambiarCamposIncidencia();
 }
 
 async function eliminarIncidencia(id) {
-  if (!confirm('⚠️ ¿Eliminar este permiso? Si se canceló el permiso, se eliminará de forma permanente.')) return;
+  if (!confirm('⚠️ ¿Eliminar incidencia?')) return;
   try {
     await apiRequest(`/api/incidencias/${id}`, 'DELETE');
-    alert('🗑️ Permiso eliminado');
     cargarIncidencias();
   } catch (e) {
     alert('❌ Error: ' + e.message);
   }
 }
 
+async function imprimirIncidencia(id) {
+  const i = incidenciasCache.find(x => x.id === id);
+  if (!i) return;
+
+  const emp = empleadosCache.find(e => e.id === i.empleado_id);
+  const dur = calcularDuracionPermiso(i, emp);
+
+  const formato = document.getElementById('formatoImpresion');
+  formato.innerHTML = `
+    <div class="header-impresion">
+      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
+      <div>
+        <div class="titulo-principal">Permiso / Incidencia</div>
+        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
+        <div class="folio-header">Folio: #${i.id}</div>
+      </div>
+    </div>
+
+    <div class="titulo-central">FORMATO DE PERMISO</div>
+
+    <table>
+      <tr><td>Empleado</td><td>${i.empleado_nombre || ''}</td></tr>
+      <tr><td>Puesto</td><td>${emp?.puesto || '—'}</td></tr>
+      <tr><td>Tipo</td><td>${i.tipo}</td></tr>
+      <tr><td>Fecha de registro</td><td>${i.fecha || ''}</td></tr>
+      <tr><td>Horario del permiso</td><td>${textoHorarioReal(i)}</td></tr>
+      <tr><td><b>Duración del permiso</b></td><td><b>⏱️ ${dur.texto}</b></td></tr>
+      <tr><td>Motivo</td><td>${i.motivo || '—'}</td></tr>
+    </table>
+
+    <div class="firmas">
+      <div class="firma-item">
+        <div class="firma-nombre">${i.empleado_nombre || ''}</div>
+        <div class="linea"></div>
+        <div class="firma-cargo">Empleado</div>
+        <div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div>
+      </div>
+      <div class="firma-item">
+        <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
+        <div class="linea"></div>
+        <div class="firma-cargo">Mantenimiento</div>
+        <div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div>
+      </div>
+    </div>
+
+    <div class="pie-pagina">
+      <span>Sistema de Mantenimiento</span>
+      <span>Generado: ${new Date().toLocaleString('es-MX')}</span>
+    </div>
+  `;
+  window.print();
+}
+
 /* ============================================================
-   SECCIONES / PROVEEDORES
+   COMPRAS
+============================================================ */
+async function cargarCompras() {
+  const lista = document.getElementById('listaCompras');
+  lista.innerHTML = 'Cargando...';
+  try {
+    const compras = await apiRequest('/api/compras');
+    if (compras.length === 0) {
+      lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>';
+      return;
+    }
+
+    const fProv = document.getElementById('filtroCompraProveedor').value.toLowerCase().trim();
+    const fSol = document.getElementById('filtroCompraSolicitante').value.toLowerCase().trim();
+    const fFecha = document.getElementById('filtroCompraFecha').value;
+
+    let filtradas = compras;
+    if (fProv) filtradas = filtradas.filter(c => (c.proveedor_nombre || '').toLowerCase().includes(fProv));
+    if (fSol) filtradas = filtradas.filter(c => (c.solicitado_por || '').toLowerCase().includes(fSol));
+    if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
+
+    if (filtradas.length === 0) {
+      lista.innerHTML = '<p class="text-gray-500">Sin compras con esos filtros.</p>';
+      return;
+    }
+
+    lista.innerHTML = filtradas.map(c => `
+      <div class="border rounded p-4 bg-white shadow-sm">
+        <div class="font-bold">Compra #${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
+        <div class="text-sm text-gray-600">Fecha: ${c.fecha} | Solicitado por: ${c.solicitado_por || '—'}</div>
+        <div class="text-sm mt-2"><b>Artículos:</b> ${(c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ') || '—'}</div>
+        <div class="text-sm mt-1">${c.observaciones || ''}</div>
+        <div class="mt-3 flex gap-2">
+          <button onclick="imprimirCompra(${c.folio})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+          <button onclick="eliminarCompra(${c.folio})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
+  }
+}
+
+async function cargarComprasSilencioso() { cargarCompras(); }
+
+function limpiarFiltrosCompras() {
+  document.getElementById('filtroCompraProveedor').value = '';
+  document.getElementById('filtroCompraSolicitante').value = '';
+  document.getElementById('filtroCompraFecha').value = '';
+  cargarCompras();
+}
+
+async function cargarProveedores() {
+  try {
+    const provs = await apiRequest('/api/proveedores');
+    const sel = document.getElementById('compraProveedor');
+    sel.innerHTML = '<option value="">Selecciona...</option>' +
+      provs.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+  } catch (e) {}
+}
+
+function agregarArticuloCompra() {
+  const cont = document.getElementById('listaArticulosCompra');
+  const div = document.createElement('div');
+  div.className = 'flex gap-2 mb-2';
+  div.innerHTML = `
+    <input placeholder="Cantidad" class="w-24 border rounded px-2 py-1 text-sm cantidad-articulo">
+    <input placeholder="Artículo" class="flex-1 border rounded px-2 py-1 text-sm nombre-articulo">
+    <button onclick="this.parentElement.remove()" class="bg-red-100 text-red-700 px-2 rounded text-sm">✕</button>
+  `;
+  cont.appendChild(div);
+}
+
+async function guardarOrdenCompra() {
+  const proveedor_id = document.getElementById('compraProveedor').value;
+  const solicitado_por = document.getElementById('compraSolicitadoPor').value.trim();
+  const observaciones = document.getElementById('compraObservaciones').value.trim();
+
+  const articulos = [];
+  document.querySelectorAll('#listaArticulosCompra .nombre-articulo').forEach((inp, idx) => {
+    const cant = document.querySelectorAll('#listaArticulosCompra .cantidad-articulo')[idx].value;
+    if (inp.value.trim()) articulos.push({ cantidad: cant || '1', articulo: inp.value.trim() });
+  });
+
+  if (!proveedor_id || articulos.length === 0) {
+    alert('⚠️ Selecciona proveedor y agrega al menos un artículo');
+    return;
+  }
+
+  try {
+    await apiRequest('/api/compras', 'POST', {
+      proveedor_id: parseInt(proveedor_id),
+      solicitado_por,
+      articulos,
+      observaciones,
+      fecha: new Date().toISOString().slice(0, 10)
+    });
+    alert('✅ Compra registrada');
+    document.getElementById('listaArticulosCompra').innerHTML = '';
+    document.getElementById('compraObservaciones').value = '';
+    cargarCompras();
+  } catch (e) {
+    alert('❌ Error: ' + e.message);
+  }
+}
+
+async function eliminarCompra(folio) {
+  if (!confirm('⚠️ ¿Eliminar compra?')) return;
+  try {
+    await apiRequest(`/api/compras/${folio}`, 'DELETE');
+    cargarCompras();
+  } catch (e) {
+    alert('❌ Error: ' + e.message);
+  }
+}
+
+async function imprimirCompra(folio) {
+  const compras = await apiRequest('/api/compras');
+  const c = compras.find(x => x.folio === folio);
+  if (!c) return;
+
+  document.getElementById('formatoImpresion').innerHTML = `
+    <div class="header-impresion">
+      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
+      <div>
+        <div class="titulo-principal">Orden de Compra</div>
+        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
+        <div class="folio-header">Folio: #${c.folio}</div>
+      </div>
+    </div>
+    <table>
+      <tr><td>Proveedor</td><td>${c.proveedor_nombre || ''}</td></tr>
+      <tr><td>Fecha</td><td>${c.fecha}</td></tr>
+      <tr><td>Solicitado por</td><td>${c.solicitado_por || '—'}</td></tr>
+      <tr><td>Artículos</td><td>${(c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join('<br>')}</td></tr>
+      <tr><td>Observaciones</td><td>${c.observaciones || '—'}</td></tr>
+    </table>
+    <div class="firmas">
+      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
+      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Autorizó</div></div>
+    </div>
+  `;
+  window.print();
+}
+
+/* ============================================================
+   SECCIONES Y PROVEEDORES
 ============================================================ */
 async function cargarSecciones() {
   try {
     const secciones = await apiRequest('/api/secciones');
-    document.getElementById('areaSolicitante').innerHTML =
-      secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
+    const select = document.getElementById('areaSolicitante');
+    if (select) {
+      select.innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
+    }
   } catch (e) {}
 }
 
@@ -2597,9 +2937,13 @@ async function cargarListaSecciones() {
   lista.innerHTML = 'Cargando...';
   try {
     const secciones = await apiRequest('/api/secciones');
+    if (secciones.length === 0) {
+      lista.innerHTML = '<p class="text-gray-500">No hay secciones.</p>';
+      return;
+    }
     lista.innerHTML = secciones.map(s => `
       <div class="border rounded p-3 bg-white flex justify-between items-center">
-        <b>${s.nombre}</b>
+        <span>${s.nombre}</span>
         <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
       </div>
     `).join('');
@@ -2632,22 +2976,18 @@ async function eliminarSeccion(id) {
   }
 }
 
-async function cargarProveedores() {
-  try {
-    const proveedores = await apiRequest('/api/proveedores');
-    document.getElementById('compraProveedor').innerHTML =
-      proveedores.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-  } catch (e) {}
-}
-
 async function cargarListaProveedores() {
   const lista = document.getElementById('listaProveedores');
   lista.innerHTML = 'Cargando...';
   try {
-    const proveedores = await apiRequest('/api/proveedores');
-    lista.innerHTML = proveedores.map(p => `
+    const provs = await apiRequest('/api/proveedores');
+    if (provs.length === 0) {
+      lista.innerHTML = '<p class="text-gray-500">No hay proveedores.</p>';
+      return;
+    }
+    lista.innerHTML = provs.map(p => `
       <div class="border rounded p-3 bg-white flex justify-between items-center">
-        <b>${p.nombre}</b>
+        <span>${p.nombre}</span>
         <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
       </div>
     `).join('');
@@ -2663,7 +3003,6 @@ async function guardarProveedor() {
     await apiRequest('/api/proveedores', 'POST', { nombre });
     document.getElementById('nuevoProveedorNombre').value = '';
     cargarListaProveedores();
-    cargarProveedores();
   } catch (e) {
     alert('❌ Error: ' + e.message);
   }
@@ -2674,290 +3013,75 @@ async function eliminarProveedor(id) {
   try {
     await apiRequest(`/api/proveedores/${id}`, 'DELETE');
     cargarListaProveedores();
-    cargarProveedores();
   } catch (e) {
     alert('❌ Error: ' + e.message);
   }
 }
 
 /* ============================================================
-   COMPRAS
+   IMPRESIÓN DE SOLICITUD Y ORDEN
 ============================================================ */
-function agregarArticuloCompra() {
-  const cont = document.getElementById('listaArticulosCompra');
-  const div = document.createElement('div');
-  div.className = 'flex gap-2 mb-2';
-  div.innerHTML = `
-    <input placeholder="Artículo" class="flex-1 border rounded px-3 py-2 articulo-nombre">
-    <input type="number" placeholder="Cant." class="w-24 border rounded px-3 py-2 articulo-cantidad" min="1" value="1">
-    <button onclick="this.parentElement.remove()" class="bg-red-100 text-red-700 px-3 py-2 rounded">✖</button>
-  `;
-  cont.appendChild(div);
-}
-
-async function guardarOrdenCompra() {
-  const proveedor_id = document.getElementById('compraProveedor').value;
-  const solicitado_por = document.getElementById('compraSolicitadoPor').value.trim();
-  const observaciones = document.getElementById('compraObservaciones').value.trim();
-
-  const articulos = [];
-  document.querySelectorAll('#listaArticulosCompra > div').forEach(div => {
-    const articulo = div.querySelector('.articulo-nombre').value.trim();
-    const cantidad = parseInt(div.querySelector('.articulo-cantidad').value);
-    if (articulo && cantidad > 0) articulos.push({ articulo, cantidad });
-  });
-
-  if (!proveedor_id || !solicitado_por || articulos.length === 0) {
-    alert('⚠️ Completa proveedor, solicitante y al menos un artículo');
-    return;
-  }
-
-  try {
-    await apiRequest('/api/compras', 'POST', {
-      proveedor_id, solicitado_por, observaciones, articulos
-    });
-    alert('✅ Solicitud de compra generada');
-    document.getElementById('listaArticulosCompra').innerHTML = '';
-    document.getElementById('compraObservaciones').value = '';
-    cargarCompras();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
-}
-
-async function cargarCompras() {
-  const lista = document.getElementById('listaCompras');
-  lista.innerHTML = 'Cargando...';
-
-  const fProveedor = document.getElementById('filtroCompraProveedor').value.toLowerCase().trim();
-  const fSolicitante = document.getElementById('filtroCompraSolicitante').value.toLowerCase().trim();
-  const fFecha = document.getElementById('filtroCompraFecha').value;
-
-  try {
-    let compras = await apiRequest('/api/compras');
-    if (fProveedor) compras = compras.filter(c => (c.proveedor_nombre || '').toLowerCase().includes(fProveedor));
-    if (fSolicitante) compras = compras.filter(c => (c.solicitado_por || '').toLowerCase().includes(fSolicitante));
-    if (fFecha) compras = compras.filter(c => (c.fecha || '').startsWith(fFecha));
-
-    if (compras.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>';
-      return;
-    }
-
-    lista.innerHTML = compras.map(c => `
-      <div class="border rounded p-4 bg-white shadow-sm">
-        <div class="font-bold">Folio: ${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
-        <div class="text-sm text-gray-600">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitado por: ${c.solicitado_por || 'N/A'}</div>
-        <div class="mt-2 text-sm">
-          <b>Artículos:</b>
-          <ul class="list-disc ml-5">
-            ${(c.articulos || []).map(a => `<li>${a.cantidad} × ${a.articulo}</li>`).join('')}
-          </ul>
-        </div>
-        ${c.observaciones ? `<div class="text-sm mt-1"><b>Observaciones:</b> ${c.observaciones}</div>` : ''}
-        <div class="mt-3 flex gap-2">
-          <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-        </div>
-      </div>
-    `).join('');
-  } catch (e) {
-    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
-  }
-}
-
-async function cargarComprasSilencioso() {
-  try {
-    const compras = await apiRequest('/api/compras');
-    const lista = document.getElementById('listaCompras');
-    if (compras.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>';
-      return;
-    }
-    lista.innerHTML = compras.map(c => `
-      <div class="border rounded p-4 bg-white shadow-sm">
-        <div class="font-bold">Folio: ${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
-        <div class="text-sm text-gray-600">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitado por: ${c.solicitado_por || 'N/A'}</div>
-        <div class="mt-2 text-sm">
-          <b>Artículos:</b>
-          <ul class="list-disc ml-5">
-            ${(c.articulos || []).map(a => `<li>${a.cantidad} × ${a.articulo}</li>`).join('')}
-          </ul>
-        </div>
-        <div class="mt-3 flex gap-2">
-          <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-        </div>
-      </div>
-    `).join('');
-  } catch (e) {}
-}
-
-async function eliminarCompra(id) {
-  if (!confirm('⚠️ ¿Eliminar compra?')) return;
-  try {
-    await apiRequest(`/api/compras/${id}`, 'DELETE');
-    cargarCompras();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
-}
-
-function limpiarFiltrosCompras() {
-  document.getElementById('filtroCompraProveedor').value = '';
-  document.getElementById('filtroCompraSolicitante').value = '';
-  document.getElementById('filtroCompraFecha').value = '';
-  cargarCompras();
-}
-
-/* ============================================================
-   IMPRESIÓN
-============================================================ */
-function imprimirSolicitud(id) {
+async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
-  const formato = document.getElementById('formatoImpresion');
-  formato.innerHTML = `
+
+  document.getElementById('formatoImpresion').innerHTML = `
     <div class="header-impresion">
       ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
       <div>
-        <div class="titulo-principal">Colegio Teresianos</div>
-        <div class="subtitulo-header">Departamento de Mantenimiento</div>
+        <div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div>
+        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
+        <div class="folio-header">Folio: #${s.id}</div>
       </div>
     </div>
-    <div class="titulo-central">SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}</div>
-    <div class="subtitulo-central">Folio #${s.id}</div>
     <table>
-      <tr><td>Folio</td><td>#${s.id}</td></tr>
-      <tr><td>Tipo</td><td>${s.tipo}</td></tr>
-      <tr><td>Área</td><td>${s.area}</td></tr>
+      <tr><td>Sección / Área</td><td>${s.area}</td></tr>
       <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
       <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr>
       ${s.tipo === 'evento' ? `
-        <tr><td>Nombre del evento</td><td>${s.nombreEvento}</td></tr>
-        <tr><td>Fecha del evento</td><td>${s.fechaEvento}</td></tr>
-        <tr><td>Lugar</td><td>${s.lugarEvento}</td></tr>
+        <tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr>
+        <tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr>
+        <tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr>
       ` : ''}
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
-      ${s.autorizadoPor ? `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>` : ''}
-      ${s.concluidoPor ? `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>` : ''}
     </table>
     <div class="firmas">
-      <div class="firma-item">
-        <div class="firma-nombre">${s.solicitante}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Solicitante</div>
-        <div class="firma-fecha">${s.fechaSolicitud}</div>
-      </div>
-      <div class="firma-item">
-        <div class="firma-nombre">${s.autorizadoPor || ''}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Autorizado por</div>
-        <div class="firma-fecha">${s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : ''}</div>
-      </div>
-      <div class="firma-item">
-        <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Mantenimiento</div>
-        <div class="firma-fecha">${new Date().toLocaleDateString('es-MX')}</div>
-      </div>
-    </div>
-    <div class="pie-pagina">
-      <div>Colegio Teresianos - Departamento de Mantenimiento</div>
-      <div>Folio #${s.id}</div>
+      <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
+      <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Mantenimiento</div></div>
     </div>
   `;
   window.print();
 }
 
-function imprimirOrdenTrabajo(id) {
-  apiRequest('/api/ordenes').then(ordenes => {
-    const o = ordenes.find(x => x.id === id);
-    if (!o) return;
-    const formato = document.getElementById('formatoImpresion');
-    formato.innerHTML = `
-      <div class="header-impresion">
-        ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
-        <div>
-          <div class="titulo-principal">Colegio Teresianos</div>
-          <div class="subtitulo-header">Departamento de Mantenimiento</div>
-        </div>
-      </div>
-      <div class="titulo-central">ORDEN DE TRABAJO</div>
-      <div class="subtitulo-central">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
-      <table>
-        <tr><td>Orden</td><td>#${o.id}</td></tr>
-        <tr><td>Solicitud</td><td>#${o.solicitud_id}</td></tr>
-        <tr><td>Empleado</td><td>${o.empleado_nombre || 'No asignado'}</td></tr>
-        <tr><td>Estado</td><td>${o.estado}</td></tr>
-        <tr><td>Área</td><td>${o.area || ''}</td></tr>
-        <tr><td>Solicitante</td><td>${o.solicitante || ''}</td></tr>
-        <tr><td>Descripción</td><td>${o.descripcion || ''}</td></tr>
-        <tr><td>Fecha creación</td><td>${formatearFechaLocal(o.fecha_creacion)}</td></tr>
-        ${o.fechaAtencion ? `<tr><td>Fecha atención</td><td>${o.fechaAtencion}</td></tr>` : ''}
-        ${o.horaInicio ? `<tr><td>Hora inicio</td><td>${o.horaInicio}</td></tr>` : ''}
-        ${o.horaFin ? `<tr><td>Hora fin</td><td>${o.horaFin}</td></tr>` : ''}
-        ${o.recibidoPor ? `<tr><td>Recibido por</td><td>${o.recibidoPor}</td></tr>` : ''}
-      </table>
-      <div class="firmas">
-        <div class="firma-item">
-          <div class="firma-nombre">${o.empleado_nombre || ''}</div>
-          <div class="linea"></div>
-          <div class="firma-cargo">Técnico asignado</div>
-        </div>
-        <div class="firma-item">
-          <div class="firma-nombre">${o.recibidoPor || ''}</div>
-          <div class="linea"></div>
-          <div class="firma-cargo">Recibido por</div>
-        </div>
-        <div class="firma-item">
-          <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
-          <div class="linea"></div>
-          <div class="firma-cargo">Mantenimiento</div>
-        </div>
-      </div>
-    `;
-    window.print();
-  });
-}
+async function imprimirOrdenTrabajo(id) {
+  const ordenes = await apiRequest('/api/ordenes');
+  const o = ordenes.find(x => x.id === id);
+  if (!o) return;
 
-function imprimirIncidencia(id) {
-  const i = incidenciasCache.find(x => x.id === id);
-  if (!i) return;
-  const formato = document.getElementById('formatoImpresion');
-  formato.innerHTML = `
+  document.getElementById('formatoImpresion').innerHTML = `
     <div class="header-impresion">
       ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
       <div>
-        <div class="titulo-principal">Colegio Teresianos</div>
-        <div class="subtitulo-header">Departamento de Mantenimiento</div>
+        <div class="titulo-principal">Orden de Trabajo</div>
+        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
+        <div class="folio-header">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
       </div>
     </div>
-    <div class="titulo-central">PERMISO / INCIDENCIA</div>
-    <div class="subtitulo-central">Folio #${i.id}</div>
     <table>
-      <tr><td>Folio</td><td>#${i.id}</td></tr>
-      <tr><td>Empleado</td><td>${i.empleado_nombre || ''}</td></tr>
-      <tr><td>Tipo</td><td>${i.tipo}</td></tr>
-      ${i.modalidad_horas ? `<tr><td>Modalidad</td><td>${i.modalidad_horas}</td></tr>` : ''}
-      <tr><td>Fecha de registro</td><td>${i.fecha || ''}</td></tr>
-      ${i.fecha_inicio ? `<tr><td>Fecha inicio</td><td>${i.fecha_inicio}</td></tr>` : ''}
-      ${i.fecha_fin ? `<tr><td>Fecha fin</td><td>${i.fecha_fin}</td></tr>` : ''}
-      ${i.hora_llegada ? `<tr><td>Hora llegada</td><td>${i.hora_llegada}</td></tr>` : ''}
-      ${i.hora_salida ? `<tr><td>Hora salida</td><td>${i.hora_salida}</td></tr>` : ''}
-      ${i.hora_regreso ? `<tr><td>Hora regreso</td><td>${i.hora_regreso}</td></tr>` : ''}
-      <tr><td>Motivo</td><td>${i.motivo || ''}</td></tr>
+      <tr><td>Asignado a</td><td>${o.empleado_nombre || '—'}</td></tr>
+      <tr><td>Descripción</td><td>${o.descripcion || ''}</td></tr>
+      <tr><td>Área</td><td>${o.area || ''}</td></tr>
+      <tr><td>Solicitante</td><td>${o.solicitante || ''}</td></tr>
+      <tr><td>Estado</td><td>${o.estado}</td></tr>
+      ${o.fechaAtencion ? `<tr><td>Fecha de atención</td><td>${o.fechaAtencion}</td></tr>` : ''}
+      ${o.horaInicio ? `<tr><td>Hora inicio</td><td>${o.horaInicio}</td></tr>` : ''}
+      ${o.horaFin ? `<tr><td>Hora fin</td><td>${o.horaFin}</td></tr>` : ''}
+      ${o.recibidoPor ? `<tr><td>Recibido por</td><td>${o.recibidoPor}</td></tr>` : ''}
     </table>
     <div class="firmas">
-      <div class="firma-item">
-        <div class="firma-nombre">${i.empleado_nombre || ''}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Empleado</div>
-      </div>
-      <div class="firma-item">
-        <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Mantenimiento</div>
-      </div>
+      <div class="firma-item"><div class="firma-nombre">${o.empleado_nombre || ''}</div><div class="linea"></div><div class="firma-cargo">Técnico</div></div>
+      <div class="firma-item"><div class="firma-nombre">${o.recibidoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Recibió</div></div>
     </div>
   `;
   window.print();
@@ -2966,10 +3090,9 @@ function imprimirIncidencia(id) {
 /* ============================================================
    INICIALIZACIÓN
 ============================================================ */
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   recuperarSesion();
 });
 </script>
-
 </body>
 </html>
