@@ -414,10 +414,20 @@
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">👥 Empleados</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
       <input type="hidden" id="idEditarEmpleado" value="">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <input id="nombreEmpleado" placeholder="Nombre" class="border rounded px-3 py-2">
         <input id="puestoEmpleado" placeholder="Puesto" class="border rounded px-3 py-2">
-        <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="activoEmpleado" checked> Activo</label>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+        <div>
+          <label class="font-semibold text-sm">Hora de entrada (jornada)</label>
+          <input type="time" id="horaEntradaEmpleado" class="w-full border rounded px-3 py-2">
+        </div>
+        <div>
+          <label class="font-semibold text-sm">Hora de salida (jornada)</label>
+          <input type="time" id="horaSalidaEmpleado" class="w-full border rounded px-3 py-2">
+        </div>
+        <label class="flex items-center gap-2 text-sm self-end mb-2"><input type="checkbox" id="activoEmpleado" checked> Activo</label>
       </div>
       <div class="flex gap-2">
         <button id="btnGuardarEmpleado" onclick="guardarEmpleado()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Empleado</button>
@@ -481,14 +491,40 @@
         </div>
       </div>
 
-      <div id="camposHoras" class="hidden grid grid-cols-2 gap-3 mb-3">
+      <!-- Selector de modalidad para permiso por horas -->
+      <div id="camposModalidadHoras" class="hidden mb-3">
+        <label class="font-semibold text-sm">Modalidad del permiso por horas</label>
+        <select id="incidenciaModalidadHoras" class="w-full border rounded px-3 py-2" onchange="cambiarModalidadHoras()">
+          <option value="">Selecciona...</option>
+          <option value="entrada">Permiso en la entrada (llega más tarde)</option>
+          <option value="salida">Permiso en la salida (se retira antes)</option>
+          <option value="jornada">Permiso entre la jornada laboral (sale y regresa)</option>
+        </select>
+      </div>
+
+      <!-- Campos dinámicos según modalidad -->
+      <div id="camposHorasEntrada" class="hidden grid grid-cols-2 gap-3 mb-3">
         <div>
-          <label class="font-semibold text-sm">Hora de entrada / llegada</label>
+          <label class="font-semibold text-sm">Hora de llegada</label>
           <input type="time" id="incidenciaHoraLlegada" class="w-full border rounded px-3 py-2">
         </div>
+      </div>
+
+      <div id="camposHorasSalida" class="hidden grid grid-cols-2 gap-3 mb-3">
         <div>
           <label class="font-semibold text-sm">Hora de salida</label>
           <input type="time" id="incidenciaHoraSalida" class="w-full border rounded px-3 py-2">
+        </div>
+      </div>
+
+      <div id="camposHorasJornada" class="hidden grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="font-semibold text-sm">Hora de salida</label>
+          <input type="time" id="incidenciaHoraSalidaJornada" class="w-full border rounded px-3 py-2">
+        </div>
+        <div>
+          <label class="font-semibold text-sm">Hora de regreso</label>
+          <input type="time" id="incidenciaHoraRegreso" class="w-full border rounded px-3 py-2">
         </div>
       </div>
 
@@ -645,6 +681,16 @@ function formatearHora(hora) {
 
 function textoHorarioReal(i) {
   if (i.tipo === 'Permiso por horas') {
+    if (i.modalidad_horas === 'entrada') {
+      return `⏰ Entrada: ${formatearHora(i.hora_llegada) || '--:--'}`;
+    }
+    if (i.modalidad_horas === 'salida') {
+      return `⏰ Salida: ${formatearHora(i.hora_salida) || '--:--'}`;
+    }
+    if (i.modalidad_horas === 'jornada') {
+      return `⏰ Sale: ${formatearHora(i.hora_salida) || '--:--'} | Regresa: ${formatearHora(i.hora_regreso) || '--:--'}`;
+    }
+    // Compatibilidad con datos viejos
     if (i.hora_llegada || i.hora_salida) {
       return `⏰ ${formatearHora(i.hora_llegada) || '--:--'} a ${formatearHora(i.hora_salida) || '--:--'}`;
     }
@@ -1249,7 +1295,7 @@ function limpiarFiltrosProyectos() {
   cargarBandejaProyectos();
 }
 </script>
-  
+
 <script>
 /* ============================================================
    AUTORIZAR / RECHAZAR / CONCLUIR / ELIMINAR / DESBLOQUEAR
@@ -1939,11 +1985,13 @@ async function exportarExcelAnalisis() {
       Folio: i.id,
       Empleado: i.empleado_nombre || '',
       Tipo: i.tipo,
+      Modalidad_Horas: i.modalidad_horas || '',
       Fecha_Registro: i.fecha,
       Fecha_Inicio: i.fecha_inicio || '',
       Fecha_Fin: i.fecha_fin || '',
       Hora_Llegada: i.hora_llegada || '',
       Hora_Salida: i.hora_salida || '',
+      Hora_Regreso: i.hora_regreso || '',
       Motivo: i.motivo || ''
     }));
 
@@ -2045,7 +2093,7 @@ async function restaurarRespaldo(input) {
 
 <script>
 /* ============================================================
-   EMPLEADOS
+   EMPLEADOS (con jornada laboral)
 ============================================================ */
 async function cargarEmpleados() {
   const lista = document.getElementById('listaEmpleados');
@@ -2060,6 +2108,7 @@ async function cargarEmpleados() {
       <div class="border rounded p-3 bg-white flex justify-between items-center ${e.activo ? '' : 'opacity-50'}">
         <div>
           <b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'}
+          ${e.hora_entrada || e.hora_salida ? `<span class="text-xs text-gray-600 ml-2">🕐 ${e.hora_entrada || '--:--'} a ${e.hora_salida || '--:--'}</span>` : ''}
           ${e.activo
             ? '<span class="badge bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>'
             : '<span class="badge bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
@@ -2079,15 +2128,17 @@ async function guardarEmpleado() {
   const id = document.getElementById('idEditarEmpleado').value;
   const nombre = document.getElementById('nombreEmpleado').value.trim();
   const puesto = document.getElementById('puestoEmpleado').value.trim();
+  const hora_entrada = document.getElementById('horaEntradaEmpleado').value;
+  const hora_salida = document.getElementById('horaSalidaEmpleado').value;
   const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
   if (!nombre) return;
 
   try {
     if (id) {
-      await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo });
+      await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, hora_entrada, hora_salida, activo });
       alert('✅ Actualizado');
     } else {
-      await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo });
+      await apiRequest('/api/empleados', 'POST', { nombre, puesto, hora_entrada, hora_salida, activo });
       alert('✅ Agregado');
     }
     cancelarEdicionEmpleado();
@@ -2101,6 +2152,8 @@ function editarEmpleado(emp) {
   document.getElementById('idEditarEmpleado').value = emp.id;
   document.getElementById('nombreEmpleado').value = emp.nombre;
   document.getElementById('puestoEmpleado').value = emp.puesto || '';
+  document.getElementById('horaEntradaEmpleado').value = emp.hora_entrada || '';
+  document.getElementById('horaSalidaEmpleado').value = emp.hora_salida || '';
   document.getElementById('activoEmpleado').checked = emp.activo === 1;
   document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar';
   document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
@@ -2110,6 +2163,8 @@ function cancelarEdicionEmpleado() {
   document.getElementById('idEditarEmpleado').value = '';
   document.getElementById('nombreEmpleado').value = '';
   document.getElementById('puestoEmpleado').value = '';
+  document.getElementById('horaEntradaEmpleado').value = '';
+  document.getElementById('horaSalidaEmpleado').value = '';
   document.getElementById('activoEmpleado').checked = true;
   document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado';
   document.getElementById('btnCancelarEmpleado').classList.add('hidden');
@@ -2306,7 +2361,7 @@ async function guardarCapturaOrden() {
 }
 
 /* ============================================================
-   INCIDENCIAS / PERMISOS - CORREGIDO
+   INCIDENCIAS / PERMISOS - CON MODALIDAD DE HORAS
 ============================================================ */
 async function cargarIncidencias() {
   const lista = document.getElementById('listaIncidencias');
@@ -2351,17 +2406,31 @@ async function cargarIncidencias() {
 function cambiarCamposIncidencia() {
   const tipo = document.getElementById('incidenciaTipo').value;
   document.getElementById('camposFechas').classList.add('hidden');
-  document.getElementById('camposHoras').classList.add('hidden');
+  document.getElementById('camposModalidadHoras').classList.add('hidden');
+  document.getElementById('camposHorasEntrada').classList.add('hidden');
+  document.getElementById('camposHorasSalida').classList.add('hidden');
+  document.getElementById('camposHorasJornada').classList.add('hidden');
 
   if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
     document.getElementById('camposFechas').classList.remove('hidden');
   } else if (tipo === 'Permiso por horas') {
-    document.getElementById('camposHoras').classList.remove('hidden');
+    document.getElementById('camposModalidadHoras').classList.remove('hidden');
+    cambiarModalidadHoras();
   }
+}
 
-  // Al editar, siempre mostrar horas para poder corregirlas
-  if (document.getElementById('idEditarIncidencia').value) {
-    document.getElementById('camposHoras').classList.remove('hidden');
+function cambiarModalidadHoras() {
+  const modalidad = document.getElementById('incidenciaModalidadHoras').value;
+  document.getElementById('camposHorasEntrada').classList.add('hidden');
+  document.getElementById('camposHorasSalida').classList.add('hidden');
+  document.getElementById('camposHorasJornada').classList.add('hidden');
+
+  if (modalidad === 'entrada') {
+    document.getElementById('camposHorasEntrada').classList.remove('hidden');
+  } else if (modalidad === 'salida') {
+    document.getElementById('camposHorasSalida').classList.remove('hidden');
+  } else if (modalidad === 'jornada') {
+    document.getElementById('camposHorasJornada').classList.remove('hidden');
   }
 }
 
@@ -2377,15 +2446,51 @@ async function guardarIncidencia() {
     return;
   }
 
+  const modalidad_horas = document.getElementById('incidenciaModalidadHoras').value;
+
+  if (tipo === 'Permiso por horas' && !modalidad_horas) {
+    alert('⚠️ Selecciona la modalidad del permiso por horas');
+    return;
+  }
+
+  let hora_llegada = '';
+  let hora_salida = '';
+  let hora_regreso = '';
+
+  if (tipo === 'Permiso por horas') {
+    if (modalidad_horas === 'entrada') {
+      hora_llegada = document.getElementById('incidenciaHoraLlegada').value;
+      if (!hora_llegada) {
+        alert('⚠️ Captura la hora de llegada');
+        return;
+      }
+    } else if (modalidad_horas === 'salida') {
+      hora_salida = document.getElementById('incidenciaHoraSalida').value;
+      if (!hora_salida) {
+        alert('⚠️ Captura la hora de salida');
+        return;
+      }
+    } else if (modalidad_horas === 'jornada') {
+      hora_salida = document.getElementById('incidenciaHoraSalidaJornada').value;
+      hora_regreso = document.getElementById('incidenciaHoraRegreso').value;
+      if (!hora_salida || !hora_regreso) {
+        alert('⚠️ Captura la hora de salida y la hora de regreso');
+        return;
+      }
+    }
+  }
+
   const datos = {
     empleado_id,
     tipo,
     fecha,
     motivo,
+    modalidad_horas,
     fecha_inicio: document.getElementById('incidenciaFechaInicio').value,
     fecha_fin: document.getElementById('incidenciaFechaFin').value,
-    hora_llegada: document.getElementById('incidenciaHoraLlegada').value,
-    hora_salida: document.getElementById('incidenciaHoraSalida').value
+    hora_llegada,
+    hora_salida,
+    hora_regreso
   };
 
   try {
@@ -2414,15 +2519,38 @@ function editarIncidencia(id) {
   document.getElementById('incidenciaFecha').value = i.fecha || '';
   document.getElementById('incidenciaFechaInicio').value = i.fecha_inicio || '';
   document.getElementById('incidenciaFechaFin').value = i.fecha_fin || '';
-  document.getElementById('incidenciaHoraLlegada').value = i.hora_llegada || '';
-  document.getElementById('incidenciaHoraSalida').value = i.hora_salida || '';
   document.getElementById('incidenciaMotivo').value = i.motivo || '';
+
+  document.getElementById('incidenciaHoraLlegada').value = '';
+  document.getElementById('incidenciaHoraSalida').value = '';
+  document.getElementById('incidenciaHoraSalidaJornada').value = '';
+  document.getElementById('incidenciaHoraRegreso').value = '';
 
   document.getElementById('btnGuardarIncidencia').textContent = '💾 Guardar Cambios';
   document.getElementById('btnCancelarIncidencia').classList.remove('hidden');
 
   cambiarCamposIncidencia();
-  document.getElementById('camposHoras').classList.remove('hidden');
+
+  if (i.tipo === 'Permiso por horas') {
+    let modalidad = i.modalidad_horas;
+    if (!modalidad) {
+      if (i.hora_llegada && i.hora_salida) modalidad = 'jornada';
+      else if (i.hora_llegada) modalidad = 'entrada';
+      else if (i.hora_salida) modalidad = 'salida';
+    }
+    document.getElementById('incidenciaModalidadHoras').value = modalidad || '';
+    cambiarModalidadHoras();
+
+    if (modalidad === 'entrada') {
+      document.getElementById('incidenciaHoraLlegada').value = i.hora_llegada || '';
+    } else if (modalidad === 'salida') {
+      document.getElementById('incidenciaHoraSalida').value = i.hora_salida || '';
+    } else if (modalidad === 'jornada') {
+      document.getElementById('incidenciaHoraSalidaJornada').value = i.hora_salida || '';
+      document.getElementById('incidenciaHoraRegreso').value = i.hora_regreso || '';
+    }
+  }
+
   document.getElementById('panelIncidencias').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -2434,6 +2562,9 @@ function cancelarEdicionIncidencia() {
   document.getElementById('incidenciaFechaFin').value = '';
   document.getElementById('incidenciaHoraLlegada').value = '';
   document.getElementById('incidenciaHoraSalida').value = '';
+  document.getElementById('incidenciaHoraSalidaJornada').value = '';
+  document.getElementById('incidenciaHoraRegreso').value = '';
+  document.getElementById('incidenciaModalidadHoras').value = '';
   document.getElementById('btnGuardarIncidencia').textContent = 'Agregar Incidencia';
   document.getElementById('btnCancelarIncidencia').classList.add('hidden');
   cambiarCamposIncidencia();
@@ -2468,12 +2599,12 @@ async function cargarListaSecciones() {
     const secciones = await apiRequest('/api/secciones');
     lista.innerHTML = secciones.map(s => `
       <div class="border rounded p-3 bg-white flex justify-between items-center">
-        <span>${s.nombre}</span>
-        <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+        <b>${s.nombre}</b>
+        <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
       </div>
     `).join('');
   } catch (e) {
-    lista.innerHTML = 'Error';
+    lista.innerHTML = '<p class="text-red-500">Error.</p>';
   }
 }
 
@@ -2486,18 +2617,18 @@ async function guardarSeccion() {
     cargarListaSecciones();
     cargarSecciones();
   } catch (e) {
-    alert(e.message);
+    alert('❌ Error: ' + e.message);
   }
 }
 
 async function eliminarSeccion(id) {
-  if (!confirm('¿Eliminar sección?')) return;
+  if (!confirm('⚠️ ¿Eliminar sección?')) return;
   try {
     await apiRequest(`/api/secciones/${id}`, 'DELETE');
     cargarListaSecciones();
     cargarSecciones();
   } catch (e) {
-    alert(e.message);
+    alert('❌ Error: ' + e.message);
   }
 }
 
@@ -2516,12 +2647,12 @@ async function cargarListaProveedores() {
     const proveedores = await apiRequest('/api/proveedores');
     lista.innerHTML = proveedores.map(p => `
       <div class="border rounded p-3 bg-white flex justify-between items-center">
-        <span>${p.nombre}</span>
-        <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+        <b>${p.nombre}</b>
+        <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
       </div>
     `).join('');
   } catch (e) {
-    lista.innerHTML = 'Error';
+    lista.innerHTML = '<p class="text-red-500">Error.</p>';
   }
 }
 
@@ -2534,18 +2665,18 @@ async function guardarProveedor() {
     cargarListaProveedores();
     cargarProveedores();
   } catch (e) {
-    alert(e.message);
+    alert('❌ Error: ' + e.message);
   }
 }
 
 async function eliminarProveedor(id) {
-  if (!confirm('¿Eliminar proveedor?')) return;
+  if (!confirm('⚠️ ¿Eliminar proveedor?')) return;
   try {
     await apiRequest(`/api/proveedores/${id}`, 'DELETE');
     cargarListaProveedores();
     cargarProveedores();
   } catch (e) {
-    alert(e.message);
+    alert('❌ Error: ' + e.message);
   }
 }
 
@@ -2553,45 +2684,48 @@ async function eliminarProveedor(id) {
    COMPRAS
 ============================================================ */
 function agregarArticuloCompra() {
+  const cont = document.getElementById('listaArticulosCompra');
   const div = document.createElement('div');
-  div.className = 'flex gap-2 items-center mb-2 articulo-row';
+  div.className = 'flex gap-2 mb-2';
   div.innerHTML = `
-    <input type="text" placeholder="Artículo" class="flex-1 border rounded px-3 py-2 articulo-nombre">
-    <input type="number" placeholder="Cant." class="w-20 border rounded px-3 py-2 articulo-cantidad" min="1">
-    <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">X</button>
+    <input placeholder="Artículo" class="flex-1 border rounded px-3 py-2 articulo-nombre">
+    <input type="number" placeholder="Cant." class="w-24 border rounded px-3 py-2 articulo-cantidad" min="1" value="1">
+    <button onclick="this.parentElement.remove()" class="bg-red-100 text-red-700 px-3 py-2 rounded">✖</button>
   `;
-  document.getElementById('listaArticulosCompra').appendChild(div);
+  cont.appendChild(div);
 }
 
 async function guardarOrdenCompra() {
   const proveedor_id = document.getElementById('compraProveedor').value;
-  const solicitado_por = document.getElementById('compraSolicitadoPor').value;
-  const observaciones = document.getElementById('compraObservaciones').value;
+  const solicitado_por = document.getElementById('compraSolicitadoPor').value.trim();
+  const observaciones = document.getElementById('compraObservaciones').value.trim();
 
   const articulos = [];
-  document.querySelectorAll('.articulo-row').forEach(row => {
-    const a = row.querySelector('.articulo-nombre').value.trim();
-    const c = parseFloat(row.querySelector('.articulo-cantidad').value) || 0;
-    if (a && c > 0) articulos.push({ articulo: a, cantidad: c });
+  document.querySelectorAll('#listaArticulosCompra > div').forEach(div => {
+    const articulo = div.querySelector('.articulo-nombre').value.trim();
+    const cantidad = parseInt(div.querySelector('.articulo-cantidad').value);
+    if (articulo && cantidad > 0) articulos.push({ articulo, cantidad });
   });
 
-  if (!proveedor_id || articulos.length === 0) {
-    alert('Selecciona proveedor y artículos.');
+  if (!proveedor_id || !solicitado_por || articulos.length === 0) {
+    alert('⚠️ Completa proveedor, solicitante y al menos un artículo');
     return;
   }
 
   try {
-    await apiRequest('/api/compras', 'POST', { proveedor_id, solicitado_por, observaciones, articulos });
-    alert('✅ Solicitud generada');
-    cargarCompras();
+    await apiRequest('/api/compras', 'POST', {
+      proveedor_id, solicitado_por, observaciones, articulos
+    });
+    alert('✅ Solicitud de compra generada');
     document.getElementById('listaArticulosCompra').innerHTML = '';
     document.getElementById('compraObservaciones').value = '';
+    cargarCompras();
   } catch (e) {
     alert('❌ Error: ' + e.message);
   }
 }
 
-function cargarCompras() {
+async function cargarCompras() {
   const lista = document.getElementById('listaCompras');
   lista.innerHTML = 'Cargando...';
 
@@ -2599,37 +2733,72 @@ function cargarCompras() {
   const fSolicitante = document.getElementById('filtroCompraSolicitante').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroCompraFecha').value;
 
-  apiRequest('/api/compras').then(compras => {
+  try {
+    let compras = await apiRequest('/api/compras');
+    if (fProveedor) compras = compras.filter(c => (c.proveedor_nombre || '').toLowerCase().includes(fProveedor));
+    if (fSolicitante) compras = compras.filter(c => (c.solicitado_por || '').toLowerCase().includes(fSolicitante));
+    if (fFecha) compras = compras.filter(c => (c.fecha || '').startsWith(fFecha));
+
     if (compras.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay solicitudes de compra.</p>';
+      lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>';
       return;
     }
 
-    let filtradas = compras;
-    if (fProveedor) filtradas = filtradas.filter(c => c.proveedor_nombre && c.proveedor_nombre.toLowerCase().includes(fProveedor));
-    if (fSolicitante) filtradas = filtradas.filter(c => c.solicitado_por && c.solicitado_por.toLowerCase().includes(fSolicitante));
-    if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
-
-    filtradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-    if (filtradas.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay solicitudes con esos filtros.</p>';
-      return;
-    }
-
-    lista.innerHTML = filtradas.map(c => `
+    lista.innerHTML = compras.map(c => `
       <div class="border rounded p-4 bg-white shadow-sm">
-        <div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div>
-        <div class="text-xs text-gray-500 mt-1">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitó: ${c.solicitado_por}</div>
-        <div class="mt-2 flex gap-2">
-          <button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+        <div class="font-bold">Folio: ${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
+        <div class="text-sm text-gray-600">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitado por: ${c.solicitado_por || 'N/A'}</div>
+        <div class="mt-2 text-sm">
+          <b>Artículos:</b>
+          <ul class="list-disc ml-5">
+            ${(c.articulos || []).map(a => `<li>${a.cantidad} × ${a.articulo}</li>`).join('')}
+          </ul>
+        </div>
+        ${c.observaciones ? `<div class="text-sm mt-1"><b>Observaciones:</b> ${c.observaciones}</div>` : ''}
+        <div class="mt-3 flex gap-2">
           <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
         </div>
       </div>
     `).join('');
-  }).catch(() => {
-    lista.innerHTML = 'Error';
-  });
+  } catch (e) {
+    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
+  }
+}
+
+async function cargarComprasSilencioso() {
+  try {
+    const compras = await apiRequest('/api/compras');
+    const lista = document.getElementById('listaCompras');
+    if (compras.length === 0) {
+      lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>';
+      return;
+    }
+    lista.innerHTML = compras.map(c => `
+      <div class="border rounded p-4 bg-white shadow-sm">
+        <div class="font-bold">Folio: ${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
+        <div class="text-sm text-gray-600">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitado por: ${c.solicitado_por || 'N/A'}</div>
+        <div class="mt-2 text-sm">
+          <b>Artículos:</b>
+          <ul class="list-disc ml-5">
+            ${(c.articulos || []).map(a => `<li>${a.cantidad} × ${a.articulo}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="mt-3 flex gap-2">
+          <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {}
+}
+
+async function eliminarCompra(id) {
+  if (!confirm('⚠️ ¿Eliminar compra?')) return;
+  try {
+    await apiRequest(`/api/compras/${id}`, 'DELETE');
+    cargarCompras();
+  } catch (e) {
+    alert('❌ Error: ' + e.message);
+  }
 }
 
 function limpiarFiltrosCompras() {
@@ -2639,310 +2808,168 @@ function limpiarFiltrosCompras() {
   cargarCompras();
 }
 
-async function cargarComprasSilencioso() {
-  try {
-    const compras = await apiRequest('/api/compras');
-    const lista = document.getElementById('listaCompras');
-    if (compras.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay solicitudes de compra.</p>';
-      return;
-    }
-    lista.innerHTML = compras.map(c => `
-      <div class="border rounded p-4 bg-white shadow-sm">
-        <div class="font-bold">${c.folio} - ${c.proveedor_nombre}</div>
-        <div class="text-xs text-gray-500 mt-1">Fecha: ${formatearFechaLocal(c.fecha)} | Solicitó: ${c.solicitado_por}</div>
-        <div class="mt-2 flex gap-2">
-          <button onclick="imprimirOrdenCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-          <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-        </div>
-      </div>
-    `).join('');
-  } catch (e) {}
-}
-
-async function eliminarCompra(id) {
-  if (!confirm('¿Eliminar solicitud de compra?')) return;
-  try {
-    await apiRequest(`/api/compras/${id}`, 'DELETE');
-    cargarCompras();
-  } catch (e) {
-    alert(e.message);
-  }
-}
-
 /* ============================================================
-   IMPRESIONES
+   IMPRESIÓN
 ============================================================ */
-function imprimirIncidencia(id) {
-  const i = incidenciasCache.find(x => x.id === id);
-  if (!i) return;
-
-  const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-  const headerHTML = logoDataURL
-    ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">PERMISO / INCIDENCIA</div><div class="subtitulo-header">${i.empleado_nombre || ''}</div><div class="folio-header">Folio: #${String(i.id).padStart(4, '0')}</div></div></div>`
-    : `<div class="titulo-central">PERMISO / INCIDENCIA</div><div class="subtitulo-central">Folio: #${String(i.id).padStart(4, '0')} | ${fechaActual}</div>`;
-
-  let html = `
-    ${headerHTML}
+function imprimirSolicitud(id) {
+  const s = solicitudes.find(x => x.id === id);
+  if (!s) return;
+  const formato = document.getElementById('formatoImpresion');
+  formato.innerHTML = `
+    <div class="header-impresion">
+      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
+      <div>
+        <div class="titulo-principal">Colegio Teresianos</div>
+        <div class="subtitulo-header">Departamento de Mantenimiento</div>
+      </div>
+    </div>
+    <div class="titulo-central">SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}</div>
+    <div class="subtitulo-central">Folio #${s.id}</div>
     <table>
-      <tr><td>Empleado</td><td><b>${i.empleado_nombre || ''}</b></td></tr>
-      <tr><td>Tipo de permiso</td><td>${i.tipo}</td></tr>
-      <tr><td>Fecha de registro</td><td>${i.fecha || ''}</td></tr>
-      <tr><td>Horario real del permiso</td><td><b>${textoHorarioReal(i)}</b></td></tr>
-      <tr><td>Hora de entrada</td><td>${formatearHora(i.hora_llegada) || '_______________'}</td></tr>
-      <tr><td>Hora de salida</td><td>${formatearHora(i.hora_salida) || '_______________'}</td></tr>
-      <tr><td>Fecha de inicio</td><td>${i.fecha_inicio || '_______________'}</td></tr>
-      <tr><td>Fecha de término</td><td>${i.fecha_fin || '_______________'}</td></tr>
-      <tr><td>Motivo / Observaciones</td><td>${i.motivo || ''}</td></tr>
+      <tr><td>Folio</td><td>#${s.id}</td></tr>
+      <tr><td>Tipo</td><td>${s.tipo}</td></tr>
+      <tr><td>Área</td><td>${s.area}</td></tr>
+      <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
+      <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr>
+      ${s.tipo === 'evento' ? `
+        <tr><td>Nombre del evento</td><td>${s.nombreEvento}</td></tr>
+        <tr><td>Fecha del evento</td><td>${s.fechaEvento}</td></tr>
+        <tr><td>Lugar</td><td>${s.lugarEvento}</td></tr>
+      ` : ''}
+      <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
+      <tr><td>Estado</td><td>${s.estado}</td></tr>
+      ${s.autorizadoPor ? `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>` : ''}
+      ${s.concluidoPor ? `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>` : ''}
     </table>
     <div class="firmas">
       <div class="firma-item">
-        <div class="firma-nombre">${i.empleado_nombre || '__________________'}</div>
+        <div class="firma-nombre">${s.solicitante}</div>
         <div class="linea"></div>
         <div class="firma-cargo">Solicitante</div>
-        <div class="firma-fecha">${i.fecha || ''}</div>
+        <div class="firma-fecha">${s.fechaSolicitud}</div>
+      </div>
+      <div class="firma-item">
+        <div class="firma-nombre">${s.autorizadoPor || ''}</div>
+        <div class="linea"></div>
+        <div class="firma-cargo">Autorizado por</div>
+        <div class="firma-fecha">${s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : ''}</div>
       </div>
       <div class="firma-item">
         <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
         <div class="linea"></div>
-        <div class="firma-cargo">Administrador - VoBo (Jefe de Empleados)</div>
-        <div class="firma-fecha">VoBo</div>
+        <div class="firma-cargo">Mantenimiento</div>
+        <div class="firma-fecha">${new Date().toLocaleDateString('es-MX')}</div>
+      </div>
+    </div>
+    <div class="pie-pagina">
+      <div>Colegio Teresianos - Departamento de Mantenimiento</div>
+      <div>Folio #${s.id}</div>
+    </div>
+  `;
+  window.print();
+}
+
+function imprimirOrdenTrabajo(id) {
+  apiRequest('/api/ordenes').then(ordenes => {
+    const o = ordenes.find(x => x.id === id);
+    if (!o) return;
+    const formato = document.getElementById('formatoImpresion');
+    formato.innerHTML = `
+      <div class="header-impresion">
+        ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
+        <div>
+          <div class="titulo-principal">Colegio Teresianos</div>
+          <div class="subtitulo-header">Departamento de Mantenimiento</div>
+        </div>
+      </div>
+      <div class="titulo-central">ORDEN DE TRABAJO</div>
+      <div class="subtitulo-central">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
+      <table>
+        <tr><td>Orden</td><td>#${o.id}</td></tr>
+        <tr><td>Solicitud</td><td>#${o.solicitud_id}</td></tr>
+        <tr><td>Empleado</td><td>${o.empleado_nombre || 'No asignado'}</td></tr>
+        <tr><td>Estado</td><td>${o.estado}</td></tr>
+        <tr><td>Área</td><td>${o.area || ''}</td></tr>
+        <tr><td>Solicitante</td><td>${o.solicitante || ''}</td></tr>
+        <tr><td>Descripción</td><td>${o.descripcion || ''}</td></tr>
+        <tr><td>Fecha creación</td><td>${formatearFechaLocal(o.fecha_creacion)}</td></tr>
+        ${o.fechaAtencion ? `<tr><td>Fecha atención</td><td>${o.fechaAtencion}</td></tr>` : ''}
+        ${o.horaInicio ? `<tr><td>Hora inicio</td><td>${o.horaInicio}</td></tr>` : ''}
+        ${o.horaFin ? `<tr><td>Hora fin</td><td>${o.horaFin}</td></tr>` : ''}
+        ${o.recibidoPor ? `<tr><td>Recibido por</td><td>${o.recibidoPor}</td></tr>` : ''}
+      </table>
+      <div class="firmas">
+        <div class="firma-item">
+          <div class="firma-nombre">${o.empleado_nombre || ''}</div>
+          <div class="linea"></div>
+          <div class="firma-cargo">Técnico asignado</div>
+        </div>
+        <div class="firma-item">
+          <div class="firma-nombre">${o.recibidoPor || ''}</div>
+          <div class="linea"></div>
+          <div class="firma-cargo">Recibido por</div>
+        </div>
+        <div class="firma-item">
+          <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
+          <div class="linea"></div>
+          <div class="firma-cargo">Mantenimiento</div>
+        </div>
+      </div>
+    `;
+    window.print();
+  });
+}
+
+function imprimirIncidencia(id) {
+  const i = incidenciasCache.find(x => x.id === id);
+  if (!i) return;
+  const formato = document.getElementById('formatoImpresion');
+  formato.innerHTML = `
+    <div class="header-impresion">
+      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
+      <div>
+        <div class="titulo-principal">Colegio Teresianos</div>
+        <div class="subtitulo-header">Departamento de Mantenimiento</div>
+      </div>
+    </div>
+    <div class="titulo-central">PERMISO / INCIDENCIA</div>
+    <div class="subtitulo-central">Folio #${i.id}</div>
+    <table>
+      <tr><td>Folio</td><td>#${i.id}</td></tr>
+      <tr><td>Empleado</td><td>${i.empleado_nombre || ''}</td></tr>
+      <tr><td>Tipo</td><td>${i.tipo}</td></tr>
+      ${i.modalidad_horas ? `<tr><td>Modalidad</td><td>${i.modalidad_horas}</td></tr>` : ''}
+      <tr><td>Fecha de registro</td><td>${i.fecha || ''}</td></tr>
+      ${i.fecha_inicio ? `<tr><td>Fecha inicio</td><td>${i.fecha_inicio}</td></tr>` : ''}
+      ${i.fecha_fin ? `<tr><td>Fecha fin</td><td>${i.fecha_fin}</td></tr>` : ''}
+      ${i.hora_llegada ? `<tr><td>Hora llegada</td><td>${i.hora_llegada}</td></tr>` : ''}
+      ${i.hora_salida ? `<tr><td>Hora salida</td><td>${i.hora_salida}</td></tr>` : ''}
+      ${i.hora_regreso ? `<tr><td>Hora regreso</td><td>${i.hora_regreso}</td></tr>` : ''}
+      <tr><td>Motivo</td><td>${i.motivo || ''}</td></tr>
+    </table>
+    <div class="firmas">
+      <div class="firma-item">
+        <div class="firma-nombre">${i.empleado_nombre || ''}</div>
+        <div class="linea"></div>
+        <div class="firma-cargo">Empleado</div>
       </div>
       <div class="firma-item">
-        <div class="firma-nombre">_________________________</div>
+        <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
         <div class="linea"></div>
-        <div class="firma-cargo">Administración - Autoriza el Permiso</div>
-        <div class="firma-fecha">Autorización</div>
+        <div class="firma-cargo">Mantenimiento</div>
       </div>
     </div>
-    <div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>
   `;
-
-  const c = document.getElementById('formatoImpresion');
-  c.innerHTML = html;
-  c.style.display = 'block';
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => { c.style.display = 'none'; }, 500);
-  }, 300);
-}
-
-async function imprimirSolicitud(id) {
-  const s = solicitudes.find(x => x.id === id);
-  if (!s) return;
-
-  let empleadoAtendio = 'No asignado';
-  if (s.tipo === 'servicio') {
-    try {
-      const ordenes = await apiRequest('/api/ordenes');
-      const ordenAsociada = ordenes.find(o => o.solicitud_id === s.id);
-      if (ordenAsociada && ordenAsociada.empleado_nombre) empleadoAtendio = ordenAsociada.empleado_nombre;
-    } catch (e) {}
-  }
-
-  const tipoEtiqueta = s.tipo === 'servicio' ? 'SERVICIO DE MANTENIMIENTO' : 'EVENTO ESCOLAR';
-
-  let estadoClase = '', estadoTexto = '';
-  if (s.estado === 'DESBLOQUEADA') { estadoClase = 'badge-desbloqueada'; estadoTexto = 'DESBLOQUEADA'; }
-  else if (s.estado === 'PENDIENTE_PROYECTOS') { estadoClase = 'badge-pendiente'; estadoTexto = 'EN EVALUACIÓN'; }
-  else if (s.estado === 'APROBADA') { estadoClase = 'badge-aprobada'; estadoTexto = 'AUTORIZADA'; }
-  else if (s.estado === 'CONCLUIDO') { estadoClase = 'badge-concluida'; estadoTexto = 'CONCLUIDA (ORDEN)'; }
-  else if (s.estado === 'CONCLUIDO_DIRECTO') { estadoClase = 'badge-concluida'; estadoTexto = 'CONCLUIDA (DIRECTO)'; }
-  else if (s.estado === 'RECHAZADA') { estadoClase = 'badge-rechazada'; estadoTexto = 'RECHAZADA'; }
-
-  const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-  const horaActual = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-  const c = document.getElementById('formatoImpresion');
-
-  let headerHTML = logoDataURL
-    ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">${tipoEtiqueta}</div><div class="subtitulo-header">${s.area}</div><div class="folio-header">Folio: #${String(s.id).padStart(4, '0')}</div></div></div>`
-    : `<div class="titulo-central">${tipoEtiqueta}</div><div class="subtitulo-central">${s.area} | Folio: #${String(s.id).padStart(4, '0')} | ${fechaActual}</div>`;
-
-  let html = `${headerHTML}
-    <table>
-      <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}<br><small style="color:#777">Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</small></td></tr>
-      <tr><td>Sección que solicita</td><td>${s.area}</td></tr>
-      <tr><td>Solicitante</td><td>${s.solicitante || 'No especificado (Creada por Mantenimiento)'}</td></tr>`;
-
-  if (s.tipo === 'evento' && s.nombreEvento) {
-    html += `<tr><td>Nombre del evento</td><td><b>${s.nombreEvento}</b></td></tr>`;
-  }
-
-  html += `<tr><td>Descripción / Detalles</td><td>${s.descripcion}</td></tr>`;
-
-  if (s.tipo === 'evento') {
-    html += `<tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar solicitado</td><td>${s.lugarEvento || ''}</td></tr>`;
-  }
-  if (s.tipo === 'servicio') {
-    html += `<tr><td>Empleado Asignado</td><td><b>${empleadoAtendio}</b></td></tr>`;
-  }
-
-  html += `<tr><td>Estado actual</td><td><span class="badge-estado ${estadoClase}">${estadoTexto}</span></td></tr>`;
-  if (s.autorizadoPor) html += `<tr><td>Autorizado por</td><td>${s.autorizadoPor}</td></tr>`;
-  if (s.estado === 'CONCLUIDO' && s.concluidoPor) html += `<tr><td>Concluido por</td><td>${s.concluidoPor}</td></tr>`;
-  if (s.estado === 'CONCLUIDO_DIRECTO' && s.concluidoPor) html += `<tr><td>Concluido por (Directo)</td><td>${s.concluidoPor}</td></tr>`;
-
-  if (s.observaciones && s.observaciones.length > 0) {
-    let obsText = '';
-    s.observaciones.forEach(obs => {
-      obsText += `${obs.autor} (${obs.rol}) - ${formatearFechaLocal(obs.fecha)}: ${obs.texto}\n`;
-    });
-    html += `<tr><td>Observaciones</td><td style="white-space: pre-wrap;">${obsText}</td></tr>`;
-  }
-
-  let firmaSolicitante = s.solicitante || '_________________________';
-  let firmaAutorizacion = s.autorizadoPor || '_________________________';
-  if (s.estado === 'PENDIENTE_PROYECTOS' || s.estado === 'RECHAZADA') {
-    firmaAutorizacion = s.estado === 'RECHAZADA' ? 'RECHAZADA' : 'Pendiente';
-  }
-
-  html += `</table>
-    <div class="firmas">
-      <div class="firma-item"><div class="firma-nombre">${firmaSolicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitante</div><div class="firma-fecha">${s.fechaSolicitud}</div></div>
-      <div class="firma-item"><div class="firma-nombre">${firmaAutorizacion}</div><div class="linea"></div><div class="firma-cargo">Autorizado por</div><div class="firma-fecha">${s.fechaAutorizacion ? formatearFechaLocal(s.fechaAutorizacion) : 'Pendiente'}</div></div>
-      <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Coordinación de Mantenimiento</div><div class="firma-fecha">${s.fechaConclusion ? formatearFechaLocal(s.fechaConclusion) : 'Pendiente'}</div></div>
-    </div>
-    <div class="pie-pagina"><span>${fechaActual} ${horaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
-
-  c.innerHTML = html;
-  c.style.display = 'block';
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => { c.style.display = 'none'; }, 500);
-  }, 300);
-}
-
-async function imprimirOrdenTrabajo(ordenId) {
-  try {
-    const ordenes = await apiRequest('/api/ordenes');
-    const o = ordenes.find(x => x.id === ordenId);
-    if (!o) return;
-
-    const fechaActual = new Date().toLocaleDateString('es-MX');
-    let headerHTML = logoDataURL
-      ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">ORDEN DE TRABAJO</div><div class="subtitulo-header">${o.area}</div><div class="folio-header">Orden: #${String(o.id).padStart(4, '0')}</div></div></div>`
-      : `<div class="titulo-central">ORDEN DE TRABAJO</div><div class="subtitulo-central">${o.area} | Orden: #${String(o.id).padStart(4, '0')} | ${fechaActual}</div>`;
-
-    let fechaAtencion = '_________________________________';
-    let horaInicio = '_________________________________';
-    let horaFin = '_________________________________';
-    let recibidoPor = '_________________________________';
-    let tituloSeccion = 'PARA LLENAR AL MOMENTO DE ATENDER';
-    let colorBorde = '#999';
-
-    if (o.estado === 'CONCLUIDO') {
-      fechaAtencion = `<b>${o.fechaAtencion || ''}</b>`;
-      horaInicio = `<b>${o.horaInicio || ''}</b>`;
-      horaFin = `<b>${o.horaFin || ''}</b>`;
-      recibidoPor = `<b>${o.recibidoPor || ''}</b>`;
-      tituloSeccion = 'DATOS DE ATENCIÓN';
-      colorBorde = '#00B42A';
-    }
-
-    let html = `${headerHTML}
-      <table>
-        <tr><td>Folio Solicitud</td><td>#${String(o.solicitud_id).padStart(4, '0')}</td></tr>
-        <tr><td>Fecha de solicitud</td><td>${formatearFechaLocal(o.fecha_creacion)}</td></tr>
-        <tr><td>Solicitante</td><td>${o.solicitante || 'No especificado'}</td></tr>
-        <tr><td>Sección</td><td>${o.area}</td></tr>
-        <tr><td>Descripción</td><td>${o.descripcion}</td></tr>
-        <tr><td>Empleado asignado</td><td><b>${o.empleado_nombre}</b></td></tr>
-      </table>
-      <div style="margin-top: 15px; border: 2px dashed ${colorBorde}; padding: 10px; border-radius: 8px;">
-        <h4 style="text-align: center; margin-top: 0; color: ${o.estado === 'CONCLUIDO' ? '#00B42A' : '#555'};">${tituloSeccion}</h4>
-        <table style="border: none;">
-          <tr>
-            <td style="width: 50%; border: none; background: transparent;"><b>Fecha en que se atendió:</b><br><br>${fechaAtencion}</td>
-            <td style="width: 50%; border: none; background: transparent;"><b>Hora de inicio:</b><br><br>${horaInicio}</td>
-          </tr>
-          <tr>
-            <td style="border: none; background: transparent; padding-top: 10px;"><b>Hora de finalización:</b><br><br>${horaFin}</td>
-            <td style="border: none; background: transparent; padding-top: 10px;"><b>Firma de conformidad:</b><br><br>${recibidoPor}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="firmas">
-        <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Recibió (Solicitante)</div></div>
-        <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Atendió (Empleado)</div></div>
-        <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Coordinación de Mantenimiento</div></div>
-      </div>
-      <div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
-
-    const c = document.getElementById('formatoImpresion');
-    c.innerHTML = html;
-    c.style.display = 'block';
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => { c.style.display = 'none'; }, 500);
-    }, 300);
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
-}
-
-async function imprimirOrdenCompra(id) {
-  try {
-    const compras = await apiRequest('/api/compras');
-    const c = compras.find(x => x.id === id);
-    if (!c) return;
-
-    const fechaActual = new Date().toLocaleDateString('es-MX');
-    let headerHTML = logoDataURL
-      ? `<div class="header-impresion"><img src="${logoDataURL}" class="logo-impresion" onerror="this.style.display='none'"><div class="header-text"><div class="titulo-principal">SOLICITUD DE COMPRA</div><div class="subtitulo-header">Folio: ${c.folio}</div></div></div>`
-      : `<div class="titulo-central">SOLICITUD DE COMPRA</div><div class="subtitulo-central">Folio: ${c.folio} | ${fechaActual}</div>`;
-
-    let filas = '';
-    if (c.articulos) {
-      c.articulos.forEach(art => {
-        filas += `<tr><td style="text-align: center; width: 20%;">${art.cantidad}</td><td style="width: 80%;">${art.articulo}</td></tr>`;
-      });
-    }
-
-    let html = `${headerHTML}
-      <table>
-        <tr><td>Proveedor</td><td>${c.proveedor_nombre}</td></tr>
-        <tr><td>Fecha</td><td>${formatearFechaLocal(c.fecha)}</td></tr>
-        <tr><td>Solicitado por</td><td>${c.solicitado_por}</td></tr>
-        <tr><td>Observaciones</td><td>${c.observaciones || 'Ninguna'}</td></tr>
-      </table>
-      <h4 style="margin-top: 20px; margin-bottom: 5px;">Artículos solicitados:</h4>
-      <table style="table-layout: fixed;">
-        <thead>
-          <tr style="background: #f3f4f6;">
-            <th style="text-align: center; padding: 5px; border: 1px solid #d1d5db; width: 20%;">Cantidad</th>
-            <th style="text-align: left; padding: 5px; border: 1px solid #d1d5db; width: 80%;">Descripción del Artículo</th>
-          </tr>
-        </thead>
-        <tbody>${filas}</tbody>
-      </table>
-      <div class="firmas">
-        <div class="firma-item"><div class="firma-nombre">${c.solicitado_por}</div><div class="linea"></div><div class="firma-cargo">Solicita</div><div class="firma-fecha">${formatearFechaLocal(c.fecha)}</div></div>
-        <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Coordinación de Mantenimiento</div><div class="firma-fecha">${formatearFechaLocal(c.fecha)}</div></div>
-        <div class="firma-item"><div class="firma-nombre">_________________________</div><div class="linea"></div><div class="firma-cargo">Autoriza Administración</div><div class="firma-fecha">Pendiente</div></div>
-      </div>
-      <div class="pie-pagina"><span>${fechaActual}</span><span>SISTEMA DE MANTENIMIENTO</span><span>v1.0</span></div>`;
-
-    const formato = document.getElementById('formatoImpresion');
-    formato.innerHTML = html;
-    formato.style.display = 'block';
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => { formato.style.display = 'none'; }, 500);
-    }, 300);
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  window.print();
 }
 
 /* ============================================================
-   INICIO
+   INICIALIZACIÓN
 ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
   recuperarSesion();
-  const campoFecha = document.getElementById('fechaSolicitud');
-  if (campoFecha) campoFecha.valueAsDate = new Date();
 });
 </script>
-<script>console.log("Script actualizado v22.0 - Incidencias + Excel + Reset Ciclo");</script>
+
 </body>
 </html>
