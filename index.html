@@ -1146,7 +1146,8 @@ async function guardarSolicitud() {
     nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '',
     lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
     solicitante: document.getElementById('nombreSolicitante').value,
-    observaciones: []
+    observaciones: [],
+    rolCreador: usuarioActivo.rol
   };
 
   if (!datos.descripcion || !datos.fechaSolicitud) {
@@ -1288,6 +1289,9 @@ function cargarMisSolicitudes() {
       <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
         ${s.tipo === 'evento' && s.nombreEvento ? `<div class="text-sm font-semibold text-colegio-naranja mt-1">Evento: ${s.nombreEvento}</div>` : ''}
+        <div class="text-sm text-gray-600">Solicitante: <b>${s.solicitante}</b></div>
+        <div class="text-sm text-gray-600">Autorizó: <b>${s.autorizadoPor || 'Pendiente'}</b></div>
+        <div class="text-sm text-gray-600">Coordinador Mantenimiento: <b>${s.concluidoPor || 'Pendiente'}</b></div>
         <div class="text-sm text-gray-600">Fecha de creación: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
         ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>` : ''}
         <div class="text-sm mt-1">${s.descripcion}</div>
@@ -1375,7 +1379,10 @@ function cargarBandejaProyectos() {
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
-        <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
+        <div class="text-sm text-gray-600">Solicitante: <b>${s.solicitante}</b></div>
+        <div class="text-sm text-gray-600">Autorizó: <b>${s.autorizadoPor || 'Pendiente'}</b></div>
+        <div class="text-sm text-gray-600">Coordinador Mantenimiento: <b>${s.concluidoPor || 'Pendiente'}</b></div>
+        <div class="text-sm text-gray-600">Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
         ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>` : ''}
         <div class="text-sm mt-1">${s.descripcion}</div>
         <div class="mt-2 font-semibold">${etiqueta} ${badge}</div>
@@ -1712,7 +1719,10 @@ function filtrarSolicitudesCoordinacion() {
       <div class="border rounded-lg p-4 ${clase} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
         ${s.tipo === 'evento' && s.nombreEvento ? `<div class="text-sm font-semibold text-colegio-naranja mt-1">Evento: ${s.nombreEvento}</div>` : ''}
-        <div class="text-sm text-gray-600">Solicitante: ${s.solicitante} | Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
+        <div class="text-sm text-gray-600">Solicitante: <b>${s.solicitante}</b></div>
+        <div class="text-sm text-gray-600">Autorizó: <b>${s.autorizadoPor || 'Pendiente'}</b></div>
+        <div class="text-sm text-gray-600">Coordinador Mantenimiento: <b>${s.concluidoPor || 'Pendiente'}</b></div>
+        <div class="text-sm text-gray-600">Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
         ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>` : ''}
         <div class="text-sm mt-1">${s.descripcion}</div>
         <div class="mt-2 flex flex-wrap gap-2 items-center">
@@ -2213,7 +2223,7 @@ async function restaurarRespaldo(input) {
 }
 
 /* ============================================================
-   EMPLEADOS (con horarios por día)
+   EMPLEADOS
 ============================================================ */
 async function cargarEmpleados() {
   const lista = document.getElementById('listaEmpleados');
@@ -2519,7 +2529,8 @@ async function guardarCapturaOrden() {
       horaInicio,
       horaFin,
       recibidoPor,
-      solicitud_id: solicitudId
+      solicitud_id: solicitudId,
+      concluidoPor: usuarioActivo.nombre
     });
     alert('✅ Concluida');
     cerrarModalCaptura();
@@ -2531,7 +2542,7 @@ async function guardarCapturaOrden() {
 }
 
 /* ============================================================
-   INCIDENCIAS / PERMISOS - CON MODALIDAD DE HORAS Y DURACIÓN
+   INCIDENCIAS / PERMISOS
 ============================================================ */
 async function cargarIncidencias() {
   const lista = document.getElementById('listaIncidencias');
@@ -2628,7 +2639,6 @@ async function guardarIncidencia() {
     return;
   }
 
-  // Calcular duración
   const emp = empleadosCache.find(e => e.id === empleado_id);
   const incidenciaTemp = {
     tipo, fecha, fecha_inicio, fecha_fin,
@@ -2763,11 +2773,6 @@ async function imprimirIncidencia(id) {
         <div class="firma-cargo">Mantenimiento</div>
         <div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div>
       </div>
-    </div>
-
-    <div class="pie-pagina">
-      <span>Sistema de Mantenimiento</span>
-      <span>Generado: ${new Date().toLocaleString('es-MX')}</span>
     </div>
   `;
   window.print();
@@ -3045,10 +3050,13 @@ async function imprimirSolicitud(id) {
       ` : ''}
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
+      <tr><td>Autorizado por (Proyectos)</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
+      <tr><td>Coordinador (Mantenimiento)</td><td><b>${s.concluidoPor || '—'}</b></td></tr>
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
-      <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Mantenimiento</div></div>
+      <div class="firma-item"><div class="firma-nombre">${s.autorizadoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Autorizó (Proyectos)</div></div>
+      <div class="firma-item"><div class="firma-nombre">${s.concluidoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Coordinador (Mantenimiento)</div></div>
     </div>
   `;
   window.print();
@@ -3077,11 +3085,23 @@ async function imprimirOrdenTrabajo(id) {
       ${o.fechaAtencion ? `<tr><td>Fecha de atención</td><td>${o.fechaAtencion}</td></tr>` : ''}
       ${o.horaInicio ? `<tr><td>Hora inicio</td><td>${o.horaInicio}</td></tr>` : ''}
       ${o.horaFin ? `<tr><td>Hora fin</td><td>${o.horaFin}</td></tr>` : ''}
-      ${o.recibidoPor ? `<tr><td>Recibido por</td><td>${o.recibidoPor}</td></tr>` : ''}
+      <tr><td>Recibido por</td><td>${o.recibidoPor || '_______________________________'}</td></tr>
     </table>
-    <div class="firmas">
-      <div class="firma-item"><div class="firma-nombre">${o.empleado_nombre || ''}</div><div class="linea"></div><div class="firma-cargo">Técnico</div></div>
-      <div class="firma-item"><div class="firma-nombre">${o.recibidoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Recibió</div></div>
+    <div class="firmas" style="margin-top: 80px;">
+      <div class="firma-item">
+        <div class="linea"></div>
+        <div class="firma-cargo">Firma del Técnico (Mantenimiento)</div>
+        <div class="firma-nombre">${o.empleado_nombre || ''}</div>
+      </div>
+      <div class="firma-item">
+        <div class="linea"></div>
+        <div class="firma-cargo">Firma de quien recibe el trabajo</div>
+        <div class="firma-nombre">${o.recibidoPor || 'Nombre y Firma'}</div>
+      </div>
+    </div>
+    <div class="pie-pagina">
+      <span>Sistema de Mantenimiento</span>
+      <span>Generado: ${new Date().toLocaleString('es-MX')}</span>
     </div>
   `;
   window.print();
