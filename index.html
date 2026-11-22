@@ -27,7 +27,6 @@
   </script>
 
   <style>
-    /* ============ ESTADOS / AVISOS ============ */
     .storage-status {
       position: fixed; top: 10px; right: 10px; z-index: 9999;
       padding: 8px 14px; border-radius: 8px;
@@ -37,11 +36,9 @@
     .storage-status.saving { background: #fef9c3; color: #854d0e; }
     .storage-status.error  { background: #fee2e2; color: #991b1b; }
 
-    /* ============ BADGES ============ */
     .badge-desbloqueado { background: #a855f7; color: #fff; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .badge-pendiente-mantenimiento { background: #facc15; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
 
-    /* ============ OBSERVACIONES ============ */
     .observacion-item {
       display: flex; justify-content: space-between; gap: 8px;
       background: #f9fafb; border: 1px solid #e5e7eb;
@@ -51,7 +48,6 @@
     .obs-texto { font-size: 13px; }
     .obs-fecha { font-weight: 400; color: #6b7280; }
 
-    /* ============ BOTONES ============ */
     .btn-bloquear { background: #111827; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 13px; }
     .btn-eliminar { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 6px; font-size: 13px; }
     .btn-observacion { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 13px; }
@@ -64,7 +60,6 @@
 
     .estado-desbloqueado { border: 2px solid #a855f7 !important; }
 
-    /* ============ IMPRESIÓN ============ */
     #formatoImpresion { display: none; }
 
     @media print {
@@ -118,7 +113,7 @@
 <body class="bg-gray-100 min-h-screen">
 <div id="storageStatus" class="storage-status"></div>
 
-<!-- ==================== LOGIN ==================== -->
+<!-- LOGIN -->
 <div id="loginModal" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm">
     <h1 class="text-2xl font-bold text-center text-colegio-azul mb-1">Sistema de Mantenimiento</h1>
@@ -135,7 +130,7 @@
   </div>
 </div>
 
-<!-- ==================== BARRA SUPERIOR ==================== -->
+<!-- BARRA SUPERIOR -->
 <div id="barraSuperior" class="hidden bg-colegio-azul text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40">
   <div class="font-bold">
     🛠️ Mantenimiento
@@ -144,7 +139,7 @@
   <button onclick="cerrarSesion()" class="bg-white/20 px-3 py-1 rounded text-sm">Cerrar sesión</button>
 </div>
 
-<!-- ==================== MENÚ ==================== -->
+<!-- MENÚ -->
 <nav id="menuNavegacion" class="hidden bg-white shadow px-4 py-2 flex gap-2 flex-wrap sticky top-[52px] z-30">
   <button onclick="nuevaSolicitud()" class="bg-colegio-azul text-white px-3 py-2 rounded text-sm">📝 Nueva Solicitud</button>
   <button id="navSolicitudes" onclick="mostrarSeccion('misSolicitudes')" class="bg-gray-100 px-3 py-2 rounded text-sm">📋 Mis Solicitudes</button>
@@ -167,8 +162,7 @@
 </nav>
 
 <main class="max-w-5xl mx-auto p-4 space-y-4">
-
-  <!-- ==================== NUEVA SOLICITUD ==================== -->
+  <!-- NUEVA SOLICITUD -->
   <section id="nuevaSolicitud">
     <div class="bg-white rounded shadow p-4">
       <h2 id="tituloFormSol" class="text-xl font-bold mb-3 text-colegio-azul">📝 Nueva Solicitud</h2>
@@ -226,7 +220,7 @@
     </div>
   </section>
 
-  <!-- ==================== MIS SOLICITUDES ==================== -->
+  <!-- MIS SOLICITUDES -->
   <section id="misSolicitudes" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">📋 Mis Solicitudes</h2>
 
@@ -256,7 +250,7 @@
     <div id="listaMisSolicitudes" class="space-y-3"></div>
   </section>
 
-  <!-- ==================== BANDEJA PROYECTOS ==================== -->
+  <!-- BANDEJA PROYECTOS -->
   <section id="bandaProyectos" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-naranja">📁 Bandeja de Proyectos Generales</h2>
 
@@ -286,11 +280,10 @@
     <div id="listaProyectos" class="space-y-3"></div>
   </section>
 
-  <!-- ==================== COORDINACIÓN ==================== -->
+  <!-- COORDINACIÓN -->
   <section id="panelCoordinacion" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">⚙️ Coordinación</h2>
 
-    <!-- Solicitudes -->
     <div id="adminSolicitudes">
       <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-5 gap-2">
         <input id="filtroSolicitante" placeholder="Solicitante / evento" class="border rounded px-3 py-2" oninput="filtrarSolicitudesCoordinacion()">
@@ -317,7 +310,6 @@
       <div id="listaCoordinacion" class="space-y-3"></div>
     </div>
 
-    <!-- Usuarios -->
     <div id="adminUsuarios" class="hidden">
       <div class="bg-white rounded shadow p-4 mb-4">
         <h3 class="font-bold mb-3">Usuarios y Permisos</h3>
@@ -358,7 +350,6 @@
       <div id="listaUsuarios" class="space-y-2"></div>
     </div>
 
-    <!-- Configuración -->
     <div id="adminConfiguracion" class="hidden">
       <div class="bg-white rounded shadow p-4 space-y-4">
         <div>
@@ -392,7 +383,6 @@
           </label>
         </div>
 
-        <!-- Cierre de Ciclo -->
         <div class="border-t pt-4 mt-2">
           <h4 class="font-bold text-colegio-azul mb-1">📊 Cierre de Ciclo Escolar</h4>
           <p class="text-sm text-gray-500 mb-3">Ciclo: Julio a Junio. Exporta antes de hacer reset.</p>
@@ -400,16 +390,12 @@
             <button onclick="exportarExcelAnalisis()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-bold">📊 Exportar Excel con Análisis</button>
             <button onclick="resetCicloEscolar()" class="bg-red-600 text-white px-4 py-2 rounded text-sm font-bold">🔄 Reset Ciclo Escolar (Borrar todo)</button>
           </div>
-          <p class="text-xs text-gray-500 mt-2">
-            ⚠️ El Reset borra: Solicitudes, Órdenes de Trabajo, Órdenes de Compra e Incidencias.<br>
-            ✅ NO borra: Usuarios, Empleados, Secciones, Proveedores, Logo, WhatsApp ni Nombre de Mantenimiento.
-          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== EMPLEADOS ==================== -->
+  <!-- EMPLEADOS -->
   <section id="panelEmpleados" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">👥 Empleados</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
@@ -419,7 +405,6 @@
         <input id="puestoEmpleado" placeholder="Puesto" class="border rounded px-3 py-2">
       </div>
 
-      <!-- Horarios por día -->
       <div class="mb-3">
         <p class="font-semibold text-sm mb-2">🕐 Horario por día (deja vacío si no trabaja ese día)</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -466,7 +451,7 @@
     <div id="listaEmpleados" class="space-y-2"></div>
   </section>
 
-  <!-- ==================== ÓRDENES ==================== -->
+  <!-- ÓRDENES -->
   <section id="panelOrdenes" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">📋 Órdenes de Trabajo</h2>
     <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
@@ -482,7 +467,7 @@
     <div id="listaOrdenes" class="space-y-3"></div>
   </section>
 
-  <!-- ==================== INCIDENCIAS ==================== -->
+  <!-- INCIDENCIAS -->
   <section id="panelIncidencias" class="hidden">
     <h2 class="text-xl font-bold mb-4 text-colegio-azul">🚨 Permisos e Incidencias</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
@@ -520,7 +505,6 @@
         </div>
       </div>
 
-      <!-- Selector de modalidad para permiso por horas -->
       <div id="camposModalidadHoras" class="hidden mb-3">
         <label class="font-semibold text-sm">Modalidad del permiso por horas</label>
         <select id="incidenciaModalidadHoras" class="w-full border rounded px-3 py-2" onchange="cambiarModalidadHoras()">
@@ -531,7 +515,6 @@
         </select>
       </div>
 
-      <!-- Campos dinámicos según modalidad -->
       <div id="camposHorasEntrada" class="hidden grid grid-cols-2 gap-3 mb-3">
         <div>
           <label class="font-semibold text-sm">Hora de llegada</label>
@@ -570,7 +553,7 @@
     <div id="listaIncidencias" class="space-y-3"></div>
   </section>
 
-  <!-- ==================== COMPRAS ==================== -->
+  <!-- COMPRAS -->
   <section id="panelCompras" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">🛒 Compras</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
@@ -603,7 +586,7 @@
     <div id="listaCompras" class="space-y-3"></div>
   </section>
 
-  <!-- ==================== SECCIONES ==================== -->
+  <!-- SECCIONES -->
   <section id="panelSecciones" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">🏫 Secciones</h2>
     <div class="bg-white rounded shadow p-4 mb-4 flex gap-2">
@@ -613,7 +596,7 @@
     <div id="listaSecciones" class="space-y-2"></div>
   </section>
 
-  <!-- ==================== PROVEEDORES ==================== -->
+  <!-- PROVEEDORES -->
   <section id="panelProveedores" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">🏷️ Proveedores</h2>
     <div class="bg-white rounded shadow p-4 mb-4 flex gap-2">
@@ -622,10 +605,9 @@
     </div>
     <div id="listaProveedores" class="space-y-2"></div>
   </section>
-
 </main>
 
-<!-- ==================== MODALES ==================== -->
+<!-- MODALES -->
 <div id="modalGenerarOrden" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl p-5 w-full max-w-sm">
     <h3 class="font-bold mb-3">Generar Orden de Trabajo</h3>
@@ -731,9 +713,6 @@ function textoHorarioReal(i) {
   return 'Sin fecha de permiso';
 }
 
-/* ============================================================
-   CÁLCULO DE DURACIÓN DE PERMISOS
-============================================================ */
 function minutosEntre(horaInicio, horaFin) {
   if (!horaInicio || !horaFin) return 0;
   const [h1, m1] = horaInicio.split(':').map(Number);
@@ -1042,7 +1021,7 @@ function iniciarAutoRefresco() {
 
       if (huboCambios && seccion) {
         if (seccion.id === 'misSolicitudes') cargarMisSolicitudes();
-        if (seccion.id === 'bandaProyectos') cargarBandejaProyectos();
+        if (seccion.id === 'bandejaProyectos') cargarBandejaProyectos();
         if (seccion.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) filtrarSolicitudesCoordinacion();
         if (seccion.id === 'panelIncidencias') cargarIncidencias();
       }
@@ -1117,7 +1096,7 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
     }
   }
   else if (id === 'misSolicitudes') cargarMisSolicitudes();
-  else if (id === 'bandaProyectos') cargarBandejaProyectos();
+  else if (id === 'bandejaProyectos') cargarBandejaProyectos();
   else if (id === 'panelEmpleados') cargarEmpleados();
   else if (id === 'panelOrdenes') cargarOrdenes();
   else if (id === 'panelIncidencias') cargarIncidencias();
@@ -1449,28 +1428,6 @@ async function marcarConcluidaDirecto(id) {
   }
 }
 
-async function concluirDirecto(id) {
-  if (confirm('✅ ¿Concluir directamente sin orden?')) {
-    await marcarConcluidaDirecto(id);
-  }
-}
-
-async function concluirEvento(id) {
-  if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
-  try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-      estado: 'CONCLUIDO_DIRECTO',
-      concluidoPor: usuarioActivo.nombre,
-      fechaConclusion: new Date().toISOString()
-    });
-    await cargarDatosIniciales();
-    alert('✅ Evento concluido');
-    recargarVistaActual();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
-}
-
 async function eliminarSolicitud(id) {
   if (!confirm('⚠️ ¿Eliminar esta SOLICITUD COMPLETA? Esta acción no se puede deshacer.')) return;
   try {
@@ -1524,7 +1481,7 @@ function recargarVistaActual() {
   const seccion = document.querySelector('main>section:not(.hidden)');
   if (!seccion) return;
   if (seccion.id === 'misSolicitudes') cargarMisSolicitudes();
-  if (seccion.id === 'bandaProyectos') cargarBandejaProyectos();
+  if (seccion.id === 'bandejaProyectos') cargarBandejaProyectos();
   if (seccion.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) {
     filtrarSolicitudesCoordinacion();
   }
@@ -1671,11 +1628,9 @@ function filtrarSolicitudesCoordinacion() {
 
     const esAdmin = usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'));
 
-    let btnConcluir = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
+    // El botón de concluir directo es EXCLUSIVO de servicios (no eventos)
+    let btnConcluirDirecto = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
       ? `<button onclick="marcarConcluidaDirecto(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Directo</button>` : '';
-
-    let btnConcluirEvento = (s.tipo === 'evento' && s.estado === 'APROBADA' && usuarioActivo?.rol === 'admin')
-      ? `<button onclick="concluirEvento(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir</button>` : '';
 
     let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') && esAdmin)
       ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
@@ -1697,7 +1652,7 @@ function filtrarSolicitudesCoordinacion() {
     let btnWhatsApp = (numeroWhatsAppDestino && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO'))
       ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
 
-    let btnGenerarOrden = (s.estado === 'APROBADA' && s.tipo === 'servicio' && esAdmin)
+    let btnGenerarOrden = (s.estado === 'APROBADA' && esAdmin)
       ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
 
     let obsHTML = '';
@@ -1728,7 +1683,7 @@ function filtrarSolicitudesCoordinacion() {
         <div class="mt-2 flex flex-wrap gap-2 items-center">
           <span class="font-semibold text-sm">${est} ${badge}</span>
           <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-          ${btnModificar}${btnWhatsApp}${btnGenerarOrden}${btnConcluir}${btnConcluirEvento}${btnDesbloquear}${btnBloquear}${btnEliminar}${btnObservacion}
+          ${btnModificar}${btnWhatsApp}${btnGenerarOrden}${btnConcluirDirecto}${btnDesbloquear}${btnBloquear}${btnEliminar}${btnObservacion}
         </div>
         ${obsHTML}
         ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500 mt-1">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
@@ -1767,31 +1722,6 @@ async function agregarObservacion(id) {
     recargarVistaActual();
   } catch (e) {
     alert('❌ Error: ' + e.message);
-  }
-}
-
-async function editarObservacion(solicitudId, index, textoActual) {
-  const nuevoTexto = prompt('✏️ Edita la observación:', textoActual);
-  if (nuevoTexto === null || nuevoTexto.trim() === '' || nuevoTexto === textoActual) return;
-  try {
-    await apiRequest(`/api/solicitudes/${solicitudId}/observaciones`, 'PUT', { index, texto: nuevoTexto.trim() });
-    await cargarDatosIniciales();
-    recargarVistaActual();
-    alert('✅ Observación actualizada');
-  } catch (e) {
-    alert('❌ Error al actualizar observación: ' + e.message);
-  }
-}
-
-async function eliminarObservacion(solicitudId, index) {
-  if (!confirm('⚠️ ¿Estás seguro de eliminar SOLO esta observación?')) return;
-  try {
-    await apiRequest(`/api/solicitudes/${solicitudId}/observaciones`, 'DELETE', { index });
-    await cargarDatosIniciales();
-    recargarVistaActual();
-    alert('🗑️ Observación eliminada');
-  } catch (e) {
-    alert('❌ Error al eliminar observación: ' + e.message);
   }
 }
 
