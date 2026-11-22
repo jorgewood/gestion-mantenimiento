@@ -106,7 +106,7 @@
 <nav id="menuNavegacion" class="hidden bg-white shadow px-4 py-2 flex gap-2 flex-wrap sticky top-[52px] z-30">
   <button onclick="nuevaSolicitud()" class="bg-colegio-azul text-white px-3 py-2 rounded text-sm">📝 Nueva Solicitud</button>
   <button id="navSolicitudes" onclick="mostrarSeccion('misSolicitudes')" class="bg-gray-100 px-3 py-2 rounded text-sm">📋 Mis Solicitudes</button>
-  <button id="btnProyectos" onclick="mostrarSeccion('bandaProyectos')" class="bg-orange-100 px-3 py-2 rounded text-sm">📁 Proyectos Generales</button>
+  <button id="btnProyectos" onclick="mostrarSeccion('bandejaProyectos')" class="bg-orange-100 px-3 py-2 rounded text-sm">📁 Proyectos Generales</button>
 
   <div class="relative">
     <button id="navMantenimiento" onclick="toggleMenu('subMenuMantenimiento')" class="bg-gray-100 px-3 py-2 rounded text-sm">⚙️ Mantenimiento ▼</button>
@@ -192,7 +192,7 @@
     <div id="listaMisSolicitudes" class="space-y-3"></div>
   </section>
 
-  <section id="bandaProyectos" class="hidden">
+  <section id="bandejaProyectos" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-naranja">📁 Bandeja de Proyectos Generales</h2>
     <div class="flex gap-2 mb-3">
       <button id="tabProyServicios" onclick="cambiarTabProy('servicio')" class="px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja">Servicios</button>
@@ -892,17 +892,24 @@ function cargarMisSolicitudes() {
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
   if (mis.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con estos filtros.</p>'; return; }
+  
   mis.forEach(s => {
     let est = '', claseExtra = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') est = '🟡 En evaluación (Proyectos)';
     else if (s.estado === 'APROBADA') est = '🟢 Autorizada';
-    else if (s.estado === 'CONCLUIDO') est = '✅ Concluida (Orden)';
-    else if (s.estado === 'CONCLUIDO_DIRECTO') est = '✅ Concluida (Directo)';
+    else if (s.estado === 'CONCLUIDO') {
+      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)';
+    }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') {
+      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)';
+    }
     else if (s.estado === 'RECHAZADA') est = '🔴 Rechazada';
+
     let botonModificar = '';
     if (s.estado !== 'RECHAZADA' && s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
     else if (s.estado === 'DESBLOQUEADA') botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
+    
     lista.innerHTML += `
       <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -949,14 +956,22 @@ function cargarBandejaProyectos() {
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
   if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes con estos filtros.</p>'; return; }
+  
   proyectos.forEach(s => {
     let etiqueta = '', colorFila = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { etiqueta = '🔓 Desbloqueada'; colorFila = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') { etiqueta = '🟡 En evaluación'; colorFila = 'bg-yellow-50'; }
     else if (s.estado === 'APROBADA') { etiqueta = '🟢 Autorizada'; colorFila = 'bg-green-50'; }
-    else if (s.estado === 'CONCLUIDO') { etiqueta = '✅ Concluida (Orden)'; colorFila = 'bg-gray-100 opacity-75'; }
-    else if (s.estado === 'CONCLUIDO_DIRECTO') { etiqueta = '✅ Concluida (Directo)'; colorFila = 'bg-gray-100 opacity-75'; }
+    else if (s.estado === 'CONCLUIDO') {
+      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; 
+      colorFila = 'bg-gray-100 opacity-75';
+    }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') {
+      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; 
+      colorFila = 'bg-gray-100 opacity-75';
+    }
     else if (s.estado === 'RECHAZADA') { etiqueta = '🔴 Rechazada'; colorFila = 'bg-red-50'; }
+
     let botones = '';
     if (s.estado === 'PENDIENTE_PROYECTOS') {
       botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button>`;
@@ -971,6 +986,7 @@ function cargarBandejaProyectos() {
       botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
     }
     botones += `<button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
+    
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1020,7 +1036,7 @@ async function marcarConcluidaDirecto(id) {
 async function concluirEvento(id) {
   if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Evento concluido'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1138,19 +1154,24 @@ function filtrarSolicitudesCoordinacion() {
     return 0;
   });
   if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
+  
   filtradas.forEach(s => {
     let est = '', clase = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; clase = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') { est = '🟡 En evaluación'; clase = 'bg-yellow-50'; badge = '<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>'; }
     else if (s.estado === 'APROBADA') { est = '🟢 Autorizada'; clase = 'bg-green-50'; }
-    else if (s.estado === 'CONCLUIDO') { est = '✅ Concluida (Orden)'; clase = 'bg-gray-100 opacity-75'; }
-    else if (s.estado === 'CONCLUIDO_DIRECTO') { est = '✅ Concluida (Directo)'; clase = 'bg-gray-100 opacity-75'; }
+    else if (s.estado === 'CONCLUIDO') {
+      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; 
+      clase = 'bg-gray-100 opacity-75';
+    }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') {
+      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; 
+      clase = 'bg-gray-100 opacity-75';
+    }
     else if (s.estado === 'RECHAZADA') { est = '🔴 Rechazada'; clase = 'bg-red-50'; }
+
     const esAdmin = usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'));
     
-    // Lógica corregida: 
-    // 1. Servicios: Concluir Directo (no orden)
-    // 2. Eventos: Concluir Evento
     let btnConcluir = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
       ? `<button onclick="marcarConcluidaDirecto(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Directo</button>` : '';
     let btnConcluirEvento = (s.tipo === 'evento' && s.estado === 'APROBADA' && usuarioActivo?.rol === 'admin')
@@ -1165,7 +1186,6 @@ function filtrarSolicitudesCoordinacion() {
     let btnModificar = (puedeModificar && esAdmin) ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : '';
     let btnWhatsApp = (numeroWhatsAppDestino && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO')) ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
     
-    // El botón de generar orden SOLO para servicios
     let btnGenerarOrden = (s.estado === 'APROBADA' && s.tipo === 'servicio' && esAdmin)
       ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
       
@@ -1175,6 +1195,7 @@ function filtrarSolicitudesCoordinacion() {
       s.observaciones.forEach((obs, i) => { obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div><div class="obs-texto">${obs.texto}</div></div></div>`; });
       obsHTML += `</div>`;
     }
+    
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${clase} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1219,14 +1240,27 @@ async function agregarObservacion(id) {
 function enviarWhatsApp(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
-  let mensaje = `📋 *SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}*\n📌 Folio: #${s.id}\n`;
-  if (s.tipo === 'evento') mensaje += `🎯 Evento: ${s.nombreEvento || 'N/A'}\n`;
-  mensaje += `👤 Solicitante: ${s.solicitante}\n🏫 Sección: ${s.area}\n📅 Fecha: ${s.fechaSolicitud}\n📝 Descripción: ${s.descripcion}\n`;
-  if (s.tipo === 'evento') mensaje += `📅 Fecha evento: ${s.fechaEvento || 'N/A'}\n📍 Lugar: ${s.lugarEvento || 'N/A'}\n`;
-  mensaje += `\n📌 *Estado: ${s.estado}*`;
-  if (s.autorizadoPor) mensaje += `\n✅ Autorizado por: ${s.autorizadoPor}`;
-  if (s.concluidoPor) mensaje += `\n🔧 Concluido por: ${s.concluidoPor}`;
-  if (s.observaciones && s.observaciones.length > 0) { mensaje += '\n\n📝 *Observaciones:*'; s.observaciones.forEach(obs => { mensaje += `\n• ${obs.autor} (${obs.rol}): ${obs.texto}`; }); }
+  
+  // Mensaje con formato limpio para WhatsApp (sin caracteres extraños)
+  let mensaje = `*SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}*\n`;
+  mensaje += `Folio: #${s.id}\n`;
+  if (s.tipo === 'evento') mensaje += `Evento: ${s.nombreEvento || 'N/A'}\n`;
+  mensaje += `Solicitante: ${s.solicitante}\n`;
+  mensaje += `Sección: ${s.area}\n`;
+  mensaje += `Fecha: ${s.fechaSolicitud}\n`;
+  mensaje += `Descripción: ${s.descripcion}\n`;
+  if (s.tipo === 'evento') {
+    mensaje += `Fecha evento: ${s.fechaEvento || 'N/A'}\n`;
+    mensaje += `Lugar: ${s.lugarEvento || 'N/A'}\n`;
+  }
+  mensaje += `\n*Estado: ${s.estado}*\n`;
+  if (s.autorizadoPor) mensaje += `Autorizado por: ${s.autorizadoPor}\n`;
+  if (s.concluidoPor) mensaje += `Concluido por: ${s.concluidoPor}\n`;
+  if (s.observaciones && s.observaciones.length > 0) {
+    mensaje += `\n*Observaciones:*\n`;
+    s.observaciones.forEach(obs => { mensaje += `- ${obs.autor} (${obs.rol}): ${obs.texto}\n`; });
+  }
+  
   window.open('https://wa.me/' + numeroWhatsAppDestino + '?text=' + encodeURIComponent(mensaje), '_blank');
 }
 
@@ -1785,15 +1819,17 @@ async function cargarCompras() {
     if (fSol) filtradas = filtradas.filter(c => (c.solicitado_por || '').toLowerCase().includes(fSol));
     if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin compras con esos filtros.</p>'; return; }
+    
+    // CORRECCIÓN: Usar c.id para los botones
     lista.innerHTML = filtradas.map(c => `
       <div class="border rounded p-4 bg-white shadow-sm">
-        <div class="font-bold">Compra #${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
+        <div class="font-bold">Compra #${c.id} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
         <div class="text-sm text-gray-600">Fecha: ${c.fecha} | Solicitado por: ${c.solicitado_por || '—'}</div>
         <div class="text-sm mt-2"><b>Artículos:</b> ${(c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ') || '—'}</div>
         <div class="text-sm mt-1">${c.observaciones || ''}</div>
         <div class="mt-3 flex gap-2">
-          <button onclick="imprimirCompra(${c.folio})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-          <button onclick="eliminarCompra(${c.folio})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
+          <button onclick="imprimirCompra(${c.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
+          <button onclick="eliminarCompra(${c.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
         </div>
       </div>
     `).join('');
@@ -1841,17 +1877,17 @@ async function guardarOrdenCompra() {
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-async function eliminarCompra(folio) {
+async function eliminarCompra(id) {
   if (!confirm('⚠️ ¿Eliminar compra?')) return;
-  try { await apiRequest(`/api/compras/${folio}`, 'DELETE'); cargarCompras(); } catch (e) { alert('❌ Error: ' + e.message); }
+  try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-async function imprimirCompra(folio) {
+async function imprimirCompra(id) {
   const compras = await apiRequest('/api/compras');
-  const c = compras.find(x => x.folio === folio);
+  const c = compras.find(x => x.id === id);
   if (!c) return;
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${c.folio}</div></div></div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${c.id}</div></div></div>
     <table>
       <tr><td>Proveedor</td><td>${c.proveedor_nombre || ''}</td></tr>
       <tr><td>Fecha</td><td>${c.fecha}</td></tr>
