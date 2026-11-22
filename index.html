@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Mantenimiento</title>
 
-  <!-- LIBRERÍAS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -27,11 +26,7 @@
   </script>
 
   <style>
-    .storage-status {
-      position: fixed; top: 10px; right: 10px; z-index: 9999;
-      padding: 8px 14px; border-radius: 8px;
-      font-size: 13px; font-weight: 600; display: none;
-    }
+    .storage-status { position: fixed; top: 10px; right: 10px; z-index: 9999; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; display: none; }
     .storage-status.online { background: #dcfce7; color: #166534; }
     .storage-status.saving { background: #fef9c3; color: #854d0e; }
     .storage-status.error  { background: #fee2e2; color: #991b1b; }
@@ -39,11 +34,7 @@
     .badge-desbloqueado { background: #a855f7; color: #fff; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .badge-pendiente-mantenimiento { background: #facc15; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
 
-    .observacion-item {
-      display: flex; justify-content: space-between; gap: 8px;
-      background: #f9fafb; border: 1px solid #e5e7eb;
-      border-radius: 8px; padding: 8px; margin-top: 6px;
-    }
+    .observacion-item { display: flex; justify-content: space-between; gap: 8px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; margin-top: 6px; }
     .obs-autor { font-weight: 700; font-size: 12px; }
     .obs-texto { font-size: 13px; }
     .obs-fecha { font-weight: 400; color: #6b7280; }
@@ -61,21 +52,13 @@
     .estado-desbloqueado { border: 2px solid #a855f7 !important; }
 
     #formatoImpresion { display: none; }
-
     @media print {
       body * { visibility: hidden; }
       #formatoImpresion, #formatoImpresion * { visibility: visible; }
-      #formatoImpresion {
-        position: absolute; left: 0; top: 0;
-        width: 100%; display: block !important;
-      }
+      #formatoImpresion { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
     }
 
-    .header-impresion {
-      display: flex; align-items: center; gap: 14px;
-      border-bottom: 3px solid #1e3a8a;
-      padding-bottom: 10px; margin-bottom: 14px;
-    }
+    .header-impresion { display: flex; align-items: center; gap: 14px; border-bottom: 3px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 14px; }
     .logo-impresion { height: 70px; object-fit: contain; }
     .titulo-principal { font-size: 22px; font-weight: 800; color: #1e3a8a; }
     .subtitulo-header { font-size: 14px; font-weight: 600; }
@@ -84,17 +67,8 @@
     .subtitulo-central { text-align: center; font-size: 13px; margin-bottom: 14px; }
 
     #formatoImpresion table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    #formatoImpresion td, #formatoImpresion th {
-      border: 1px solid #d1d5db; padding: 7px; font-size: 13px; text-align: left;
-    }
+    #formatoImpresion td, #formatoImpresion th { border: 1px solid #d1d5db; padding: 7px; font-size: 13px; text-align: left; }
     #formatoImpresion td:first-child { background: #f3f4f6; font-weight: 700; width: 32%; }
-
-    .badge-estado { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; color: #fff; }
-    .badge-desbloqueada { background: #a855f7; }
-    .badge-pendiente { background: #ca8a04; }
-    .badge-aprobada { background: #16a34a; }
-    .badge-concluida { background: #15803d; }
-    .badge-rechazada { background: #dc2626; }
 
     .firmas { display: flex; justify-content: space-between; gap: 12px; margin-top: 55px; }
     .firma-item { flex: 1; text-align: center; }
@@ -102,35 +76,25 @@
     .linea { border-top: 1.5px solid #111; margin: 28px 10px 6px; }
     .firma-cargo { font-size: 12px; font-weight: 700; }
     .firma-fecha { font-size: 11px; color: #555; }
-    .pie-pagina {
-      display: flex; justify-content: space-between;
-      font-size: 11px; color: #777;
-      margin-top: 18px; border-top: 1px solid #ddd; padding-top: 8px;
-    }
+    .pie-pagina { display: flex; justify-content: space-between; font-size: 11px; color: #777; margin-top: 18px; border-top: 1px solid #ddd; padding-top: 8px; }
   </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 <div id="storageStatus" class="storage-status"></div>
 
-<!-- LOGIN -->
 <div id="loginModal" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm">
     <h1 class="text-2xl font-bold text-center text-colegio-azul mb-1">Sistema de Mantenimiento</h1>
     <p class="text-center text-gray-500 text-sm mb-5">Inicia sesión para continuar</p>
-
     <label class="font-semibold text-sm">Usuario</label>
     <input id="usuarioLogin" class="w-full border rounded px-3 py-2 mb-3" placeholder="Usuario">
-
     <label class="font-semibold text-sm">Contraseña</label>
-    <input id="passLogin" type="password" class="w-full border rounded px-3 py-2 mb-4"
-      placeholder="Contraseña" onkeydown="if(event.key==='Enter') iniciarSesion()">
-
+    <input id="passLogin" type="password" class="w-full border rounded px-3 py-2 mb-4" placeholder="Contraseña" onkeydown="if(event.key==='Enter') iniciarSesion()">
     <button onclick="iniciarSesion()" class="w-full bg-colegio-azul text-white py-2 rounded font-bold">Entrar</button>
   </div>
 </div>
 
-<!-- BARRA SUPERIOR -->
 <div id="barraSuperior" class="hidden bg-colegio-azul text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40">
   <div class="font-bold">
     🛠️ Mantenimiento
@@ -139,7 +103,6 @@
   <button onclick="cerrarSesion()" class="bg-white/20 px-3 py-1 rounded text-sm">Cerrar sesión</button>
 </div>
 
-<!-- MENÚ -->
 <nav id="menuNavegacion" class="hidden bg-white shadow px-4 py-2 flex gap-2 flex-wrap sticky top-[52px] z-30">
   <button onclick="nuevaSolicitud()" class="bg-colegio-azul text-white px-3 py-2 rounded text-sm">📝 Nueva Solicitud</button>
   <button id="navSolicitudes" onclick="mostrarSeccion('misSolicitudes')" class="bg-gray-100 px-3 py-2 rounded text-sm">📋 Mis Solicitudes</button>
@@ -162,7 +125,6 @@
 </nav>
 
 <main class="max-w-5xl mx-auto p-4 space-y-4">
-  <!-- NUEVA SOLICITUD -->
   <section id="nuevaSolicitud">
     <div class="bg-white rounded shadow p-4">
       <h2 id="tituloFormSol" class="text-xl font-bold mb-3 text-colegio-azul">📝 Nueva Solicitud</h2>
@@ -178,9 +140,7 @@
         </div>
         <div>
           <label class="font-semibold text-sm">Sección / Área</label>
-          <select id="areaSolicitante" class="w-full border rounded px-3 py-2">
-            <option value="Preescolar">Preescolar</option>
-          </select>
+          <select id="areaSolicitante" class="w-full border rounded px-3 py-2"></select>
         </div>
         <div>
           <label class="font-semibold text-sm">Solicitante</label>
@@ -193,42 +153,27 @@
       </div>
 
       <div id="camposEvento" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Nombre del evento</label>
-          <input id="nombreEvento" class="w-full border rounded px-3 py-2">
-        </div>
-        <div>
-          <label class="font-semibold text-sm">Fecha del evento</label>
-          <input type="date" id="fechaEvento" class="w-full border rounded px-3 py-2">
-        </div>
-        <div>
-          <label class="font-semibold text-sm">Lugar del evento</label>
-          <input id="lugarEvento" class="w-full border rounded px-3 py-2">
-        </div>
+        <div><label class="font-semibold text-sm">Nombre del evento</label><input id="nombreEvento" class="w-full border rounded px-3 py-2"></div>
+        <div><label class="font-semibold text-sm">Fecha del evento</label><input type="date" id="fechaEvento" class="w-full border rounded px-3 py-2"></div>
+        <div><label class="font-semibold text-sm">Lugar del evento</label><input id="lugarEvento" class="w-full border rounded px-3 py-2"></div>
       </div>
 
       <label class="font-semibold text-sm">Descripción</label>
       <textarea id="descripcionSol" rows="4" class="w-full border rounded px-3 py-2 mb-3"></textarea>
 
       <div class="flex gap-2">
-        <button id="btnGuardarSol" onclick="guardarSolicitud()" class="btn-enviar-proyectos">
-          <i id="btnIconoGuardar" class="fas fa-paper-plane"></i>
-          <span id="btnTextoGuardar">Enviar a Proyectos Generales</span>
-        </button>
+        <button id="btnGuardarSol" onclick="guardarSolicitud()" class="btn-enviar-proyectos"><i id="btnIconoGuardar" class="fas fa-paper-plane"></i> <span id="btnTextoGuardar">Enviar a Proyectos Generales</span></button>
         <button id="btnCancelarSol" onclick="cancelarEdicionSol()" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
       </div>
     </div>
   </section>
 
-  <!-- MIS SOLICITUDES -->
   <section id="misSolicitudes" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">📋 Mis Solicitudes</h2>
-
     <div class="flex gap-2 mb-3">
       <button id="tabMisServicios" onclick="cambiarTabMis('servicio')" class="px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul">Servicios</button>
       <button id="tabMisEventos" onclick="cambiarTabMis('evento')" class="px-4 py-2 font-semibold text-gray-500">Eventos</button>
     </div>
-
     <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
       <input id="filtroMisBuscar" placeholder="Buscar..." class="border rounded px-3 py-2" oninput="cargarMisSolicitudes()">
       <input type="date" id="filtroMisFecha" class="border rounded px-3 py-2" onchange="cargarMisSolicitudes()">
@@ -241,24 +186,18 @@
         <option value="CONCLUIDO_DIRECTO">Concluida Directo</option>
         <option value="RECHAZADA">Rechazada</option>
       </select>
-      <label class="flex items-center gap-2 text-sm">
-        <input type="checkbox" id="toggleConcluidasMis" onchange="cargarMisSolicitudes()"> Mostrar concluidas
-      </label>
+      <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggleConcluidasMis" onchange="cargarMisSolicitudes()"> Mostrar concluidas</label>
     </div>
-
     <button onclick="limpiarFiltrosMis()" class="text-sm text-blue-600 mb-3">Limpiar filtros</button>
     <div id="listaMisSolicitudes" class="space-y-3"></div>
   </section>
 
-  <!-- BANDEJA PROYECTOS -->
   <section id="bandaProyectos" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-naranja">📁 Bandeja de Proyectos Generales</h2>
-
     <div class="flex gap-2 mb-3">
       <button id="tabProyServicios" onclick="cambiarTabProy('servicio')" class="px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja">Servicios</button>
       <button id="tabProyEventos" onclick="cambiarTabProy('evento')" class="px-4 py-2 font-semibold text-gray-500">Eventos</button>
     </div>
-
     <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
       <input id="filtroProyBuscar" placeholder="Buscar solicitante / evento..." class="border rounded px-3 py-2" oninput="cargarBandejaProyectos()">
       <input type="date" id="filtroProyFecha" class="border rounded px-3 py-2" onchange="cargarBandejaProyectos()">
@@ -271,19 +210,14 @@
         <option value="CONCLUIDO_DIRECTO">Concluida Directo</option>
         <option value="RECHAZADA">Rechazada</option>
       </select>
-      <label class="flex items-center gap-2 text-sm">
-        <input type="checkbox" id="toggleConcluidasProyectos" onchange="cargarBandejaProyectos()"> Mostrar concluidas
-      </label>
+      <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggleConcluidasProyectos" onchange="cargarBandejaProyectos()"> Mostrar concluidas</label>
     </div>
-
     <button onclick="limpiarFiltrosProyectos()" class="text-sm text-blue-600 mb-3">Limpiar filtros</button>
     <div id="listaProyectos" class="space-y-3"></div>
   </section>
 
-  <!-- COORDINACIÓN -->
   <section id="panelCoordinacion" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">⚙️ Coordinación</h2>
-
     <div id="adminSolicitudes">
       <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-5 gap-2">
         <input id="filtroSolicitante" placeholder="Solicitante / evento" class="border rounded px-3 py-2" oninput="filtrarSolicitudesCoordinacion()">
@@ -302,9 +236,7 @@
           <option value="CONCLUIDO_DIRECTO">Concluida Directo</option>
           <option value="RECHAZADA">Rechazada</option>
         </select>
-        <label class="flex items-center gap-2 text-sm">
-          <input type="checkbox" id="toggleConcluidasCoordinacion" onchange="filtrarSolicitudesCoordinacion()"> Mostrar concluidas
-        </label>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggleConcluidasCoordinacion" onchange="filtrarSolicitudesCoordinacion()"> Mostrar concluidas</label>
       </div>
       <button onclick="limpiarFiltros()" class="text-sm text-blue-600 mb-3">Limpiar filtros</button>
       <div id="listaCoordinacion" class="space-y-3"></div>
@@ -314,7 +246,6 @@
       <div class="bg-white rounded shadow p-4 mb-4">
         <h3 class="font-bold mb-3">Usuarios y Permisos</h3>
         <input type="hidden" id="editandoUsuario" value="">
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input id="nuevoUsuario" placeholder="Usuario" class="border rounded px-3 py-2">
           <input id="nuevoPass" type="password" placeholder="Contraseña (mín. 6)" class="border rounded px-3 py-2">
@@ -325,7 +256,6 @@
             <option value="admin">Administrador</option>
           </select>
         </div>
-
         <div class="mb-3">
           <p class="font-semibold text-sm mb-2">Permisos:</p>
           <div class="flex flex-wrap gap-3 text-sm">
@@ -341,7 +271,6 @@
             <label><input type="checkbox" class="permiso-checkbox" value="configuracion"> Configuración</label>
           </div>
         </div>
-
         <div class="flex gap-2">
           <button id="btnAgregarUsuario" onclick="agregarUsuario()" class="bg-colegio-azul text-white px-4 py-2 rounded">💾 Guardar Usuario</button>
           <button id="btnCancelarEditarUsuario" onclick="cancelarEdicionUsuario()" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
@@ -357,7 +286,6 @@
           <input id="nombreMantenimiento" class="w-full border rounded px-3 py-2">
           <button onclick="guardarNombreMantenimiento()" class="mt-2 bg-colegio-azul text-white px-4 py-2 rounded text-sm">Guardar Nombre</button>
         </div>
-
         <div>
           <label class="font-semibold">Logo</label>
           <div class="flex items-center gap-3 mt-1">
@@ -367,14 +295,12 @@
             <button onclick="eliminarLogo()" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">Eliminar logo</button>
           </div>
         </div>
-
         <div>
           <label class="font-semibold">Número WhatsApp destino</label>
           <input id="numeroWhatsApp" class="w-full border rounded px-3 py-2" placeholder="521999...">
           <p class="text-sm text-gray-500">Actual: <span id="numeroActualWhatsApp">Sin configurar</span></p>
           <button onclick="actualizarWhatsApp()" class="mt-2 bg-green-600 text-white px-4 py-2 rounded text-sm">Guardar WhatsApp</button>
         </div>
-
         <div class="flex gap-2 flex-wrap">
           <button onclick="crearRespaldo()" class="bg-gray-700 text-white px-4 py-2 rounded text-sm">⬇️ Descargar Respaldo</button>
           <label class="bg-blue-600 text-white px-4 py-2 rounded text-sm cursor-pointer">
@@ -382,7 +308,6 @@
             <input type="file" accept=".json" onchange="restaurarRespaldo(this)" class="hidden">
           </label>
         </div>
-
         <div class="border-t pt-4 mt-2">
           <h4 class="font-bold text-colegio-azul mb-1">📊 Cierre de Ciclo Escolar</h4>
           <p class="text-sm text-gray-500 mb-3">Ciclo: Julio a Junio. Exporta antes de hacer reset.</p>
@@ -395,7 +320,6 @@
     </div>
   </section>
 
-  <!-- EMPLEADOS -->
   <section id="panelEmpleados" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">👥 Empleados</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
@@ -404,45 +328,18 @@
         <input id="nombreEmpleado" placeholder="Nombre" class="border rounded px-3 py-2">
         <input id="puestoEmpleado" placeholder="Puesto" class="border rounded px-3 py-2">
       </div>
-
       <div class="mb-3">
-        <p class="font-semibold text-sm mb-2">🕐 Horario por día (deja vacío si no trabaja ese día)</p>
+        <p class="font-semibold text-sm mb-2">🕐 Horario por día</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <div class="border rounded p-2">
-            <p class="font-semibold text-xs mb-1">Lunes</p>
-            <input type="time" id="lunesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1" placeholder="Entrada">
-            <input type="time" id="lunesSalida" class="w-full border rounded px-2 py-1 text-sm" placeholder="Salida">
-          </div>
-          <div class="border rounded p-2">
-            <p class="font-semibold text-xs mb-1">Martes</p>
-            <input type="time" id="martesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
-            <input type="time" id="martesSalida" class="w-full border rounded px-2 py-1 text-sm">
-          </div>
-          <div class="border rounded p-2">
-            <p class="font-semibold text-xs mb-1">Miércoles</p>
-            <input type="time" id="miercolesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
-            <input type="time" id="miercolesSalida" class="w-full border rounded px-2 py-1 text-sm">
-          </div>
-          <div class="border rounded p-2">
-            <p class="font-semibold text-xs mb-1">Jueves</p>
-            <input type="time" id="juevesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
-            <input type="time" id="juevesSalida" class="w-full border rounded px-2 py-1 text-sm">
-          </div>
-          <div class="border rounded p-2">
-            <p class="font-semibold text-xs mb-1">Viernes</p>
-            <input type="time" id="viernesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
-            <input type="time" id="viernesSalida" class="w-full border rounded px-2 py-1 text-sm">
-          </div>
-          <div class="border rounded p-2">
-            <p class="font-semibold text-xs mb-1">Sábado</p>
-            <input type="time" id="sabadoEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1">
-            <input type="time" id="sabadoSalida" class="w-full border rounded px-2 py-1 text-sm">
-          </div>
+          <div class="border rounded p-2"><p class="font-semibold text-xs mb-1">Lunes</p><input type="time" id="lunesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1"><input type="time" id="lunesSalida" class="w-full border rounded px-2 py-1 text-sm"></div>
+          <div class="border rounded p-2"><p class="font-semibold text-xs mb-1">Martes</p><input type="time" id="martesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1"><input type="time" id="martesSalida" class="w-full border rounded px-2 py-1 text-sm"></div>
+          <div class="border rounded p-2"><p class="font-semibold text-xs mb-1">Miércoles</p><input type="time" id="miercolesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1"><input type="time" id="miercolesSalida" class="w-full border rounded px-2 py-1 text-sm"></div>
+          <div class="border rounded p-2"><p class="font-semibold text-xs mb-1">Jueves</p><input type="time" id="juevesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1"><input type="time" id="juevesSalida" class="w-full border rounded px-2 py-1 text-sm"></div>
+          <div class="border rounded p-2"><p class="font-semibold text-xs mb-1">Viernes</p><input type="time" id="viernesEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1"><input type="time" id="viernesSalida" class="w-full border rounded px-2 py-1 text-sm"></div>
+          <div class="border rounded p-2"><p class="font-semibold text-xs mb-1">Sábado</p><input type="time" id="sabadoEntrada" class="w-full border rounded px-2 py-1 text-sm mb-1"><input type="time" id="sabadoSalida" class="w-full border rounded px-2 py-1 text-sm"></div>
         </div>
       </div>
-
       <label class="flex items-center gap-2 text-sm mb-3"><input type="checkbox" id="activoEmpleado" checked> Activo</label>
-
       <div class="flex gap-2">
         <button id="btnGuardarEmpleado" onclick="guardarEmpleado()" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Empleado</button>
         <button id="btnCancelarEmpleado" onclick="cancelarEdicionEmpleado()" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
@@ -451,7 +348,6 @@
     <div id="listaEmpleados" class="space-y-2"></div>
   </section>
 
-  <!-- ÓRDENES -->
   <section id="panelOrdenes" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">📋 Órdenes de Trabajo</h2>
     <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
@@ -467,20 +363,14 @@
     <div id="listaOrdenes" class="space-y-3"></div>
   </section>
 
-  <!-- INCIDENCIAS -->
   <section id="panelIncidencias" class="hidden">
     <h2 class="text-xl font-bold mb-4 text-colegio-azul">🚨 Permisos e Incidencias</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
       <input type="hidden" id="idEditarIncidencia" value="">
       <h3 id="tituloFormIncidencia" class="font-bold mb-3">Nueva Incidencia</h3>
-
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Empleado</label>
-          <select id="incidenciaEmpleado" class="w-full border rounded px-3 py-2"></select>
-        </div>
-        <div>
-          <label class="font-semibold text-sm">Tipo</label>
+        <div><label class="font-semibold text-sm">Empleado</label><select id="incidenciaEmpleado" class="w-full border rounded px-3 py-2"></select></div>
+        <div><label class="font-semibold text-sm">Tipo</label>
           <select id="incidenciaTipo" class="w-full border rounded px-3 py-2" onchange="cambiarCamposIncidencia()">
             <option value="Vacaciones">Vacaciones</option>
             <option value="Incapacidad">Incapacidad</option>
@@ -488,23 +378,12 @@
             <option value="Permiso por días">Permiso por días</option>
           </select>
         </div>
-        <div>
-          <label class="font-semibold text-sm">Fecha de Registro</label>
-          <input type="date" id="incidenciaFecha" class="w-full border rounded px-3 py-2">
-        </div>
+        <div><label class="font-semibold text-sm">Fecha de Registro</label><input type="date" id="incidenciaFecha" class="w-full border rounded px-3 py-2"></div>
       </div>
-
       <div id="camposFechas" class="hidden grid grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Fecha de Inicio</label>
-          <input type="date" id="incidenciaFechaInicio" class="w-full border rounded px-3 py-2">
-        </div>
-        <div>
-          <label class="font-semibold text-sm">Fecha de Término</label>
-          <input type="date" id="incidenciaFechaFin" class="w-full border rounded px-3 py-2">
-        </div>
+        <div><label class="font-semibold text-sm">Fecha de Inicio</label><input type="date" id="incidenciaFechaInicio" class="w-full border rounded px-3 py-2"></div>
+        <div><label class="font-semibold text-sm">Fecha de Término</label><input type="date" id="incidenciaFechaFin" class="w-full border rounded px-3 py-2"></div>
       </div>
-
       <div id="camposModalidadHoras" class="hidden mb-3">
         <label class="font-semibold text-sm">Modalidad del permiso por horas</label>
         <select id="incidenciaModalidadHoras" class="w-full border rounded px-3 py-2" onchange="cambiarModalidadHoras()">
@@ -514,37 +393,13 @@
           <option value="jornada">Permiso entre la jornada laboral (sale y regresa)</option>
         </select>
       </div>
-
-      <div id="camposHorasEntrada" class="hidden grid grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Hora de llegada</label>
-          <input type="time" id="incidenciaHoraLlegada" class="w-full border rounded px-3 py-2">
-        </div>
-      </div>
-
-      <div id="camposHorasSalida" class="hidden grid grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Hora de salida</label>
-          <input type="time" id="incidenciaHoraSalida" class="w-full border rounded px-3 py-2">
-        </div>
-      </div>
-
+      <div id="camposHorasEntrada" class="hidden grid grid-cols-2 gap-3 mb-3"><div><label class="font-semibold text-sm">Hora de llegada</label><input type="time" id="incidenciaHoraLlegada" class="w-full border rounded px-3 py-2"></div></div>
+      <div id="camposHorasSalida" class="hidden grid grid-cols-2 gap-3 mb-3"><div><label class="font-semibold text-sm">Hora de salida</label><input type="time" id="incidenciaHoraSalida" class="w-full border rounded px-3 py-2"></div></div>
       <div id="camposHorasJornada" class="hidden grid grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Hora de salida</label>
-          <input type="time" id="incidenciaHoraSalidaJornada" class="w-full border rounded px-3 py-2">
-        </div>
-        <div>
-          <label class="font-semibold text-sm">Hora de regreso</label>
-          <input type="time" id="incidenciaHoraRegreso" class="w-full border rounded px-3 py-2">
-        </div>
+        <div><label class="font-semibold text-sm">Hora de salida</label><input type="time" id="incidenciaHoraSalidaJornada" class="w-full border rounded px-3 py-2"></div>
+        <div><label class="font-semibold text-sm">Hora de regreso</label><input type="time" id="incidenciaHoraRegreso" class="w-full border rounded px-3 py-2"></div>
       </div>
-
-      <div class="mb-3">
-        <label class="font-semibold text-sm">Motivo / Observaciones</label>
-        <textarea id="incidenciaMotivo" rows="2" class="w-full border rounded px-3 py-2"></textarea>
-      </div>
-
+      <div class="mb-3"><label class="font-semibold text-sm">Motivo / Observaciones</label><textarea id="incidenciaMotivo" rows="2" class="w-full border rounded px-3 py-2"></textarea></div>
       <div class="flex gap-2">
         <button onclick="guardarIncidencia()" id="btnGuardarIncidencia" class="bg-colegio-azul text-white px-4 py-2 rounded">Agregar Incidencia</button>
         <button onclick="cancelarEdicionIncidencia()" id="btnCancelarIncidencia" class="bg-gray-200 px-4 py-2 rounded hidden">Cancelar</button>
@@ -553,19 +408,12 @@
     <div id="listaIncidencias" class="space-y-3"></div>
   </section>
 
-  <!-- COMPRAS -->
   <section id="panelCompras" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">🛒 Compras</h2>
     <div class="bg-white rounded shadow p-4 mb-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="font-semibold text-sm">Proveedor</label>
-          <select id="compraProveedor" class="w-full border rounded px-3 py-2"></select>
-        </div>
-        <div>
-          <label class="font-semibold text-sm">Solicitado por</label>
-          <input id="compraSolicitadoPor" class="w-full border rounded px-3 py-2">
-        </div>
+        <div><label class="font-semibold text-sm">Proveedor</label><select id="compraProveedor" class="w-full border rounded px-3 py-2"></select></div>
+        <div><label class="font-semibold text-sm">Solicitado por</label><input id="compraSolicitadoPor" class="w-full border rounded px-3 py-2"></div>
       </div>
       <div class="mb-3">
         <label class="font-semibold text-sm">Artículos</label>
@@ -576,7 +424,6 @@
       <textarea id="compraObservaciones" class="w-full border rounded px-3 py-2 mb-3"></textarea>
       <button onclick="guardarOrdenCompra()" class="bg-colegio-azul text-white px-4 py-2 rounded">Generar Solicitud de Compra</button>
     </div>
-
     <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
       <input id="filtroCompraProveedor" placeholder="Proveedor" class="border rounded px-3 py-2" oninput="cargarCompras()">
       <input id="filtroCompraSolicitante" placeholder="Solicitante" class="border rounded px-3 py-2" oninput="cargarCompras()">
@@ -586,7 +433,6 @@
     <div id="listaCompras" class="space-y-3"></div>
   </section>
 
-  <!-- SECCIONES -->
   <section id="panelSecciones" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">🏫 Secciones</h2>
     <div class="bg-white rounded shadow p-4 mb-4 flex gap-2">
@@ -596,7 +442,6 @@
     <div id="listaSecciones" class="space-y-2"></div>
   </section>
 
-  <!-- PROVEEDORES -->
   <section id="panelProveedores" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">🏷️ Proveedores</h2>
     <div class="bg-white rounded shadow p-4 mb-4 flex gap-2">
@@ -607,7 +452,6 @@
   </section>
 </main>
 
-<!-- MODALES -->
 <div id="modalGenerarOrden" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl p-5 w-full max-w-sm">
     <h3 class="font-bold mb-3">Generar Orden de Trabajo</h3>
@@ -644,42 +488,27 @@
 <div id="formatoImpresion"></div>
 
 <script>
-/* ============================================================
-   VARIABLES GLOBALES
-============================================================ */
 const API_URL = 'https://api-mantenimiento.teresianos.workers.dev'; // <-- CAMBIA ESTO
 
 let usuarios = {};
 let solicitudes = [];
 let usuarioActivo = null;
-
 let numeroWhatsAppDestino = '';
 let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
-
 let tabMisActiva = 'servicio';
 let tabProyActiva = 'servicio';
 let intervaloRefresco = null;
 let incidenciasCache = [];
 let empleadosCache = [];
 
-/* ============================================================
-   UTILIDADES
-============================================================ */
 function formatearFechaLocal(f) {
   if (!f) return '';
   try {
     const d = new Date(f);
-    if (!isNaN(d) && f.includes('T')) {
-      return d.toLocaleString('es-MX', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-    }
+    if (!isNaN(d) && f.includes('T')) return d.toLocaleString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     return f;
-  } catch (e) {
-    return f;
-  }
+  } catch (e) { return f; }
 }
 
 function formatearHora(hora) {
@@ -693,23 +522,13 @@ function formatearHora(hora) {
 
 function textoHorarioReal(i) {
   if (i.tipo === 'Permiso por horas') {
-    if (i.modalidad_horas === 'entrada') {
-      return `⏰ Entrada: ${formatearHora(i.hora_llegada) || '--:--'}`;
-    }
-    if (i.modalidad_horas === 'salida') {
-      return `⏰ Salida: ${formatearHora(i.hora_salida) || '--:--'}`;
-    }
-    if (i.modalidad_horas === 'jornada') {
-      return `⏰ Sale: ${formatearHora(i.hora_salida) || '--:--'} | Regresa: ${formatearHora(i.hora_regreso) || '--:--'}`;
-    }
-    if (i.hora_llegada || i.hora_salida) {
-      return `⏰ ${formatearHora(i.hora_llegada) || '--:--'} a ${formatearHora(i.hora_salida) || '--:--'}`;
-    }
+    if (i.modalidad_horas === 'entrada') return `⏰ Entrada: ${formatearHora(i.hora_llegada) || '--:--'}`;
+    if (i.modalidad_horas === 'salida') return `⏰ Salida: ${formatearHora(i.hora_salida) || '--:--'}`;
+    if (i.modalidad_horas === 'jornada') return `⏰ Sale: ${formatearHora(i.hora_salida) || '--:--'} | Regresa: ${formatearHora(i.hora_regreso) || '--:--'}`;
+    if (i.hora_llegada || i.hora_salida) return `⏰ ${formatearHora(i.hora_llegada) || '--:--'} a ${formatearHora(i.hora_salida) || '--:--'}`;
     return '⏰ Sin hora capturada';
   }
-  if (i.fecha_inicio || i.fecha_fin) {
-    return `📅 ${i.fecha_inicio || '--'} al ${i.fecha_fin || '--'}`;
-  }
+  if (i.fecha_inicio || i.fecha_fin) return `📅 ${i.fecha_inicio || '--'} al ${i.fecha_fin || '--'}`;
   return 'Sin fecha de permiso';
 }
 
@@ -743,76 +562,43 @@ function obtenerHorarioDelDia(empleado, fechaStr) {
 
 function calcularDuracionPermiso(incidencia, empleado) {
   const tipo = incidencia.tipo;
-
   if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
-    if (!incidencia.fecha_inicio || !incidencia.fecha_fin) {
-      return { minutos: 0, texto: 'Sin fechas' };
-    }
+    if (!incidencia.fecha_inicio || !incidencia.fecha_fin) return { minutos: 0, texto: 'Sin fechas' };
     const inicio = new Date(incidencia.fecha_inicio);
     const fin = new Date(incidencia.fecha_fin);
     const dias = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1;
     return { minutos: 0, texto: `${dias} día(s)` };
   }
-
   if (tipo === 'Permiso por horas' && empleado) {
     const horario = obtenerHorarioDelDia(empleado, incidencia.fecha);
-    if (!horario) {
-      return { minutos: 0, texto: 'Día no laboral' };
-    }
-
+    if (!horario) return { minutos: 0, texto: 'Día no laboral' };
     let minutos = 0;
-    if (incidencia.modalidad_horas === 'entrada' && incidencia.hora_llegada) {
-      minutos = minutosEntre(horario.entrada, incidencia.hora_llegada);
-    } else if (incidencia.modalidad_horas === 'salida' && incidencia.hora_salida) {
-      minutos = minutosEntre(incidencia.hora_salida, horario.salida);
-    } else if (incidencia.modalidad_horas === 'jornada' && incidencia.hora_salida && incidencia.hora_regreso) {
-      minutos = minutosEntre(incidencia.hora_salida, incidencia.hora_regreso);
-    } else if (incidencia.hora_llegada && incidencia.hora_salida) {
-      minutos = minutosEntre(incidencia.hora_llegada, incidencia.hora_salida);
-    }
-
+    if (incidencia.modalidad_horas === 'entrada' && incidencia.hora_llegada) minutos = minutosEntre(horario.entrada, incidencia.hora_llegada);
+    else if (incidencia.modalidad_horas === 'salida' && incidencia.hora_salida) minutos = minutosEntre(incidencia.hora_salida, horario.salida);
+    else if (incidencia.modalidad_horas === 'jornada' && incidencia.hora_salida && incidencia.hora_regreso) minutos = minutosEntre(incidencia.hora_salida, incidencia.hora_regreso);
+    else if (incidencia.hora_llegada && incidencia.hora_salida) minutos = minutosEntre(incidencia.hora_llegada, incidencia.hora_salida);
     if (minutos < 0) minutos = 0;
     return { minutos, texto: formatearDuracion(minutos) };
   }
-
   return { minutos: 0, texto: '—' };
 }
 
-/* ============================================================
-   MENÚ
-============================================================ */
 function toggleMenu(id) {
-  document.querySelectorAll('nav .absolute').forEach(el => {
-    if (el.id !== id) el.classList.add('hidden');
-  });
+  document.querySelectorAll('nav .absolute').forEach(el => { if (el.id !== id) el.classList.add('hidden'); });
   document.getElementById(id).classList.toggle('hidden');
 }
-
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('.relative')) {
-    document.querySelectorAll('nav .absolute').forEach(el => el.classList.add('hidden'));
-  }
+  if (!e.target.closest('.relative')) document.querySelectorAll('nav .absolute').forEach(el => el.classList.add('hidden'));
 });
 
-/* ============================================================
-   RESPALDO LOCAL / ESTADO
-============================================================ */
 function guardarRespaldoLocal() {
   try {
-    const backup = {
-      fecha: new Date().toLocaleString('es-MX'),
-      usuarios, solicitudes,
-      numeroWhatsAppDestino, logoDataURL,
-      nombreResponsableMantenimiento,
-      timestamp: Date.now()
-    };
+    const backup = { fecha: new Date().toLocaleString('es-MX'), usuarios, solicitudes, numeroWhatsAppDestino, logoDataURL, nombreResponsableMantenimiento, timestamp: Date.now() };
     localStorage.setItem('app_backup_auto', JSON.stringify(backup));
     mostrarEstado('💾 Datos guardados localmente', 'saving');
     setTimeout(() => mostrarEstado('✅ Datos sincronizados', 'online'), 1500);
     return true;
-  } catch (e) {
-    return false;
-  }
+  } catch (e) { return false; }
 }
 
 function cargarRespaldoLocal() {
@@ -822,9 +608,7 @@ function cargarRespaldoLocal() {
     const parsed = JSON.parse(data);
     if (parsed.usuarios && parsed.solicitudes) return parsed;
     return null;
-  } catch (e) {
-    return null;
-  }
+  } catch (e) { return null; }
 }
 
 function mostrarEstado(mensaje, tipo) {
@@ -832,22 +616,13 @@ function mostrarEstado(mensaje, tipo) {
   status.textContent = mensaje;
   status.className = 'storage-status ' + (tipo || 'online');
   status.style.display = 'block';
-  if (tipo === 'online') {
-    setTimeout(() => { status.style.display = 'none'; }, 3000);
-  }
+  if (tipo === 'online') setTimeout(() => { status.style.display = 'none'; }, 3000);
 }
 
-/* ============================================================
-   API
-============================================================ */
 async function apiRequest(endpoint, method = 'GET', data = null) {
   try {
-    const options = {
-      method,
-      headers: { 'Content-Type': 'application/json' }
-    };
+    const options = { method, headers: { 'Content-Type': 'application/json' } };
     if (data) options.body = JSON.stringify(data);
-
     const response = await fetch(`${API_URL}${endpoint}`, options);
     if (!response.ok) {
       const error = await response.json();
@@ -866,11 +641,9 @@ async function sincronizarDatos() {
     solicitudes = await apiRequest('/api/solicitudes');
     usuarios = await apiRequest('/api/usuarios');
     const config = await apiRequest('/api/configuracion');
-
     numeroWhatsAppDestino = config.numeroWhatsApp || '';
     nombreResponsableMantenimiento = config.nombreResponsableMantenimiento || 'Ricardo Madera';
     logoDataURL = config.logoDataURL || '';
-
     guardarRespaldoLocal();
     return true;
   } catch (error) {
@@ -889,16 +662,10 @@ async function sincronizarDatos() {
   }
 }
 
-/* ============================================================
-   LOGIN / SESIÓN
-============================================================ */
 async function iniciarSesion() {
   const user = document.getElementById('usuarioLogin').value.trim();
   const pass = document.getElementById('passLogin').value;
-  if (!user || !pass) {
-    alert('⚠️ Ingresa usuario y contraseña');
-    return;
-  }
+  if (!user || !pass) { alert('⚠️ Ingresa usuario y contraseña'); return; }
   try {
     const data = await apiRequest('/api/login', 'POST', { usuario: user, password: pass });
     if (data.success) {
@@ -910,43 +677,25 @@ async function iniciarSesion() {
       actualizarTextoBoton();
       nuevaSolicitud();
       iniciarAutoRefresco();
-    } else {
-      alert('❌ Usuario o contraseña incorrectos');
-    }
-  } catch (e) {
-    alert('❌ Error al conectar con el servidor.');
-  }
+    } else { alert('❌ Usuario o contraseña incorrectos'); }
+  } catch (e) { alert('❌ Error al conectar con el servidor.'); }
 }
 
-function cerrarSesion() {
-  localStorage.removeItem('usuarioActivo');
-  location.reload();
-}
+function cerrarSesion() { localStorage.removeItem('usuarioActivo'); location.reload(); }
 
 function aplicarPermisosUI() {
   document.getElementById('loginModal').classList.add('hidden');
   document.getElementById('barraSuperior').classList.remove('hidden');
   document.getElementById('menuNavegacion').classList.remove('hidden');
   document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
-
   document.getElementById('navSolicitudes').classList.add('hidden');
   document.getElementById('btnProyectos').classList.add('hidden');
   document.getElementById('navMantenimiento').classList.add('hidden');
-
   const p = usuarioActivo.permisos || [];
-
-  if (p.includes('solicitudes') || usuarioActivo.rol === 'admin') {
-    document.getElementById('navSolicitudes').classList.remove('hidden');
-  }
-  if (p.includes('proyectos')) {
-    document.getElementById('btnProyectos').classList.remove('hidden');
-  }
-
+  if (p.includes('solicitudes') || usuarioActivo.rol === 'admin') document.getElementById('navSolicitudes').classList.remove('hidden');
+  if (p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
   const permisosMant = ['mantenimiento', 'empleados', 'ordenes', 'incidencias', 'compras', 'secciones', 'proveedores', 'configuracion'];
-  if (permisosMant.some(x => p.includes(x)) || usuarioActivo.rol === 'admin') {
-    document.getElementById('navMantenimiento').classList.remove('hidden');
-  }
-
+  if (permisosMant.some(x => p.includes(x)) || usuarioActivo.rol === 'admin') document.getElementById('navMantenimiento').classList.remove('hidden');
   for (let btn of document.getElementById('subMenuMantenimiento').children) {
     const t = btn.textContent.toLowerCase();
     if (t.includes('bandeja') && !p.includes('mantenimiento') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
@@ -983,30 +732,21 @@ async function cargarDatosIniciales() {
   mostrarLogo();
 }
 
-/* ============================================================
-   AUTO-REFRESCO
-============================================================ */
 function pedirPermisoNotificaciones() {
-  if (("Notification" in window) && Notification.permission !== "granted" && Notification.permission !== "denied") {
-    Notification.requestPermission();
-  }
+  if (("Notification" in window) && Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission();
 }
 
 function lanzarNotificacion(titulo, cuerpo) {
-  if (("Notification" in window) && Notification.permission === "granted") {
-    new Notification(titulo, { body: cuerpo });
-  }
+  if (("Notification" in window) && Notification.permission === "granted") new Notification(titulo, { body: cuerpo });
 }
 
 function iniciarAutoRefresco() {
   if (intervaloRefresco) clearInterval(intervaloRefresco);
   pedirPermisoNotificaciones();
-
   intervaloRefresco = setInterval(async () => {
     if (!usuarioActivo) return;
     const seccion = document.querySelector('main>section:not(.hidden)');
     if (seccion && seccion.id === 'nuevaSolicitud') return;
-
     try {
       const datos = await apiRequest('/api/solicitudes');
       if (solicitudes.length > 0 && datos.length > solicitudes.length) {
@@ -1015,10 +755,8 @@ function iniciarAutoRefresco() {
       }
       const huboCambios = JSON.stringify(solicitudes) !== JSON.stringify(datos);
       if (huboCambios) solicitudes = datos;
-
       if (seccion && seccion.id === 'panelOrdenes') await cargarOrdenesSilencioso();
       if (seccion && seccion.id === 'panelCompras') await cargarComprasSilencioso();
-
       if (huboCambios && seccion) {
         if (seccion.id === 'misSolicitudes') cargarMisSolicitudes();
         if (seccion.id === 'bandejaProyectos') cargarBandejaProyectos();
@@ -1029,35 +767,16 @@ function iniciarAutoRefresco() {
   }, 15000);
 }
 
-/* ============================================================
-   NAVEGACIÓN / BOTÓN GUARDAR
-============================================================ */
 function actualizarTextoBoton() {
   const btnTexto = document.getElementById('btnTextoGuardar');
   const btnIcono = document.getElementById('btnIconoGuardar');
   const btnGuardar = document.getElementById('btnGuardarSol');
   const idEditar = parseInt(document.getElementById('idEditarSol').value);
   if (!btnTexto || !btnIcono || !btnGuardar) return;
-
-  if (idEditar > 0) {
-    btnTexto.textContent = 'Guardar Cambios';
-    btnIcono.className = 'fas fa-save';
-    btnGuardar.className = 'btn-guardar-edicion';
-    return;
-  }
-  if (usuarioActivo && (usuarioActivo.rol === 'admin' || usuarioActivo.permisos?.includes('mantenimiento'))) {
-    btnTexto.textContent = 'Guardar Solicitud';
-    btnIcono.className = 'fas fa-save';
-    btnGuardar.className = 'btn-guardar-mantenimiento';
-  } else if (usuarioActivo && (usuarioActivo.rol === 'proyectos' || usuarioActivo.permisos?.includes('proyectos'))) {
-    btnTexto.textContent = 'Enviar a Mantenimiento';
-    btnIcono.className = 'fas fa-tools';
-    btnGuardar.className = 'btn-enviar-mantenimiento';
-  } else {
-    btnTexto.textContent = 'Enviar a Proyectos Generales';
-    btnIcono.className = 'fas fa-paper-plane';
-    btnGuardar.className = 'btn-enviar-proyectos';
-  }
+  if (idEditar > 0) { btnTexto.textContent = 'Guardar Cambios'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-edicion'; return; }
+  if (usuarioActivo && (usuarioActivo.rol === 'admin' || usuarioActivo.permisos?.includes('mantenimiento'))) { btnTexto.textContent = 'Guardar Solicitud'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-mantenimiento'; }
+  else if (usuarioActivo && (usuarioActivo.rol === 'proyectos' || usuarioActivo.permisos?.includes('proyectos'))) { btnTexto.textContent = 'Enviar a Mantenimiento'; btnIcono.className = 'fas fa-tools'; btnGuardar.className = 'btn-enviar-mantenimiento'; }
+  else { btnTexto.textContent = 'Enviar a Proyectos Generales'; btnIcono.className = 'fas fa-paper-plane'; btnGuardar.className = 'btn-enviar-proyectos'; }
 }
 
 function nuevaSolicitud() {
@@ -1070,30 +789,18 @@ function nuevaSolicitud() {
   document.getElementById('nuevaSolicitud').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function ocultarTodasSecciones() {
-  document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden'));
-}
+function ocultarTodasSecciones() { document.querySelectorAll('main>section').forEach(s => s.classList.add('hidden')); }
 
 function mostrarSeccion(id, subpanel = 'solicitudes') {
   ocultarTodasSecciones();
   document.getElementById(id).classList.remove('hidden');
-
   if (id === 'panelCoordinacion') {
     document.getElementById('adminSolicitudes').classList.add('hidden');
     document.getElementById('adminUsuarios').classList.add('hidden');
     document.getElementById('adminConfiguracion').classList.add('hidden');
-
-    if (subpanel === 'solicitudes') {
-      document.getElementById('adminSolicitudes').classList.remove('hidden');
-      filtrarSolicitudesCoordinacion();
-    } else if (subpanel === 'usuarios') {
-      document.getElementById('adminUsuarios').classList.remove('hidden');
-      cargarListaUsuarios();
-    } else if (subpanel === 'configuracion') {
-      document.getElementById('adminConfiguracion').classList.remove('hidden');
-      cargarNombreMantenimiento();
-      mostrarLogo();
-    }
+    if (subpanel === 'solicitudes') { document.getElementById('adminSolicitudes').classList.remove('hidden'); filtrarSolicitudesCoordinacion(); }
+    else if (subpanel === 'usuarios') { document.getElementById('adminUsuarios').classList.remove('hidden'); cargarListaUsuarios(); }
+    else if (subpanel === 'configuracion') { document.getElementById('adminConfiguracion').classList.remove('hidden'); cargarNombreMantenimiento(); mostrarLogo(); }
   }
   else if (id === 'misSolicitudes') cargarMisSolicitudes();
   else if (id === 'bandejaProyectos') cargarBandejaProyectos();
@@ -1109,13 +816,9 @@ function mostrarCamposEvento() {
   document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value !== 'evento');
 }
 
-/* ============================================================
-   GUARDAR SOLICITUD
-============================================================ */
 async function guardarSolicitud() {
   const idEditar = parseInt(document.getElementById('idEditarSol').value);
   const tipo = document.getElementById('tipoSolicitud').value;
-
   let datos = {
     tipo,
     area: document.getElementById('areaSolicitante').value,
@@ -1128,142 +831,78 @@ async function guardarSolicitud() {
     observaciones: [],
     rolCreador: usuarioActivo.rol
   };
-
-  if (!datos.descripcion || !datos.fechaSolicitud) {
-    alert('⚠️ Completa la descripción y la fecha');
-    return;
-  }
-  if (tipo === 'evento' && (!datos.nombreEvento || !datos.fechaEvento || !datos.lugarEvento)) {
-    alert('⚠️ Completa datos del evento');
-    return;
-  }
-
+  if (!datos.descripcion || !datos.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
+  if (tipo === 'evento' && (!datos.nombreEvento || !datos.fechaEvento || !datos.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
   try {
     if (idEditar > 0) {
       const original = solicitudes.find(x => x.id === idEditar);
       let nuevoEstado = original.estado;
-
       if (original.estado === 'DESBLOQUEADA') {
-        if (usuarioActivo.rol === 'seccion') {
-          nuevoEstado = 'PENDIENTE_PROYECTOS';
-          datos.autorizadoPor = null;
-        } else {
-          nuevoEstado = 'APROBADA';
-          datos.autorizadoPor = usuarioActivo.nombre;
-          datos.fechaAutorizacion = new Date().toISOString();
-        }
+        if (usuarioActivo.rol === 'seccion') { nuevoEstado = 'PENDIENTE_PROYECTOS'; datos.autorizadoPor = null; }
+        else { nuevoEstado = 'APROBADA'; datos.autorizadoPor = usuarioActivo.nombre; datos.fechaAutorizacion = new Date().toISOString(); }
       } else if (original.estado === 'APROBADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
-        nuevoEstado = 'APROBADA';
-        datos.autorizadoPor = usuarioActivo.nombre;
-        datos.fechaAutorizacion = new Date().toISOString();
+        nuevoEstado = 'APROBADA'; datos.autorizadoPor = usuarioActivo.nombre; datos.fechaAutorizacion = new Date().toISOString();
       }
-
-      await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', {
-        ...datos, id: idEditar, estado: nuevoEstado, observaciones: original.observaciones || []
-      });
+      await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', { ...datos, id: idEditar, estado: nuevoEstado, observaciones: original.observaciones || [] });
       alert('✅ Solicitud actualizada correctamente');
     } else {
       if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
-        datos.estado = 'APROBADA';
-        datos.autorizadoPor = usuarioActivo.nombre;
-        datos.fechaAutorizacion = new Date().toISOString();
+        datos.estado = 'APROBADA'; datos.autorizadoPor = usuarioActivo.nombre; datos.fechaAutorizacion = new Date().toISOString();
         alert('✅ Solicitud creada y autorizada automáticamente');
-      } else {
-        datos.estado = 'PENDIENTE_PROYECTOS';
-        alert('✅ Enviada a Proyectos para su revisión');
-      }
+      } else { datos.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos para su revisión'); }
       await apiRequest('/api/solicitudes', 'POST', datos);
     }
-
     await cargarDatosIniciales();
     guardarRespaldoLocal();
     cancelarEdicionSol();
-
-    if (usuarioActivo.rol === 'proyectos') mostrarSeccion('bandaProyectos');
+    if (usuarioActivo.rol === 'proyectos') mostrarSeccion('bandejaProyectos');
     else if (usuarioActivo.rol === 'admin') mostrarSeccion('panelCoordinacion', 'solicitudes');
     else mostrarSeccion('misSolicitudes');
-
-  } catch (error) {
-    alert('❌ Error: ' + error.message);
-  }
+  } catch (error) { alert('❌ Error: ' + error.message); }
 }
 
-/* ============================================================
-   TABS
-============================================================ */
 function cambiarTabMis(tipo) {
   tabMisActiva = tipo;
-  document.getElementById('tabMisServicios').className = tipo === 'servicio'
-    ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul'
-    : 'px-4 py-2 font-semibold text-gray-500';
-  document.getElementById('tabMisEventos').className = tipo === 'evento'
-    ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul'
-    : 'px-4 py-2 font-semibold text-gray-500';
+  document.getElementById('tabMisServicios').className = tipo === 'servicio' ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul' : 'px-4 py-2 font-semibold text-gray-500';
+  document.getElementById('tabMisEventos').className = tipo === 'evento' ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul' : 'px-4 py-2 font-semibold text-gray-500';
   cargarMisSolicitudes();
 }
 
 function cambiarTabProy(tipo) {
   tabProyActiva = tipo;
-  document.getElementById('tabProyServicios').className = tipo === 'servicio'
-    ? 'px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja'
-    : 'px-4 py-2 font-semibold text-gray-500';
-  document.getElementById('tabProyEventos').className = tipo === 'evento'
-    ? 'px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja'
-    : 'px-4 py-2 font-semibold text-gray-500';
+  document.getElementById('tabProyServicios').className = tipo === 'servicio' ? 'px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja' : 'px-4 py-2 font-semibold text-gray-500';
+  document.getElementById('tabProyEventos').className = tipo === 'evento' ? 'px-4 py-2 font-semibold text-colegio-naranja border-b-2 border-colegio-naranja' : 'px-4 py-2 font-semibold text-gray-500';
   cargarBandejaProyectos();
 }
 
-/* ============================================================
-   MIS SOLICITUDES
-============================================================ */
 function cargarMisSolicitudes() {
   const lista = document.getElementById('listaMisSolicitudes');
   lista.innerHTML = '';
-
   const fBuscar = document.getElementById('filtroMisBuscar').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroMisFecha').value;
   const fEstado = document.getElementById('filtroMisEstado').value;
   const mostrarConcluidas = document.getElementById('toggleConcluidasMis').checked;
-
   let mis = solicitudes.filter(s => s.solicitante === usuarioActivo.nombre && s.tipo === tabMisActiva);
-
-  if (!mostrarConcluidas && !fEstado) {
-    mis = mis.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
-  }
-  if (fBuscar) {
-    mis = mis.filter(s => s.descripcion.toLowerCase().includes(fBuscar) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar)));
-  }
+  if (!mostrarConcluidas && !fEstado) mis = mis.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
+  if (fBuscar) mis = mis.filter(s => s.descripcion.toLowerCase().includes(fBuscar) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar)));
   if (fFecha) mis = mis.filter(s => s.fechaSolicitud === fFecha || s.fechaEvento === fFecha);
   if (fEstado) mis = mis.filter(s => s.estado === fEstado);
-
   mis.sort((a, b) => {
     if (tabMisActiva === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
-
-  if (mis.length === 0) {
-    lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con estos filtros.</p>';
-    return;
-  }
-
+  if (mis.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con estos filtros.</p>'; return; }
   mis.forEach(s => {
     let est = '', claseExtra = '', badge = '';
-    if (s.estado === 'DESBLOQUEADA') {
-      est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
-    }
+    if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') est = '🟡 En evaluación (Proyectos)';
     else if (s.estado === 'APROBADA') est = '🟢 Autorizada';
     else if (s.estado === 'CONCLUIDO') est = '✅ Concluida (Orden)';
     else if (s.estado === 'CONCLUIDO_DIRECTO') est = '✅ Concluida (Directo)';
     else if (s.estado === 'RECHAZADA') est = '🔴 Rechazada';
-
     let botonModificar = '';
-    if (s.estado !== 'RECHAZADA' && s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') {
-      botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
-    } else if (s.estado === 'DESBLOQUEADA') {
-      botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
-    }
-
+    if (s.estado !== 'RECHAZADA' && s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
+    else if (s.estado === 'DESBLOQUEADA') botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
     lista.innerHTML += `
       <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1291,42 +930,25 @@ function limpiarFiltrosMis() {
   cargarMisSolicitudes();
 }
 
-/* ============================================================
-   BANDEJA PROYECTOS
-============================================================ */
 function cargarBandejaProyectos() {
   const lista = document.getElementById('listaProyectos');
   lista.innerHTML = '';
-
   const tienePermiso = (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')) || usuarioActivo.rol === 'proyectos';
-  if (!tienePermiso) {
-    lista.innerHTML = '<p class="text-red-500 font-bold p-4 bg-red-50 rounded">⛔ Acceso Denegado. No tienes permiso para ver la Bandeja de Proyectos.</p>';
-    return;
-  }
-
+  if (!tienePermiso) { lista.innerHTML = '<p class="text-red-500 font-bold p-4 bg-red-50 rounded">⛔ Acceso Denegado.</p>'; return; }
   const fBuscar = document.getElementById('filtroProyBuscar').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroProyFecha').value;
   const fEstado = document.getElementById('filtroProyEstado').value;
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
-
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
-  if (!mostrarConcluidas && !fEstado) {
-    proyectos = proyectos.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
-  }
+  if (!mostrarConcluidas && !fEstado) proyectos = proyectos.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
   if (fBuscar) proyectos = proyectos.filter(s => s.solicitante.toLowerCase().includes(fBuscar) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar)));
   if (fFecha) proyectos = proyectos.filter(s => s.fechaEvento === fFecha || s.fechaSolicitud === fFecha);
   if (fEstado) proyectos = proyectos.filter(s => s.estado === fEstado);
-
   proyectos.sort((a, b) => {
     if (tabProyActiva === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
-
-  if (proyectos.length === 0) {
-    lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes con estos filtros.</p>';
-    return;
-  }
-
+  if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes con estos filtros.</p>'; return; }
   proyectos.forEach(s => {
     let etiqueta = '', colorFila = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { etiqueta = '🔓 Desbloqueada'; colorFila = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
@@ -1335,18 +957,13 @@ function cargarBandejaProyectos() {
     else if (s.estado === 'CONCLUIDO') { etiqueta = '✅ Concluida (Orden)'; colorFila = 'bg-gray-100 opacity-75'; }
     else if (s.estado === 'CONCLUIDO_DIRECTO') { etiqueta = '✅ Concluida (Directo)'; colorFila = 'bg-gray-100 opacity-75'; }
     else if (s.estado === 'RECHAZADA') { etiqueta = '🔴 Rechazada'; colorFila = 'bg-red-50'; }
-
     let botones = '';
     if (s.estado === 'PENDIENTE_PROYECTOS') {
       botones += `<button onclick="autorizar(${s.id})" class="bg-colegio-verde text-white px-4 py-2 rounded">✅ Autorizar</button>`;
       botones += `<button onclick="rechazar(${s.id})" class="bg-colegio-rojo text-white px-4 py-2 rounded">❌ Rechazar</button>`;
     }
-    if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') {
-      botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
-    }
-    if (s.estado === 'DESBLOQUEADA') {
-      botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
-    }
+    if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') botones += `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-4 py-2 rounded">🔓 Desbloquear</button>`;
+    if (s.estado === 'DESBLOQUEADA') botones += `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>`;
     const puedeModificar = (s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') || s.estado === 'DESBLOQUEADA';
     if (puedeModificar) {
       botones += `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded">✏️ Modificar</button>`;
@@ -1354,7 +971,6 @@ function cargarBandejaProyectos() {
       botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
     }
     botones += `<button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
-
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1378,54 +994,35 @@ function limpiarFiltrosProyectos() {
   cargarBandejaProyectos();
 }
 
-/* ============================================================
-   AUTORIZAR / RECHAZAR / CONCLUIR / ELIMINAR / DESBLOQUEAR
-============================================================ */
 async function autorizar(id) {
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-      estado: 'APROBADA',
-      autorizadoPor: usuarioActivo.nombre,
-      fechaAutorizacion: new Date().toISOString()
-    });
-    await cargarDatosIniciales();
-    alert('✅ Autorizada');
-    cargarBandejaProyectos();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'APROBADA', autorizadoPor: usuarioActivo.nombre, fechaAutorizacion: new Date().toISOString() });
+    await cargarDatosIniciales(); alert('✅ Autorizada'); cargarBandejaProyectos();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function rechazar(id) {
   if (!confirm('¿Rechazar esta solicitud?')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-      estado: 'RECHAZADA',
-      rechazadoPor: usuarioActivo.nombre,
-      fechaRechazo: new Date().toISOString()
-    });
-    await cargarDatosIniciales();
-    alert('🔴 Rechazada');
-    cargarBandejaProyectos();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'RECHAZADA', rechazadoPor: usuarioActivo.nombre, fechaRechazo: new Date().toISOString() });
+    await cargarDatosIniciales(); alert('🔴 Rechazada'); cargarBandejaProyectos();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function marcarConcluidaDirecto(id) {
   if (!confirm('✅ ¿Marcar como CONCLUIDA DIRECTA?\n\nEsto cerrará la solicitud SIN generar una Orden de Trabajo.')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-      estado: 'CONCLUIDO_DIRECTO',
-      concluidoPor: usuarioActivo.nombre,
-      fechaConclusion: new Date().toISOString()
-    });
-    await cargarDatosIniciales();
-    alert('✅ Solicitud concluida directamente');
-    recargarVistaActual();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    await cargarDatosIniciales(); alert('✅ Solicitud concluida directamente'); recargarVistaActual();
+  } catch (e) { alert('❌ Error: ' + e.message); }
+}
+
+async function concluirEvento(id) {
+  if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
+  try {
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    await cargarDatosIniciales(); alert('✅ Evento concluido'); recargarVistaActual();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function eliminarSolicitud(id) {
@@ -1433,48 +1030,26 @@ async function eliminarSolicitud(id) {
   try {
     await apiRequest(`/api/solicitudes/${id}`, 'DELETE');
     solicitudes = solicitudes.filter(s => s.id !== id);
-    guardarRespaldoLocal();
-    recargarVistaActual();
-    alert('🗑️ Solicitud Eliminada');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    guardarRespaldoLocal(); recargarVistaActual(); alert('🗑️ Solicitud Eliminada');
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function desbloquearSolicitud(id) {
   if (!confirm('⚠️ ¿Desbloquear esta solicitud?\n\nEsto permitirá que el creador pueda modificarla y enviarla de nuevo.')) return;
   try {
     const s = solicitudes.find(x => x.id === id);
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-      estado: 'DESBLOQUEADA',
-      estadoAnterior: s.estado,
-      desbloqueadoPor: usuarioActivo.nombre,
-      fechaDesbloqueo: new Date().toISOString()
-    });
-    await cargarDatosIniciales();
-    alert('🔓 Solicitud desbloqueada.');
-    recargarVistaActual();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'DESBLOQUEADA', estadoAnterior: s.estado, desbloqueadoPor: usuarioActivo.nombre, fechaDesbloqueo: new Date().toISOString() });
+    await cargarDatosIniciales(); alert('🔓 Solicitud desbloqueada.'); recargarVistaActual();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function bloquearSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!confirm('🔒 ¿Bloquear?')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', {
-      estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS',
-      estadoAnterior: undefined,
-      bloqueadoPor: usuarioActivo.nombre,
-      fechaBloqueo: new Date().toISOString()
-    });
-    await cargarDatosIniciales();
-    alert('🔒 Bloqueada');
-    recargarVistaActual();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: s.estadoAnterior || 'PENDIENTE_PROYECTOS', estadoAnterior: undefined, bloqueadoPor: usuarioActivo.nombre, fechaBloqueo: new Date().toISOString() });
+    await cargarDatosIniciales(); alert('🔒 Bloqueada'); recargarVistaActual();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function recargarVistaActual() {
@@ -1482,52 +1057,22 @@ function recargarVistaActual() {
   if (!seccion) return;
   if (seccion.id === 'misSolicitudes') cargarMisSolicitudes();
   if (seccion.id === 'bandejaProyectos') cargarBandejaProyectos();
-  if (seccion.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) {
-    filtrarSolicitudesCoordinacion();
-  }
+  if (seccion.id === 'panelCoordinacion' && !document.getElementById('adminSolicitudes').classList.contains('hidden')) filtrarSolicitudesCoordinacion();
 }
 
-/* ============================================================
-   EDITAR SOLICITUD
-============================================================ */
 function editarSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
-
   const esSupervisor = (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos');
   const esCreador = s.solicitante === usuarioActivo.nombre;
-
   if (esSupervisor) {
-    if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') {
-      if (confirm('⚠️ Esta solicitud ya está autorizada/concluida.\n\n¿Deseas abrir el editor para modificarla de todos modos?')) {
-        cargarDatosEdicion(s);
-      }
-      return;
-    }
-    cargarDatosEdicion(s);
-    return;
+    if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') { if (confirm('⚠️ Esta solicitud ya está autorizada/concluida.\n\n¿Deseas abrir el editor para modificarla de todos modos?')) cargarDatosEdicion(s); return; }
+    cargarDatosEdicion(s); return;
   }
-
-  if (s.estado === 'RECHAZADA') {
-    alert('❌ No se puede modificar una solicitud rechazada.');
-    return;
-  }
-  if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') {
-    alert('🔒 Esta solicitud ya fue autorizada. Pide a tu supervisor que la desbloquee.');
-    return;
-  }
-  if (s.estado === 'DESBLOQUEADA') {
-    if (!esCreador) {
-      alert('🔒 Solo el creador puede modificarla cuando está desbloqueada.');
-      return;
-    }
-    cargarDatosEdicion(s);
-    return;
-  }
-  if (s.estado === 'PENDIENTE_PROYECTOS' && esCreador) {
-    cargarDatosEdicion(s);
-    return;
-  }
+  if (s.estado === 'RECHAZADA') { alert('❌ No se puede modificar una solicitud rechazada.'); return; }
+  if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') { alert('🔒 Esta solicitud ya fue autorizada. Pide a tu supervisor que la desbloquee.'); return; }
+  if (s.estado === 'DESBLOQUEADA') { if (!esCreador) { alert('🔒 Solo el creador puede modificarla cuando está desbloqueada.'); return; } cargarDatosEdicion(s); return; }
+  if (s.estado === 'PENDIENTE_PROYECTOS' && esCreador) { cargarDatosEdicion(s); return; }
   alert('🔒 No tienes permiso para modificar esta solicitud.');
 }
 
@@ -1539,7 +1084,6 @@ function cargarDatosEdicion(s) {
   document.getElementById('nombreSolicitante').value = s.solicitante;
   document.getElementById('descripcionSol').value = s.descripcion;
   document.getElementById('fechaSolicitud').value = s.fechaSolicitud;
-
   if (s.tipo === 'evento') {
     document.getElementById('nombreEvento').value = s.nombreEvento || '';
     document.getElementById('fechaEvento').value = s.fechaEvento || '';
@@ -1551,7 +1095,6 @@ function cargarDatosEdicion(s) {
     document.getElementById('lugarEvento').value = '';
     document.getElementById('camposEvento').classList.add('hidden');
   }
-
   document.getElementById('btnGuardarSol').className = 'btn-guardar-edicion';
   document.getElementById('btnIconoGuardar').className = 'fas fa-save';
   document.getElementById('btnTextoGuardar').textContent = 'Guardar Cambios';
@@ -1575,9 +1118,6 @@ function cancelarEdicionSol() {
   document.getElementById('btnCancelarSol').classList.add('hidden');
 }
 
-/* ============================================================
-   COORDINACIÓN
-============================================================ */
 function filtrarSolicitudesCoordinacion() {
   const fSolicitante = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroFecha').value;
@@ -1586,90 +1126,55 @@ function filtrarSolicitudesCoordinacion() {
   const mostrarConcluidas = document.getElementById('toggleConcluidasCoordinacion').checked;
   const lista = document.getElementById('listaCoordinacion');
   lista.innerHTML = '';
-
   let filtradas = solicitudes;
-
-  if (!mostrarConcluidas && !fEstado) {
-    filtradas = filtradas.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
-  }
-  if (fSolicitante) {
-    filtradas = filtradas.filter(s => s.solicitante.toLowerCase().includes(fSolicitante) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fSolicitante)));
-  }
+  if (!mostrarConcluidas && !fEstado) filtradas = filtradas.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
+  if (fSolicitante) filtradas = filtradas.filter(s => s.solicitante.toLowerCase().includes(fSolicitante) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fSolicitante)));
   if (fFecha) filtradas = filtradas.filter(s => s.fechaSolicitud === fFecha || s.fechaEvento === fFecha);
   if (fTipo) filtradas = filtradas.filter(s => s.tipo === fTipo);
   if (fEstado) filtradas = filtradas.filter(s => s.estado === fEstado);
-
   filtradas.sort((a, b) => {
     if (a.tipo === 'evento' && b.tipo === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
     if (a.tipo === 'servicio' && b.tipo === 'servicio') return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
     return 0;
   });
-
-  if (filtradas.length === 0) {
-    lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>';
-    return;
-  }
-
+  if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
   filtradas.forEach(s => {
     let est = '', clase = '', badge = '';
-    if (s.estado === 'DESBLOQUEADA') {
-      est = '🔓 Desbloqueada'; clase = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>';
-    } else if (s.estado === 'PENDIENTE_PROYECTOS') {
-      est = '🟡 En evaluación'; clase = 'bg-yellow-50'; badge = '<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>';
-    } else if (s.estado === 'APROBADA') {
-      est = '🟢 Autorizada'; clase = 'bg-green-50';
-    } else if (s.estado === 'CONCLUIDO') {
-      est = '✅ Concluida (Orden)'; clase = 'bg-gray-100 opacity-75';
-    } else if (s.estado === 'CONCLUIDO_DIRECTO') {
-      est = '✅ Concluida (Directo)'; clase = 'bg-gray-100 opacity-75';
-    } else if (s.estado === 'RECHAZADA') {
-      est = '🔴 Rechazada'; clase = 'bg-red-50';
-    }
-
+    if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; clase = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
+    else if (s.estado === 'PENDIENTE_PROYECTOS') { est = '🟡 En evaluación'; clase = 'bg-yellow-50'; badge = '<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>'; }
+    else if (s.estado === 'APROBADA') { est = '🟢 Autorizada'; clase = 'bg-green-50'; }
+    else if (s.estado === 'CONCLUIDO') { est = '✅ Concluida (Orden)'; clase = 'bg-gray-100 opacity-75'; }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') { est = '✅ Concluida (Directo)'; clase = 'bg-gray-100 opacity-75'; }
+    else if (s.estado === 'RECHAZADA') { est = '🔴 Rechazada'; clase = 'bg-red-50'; }
     const esAdmin = usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'));
-
-    // El botón de concluir directo es EXCLUSIVO de servicios (no eventos)
-    let btnConcluirDirecto = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
+    
+    // Lógica corregida: 
+    // 1. Servicios: Concluir Directo (no orden)
+    // 2. Eventos: Concluir Evento
+    let btnConcluir = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
       ? `<button onclick="marcarConcluidaDirecto(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Directo</button>` : '';
-
+    let btnConcluirEvento = (s.tipo === 'evento' && s.estado === 'APROBADA' && usuarioActivo?.rol === 'admin')
+      ? `<button onclick="concluirEvento(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Evento</button>` : '';
+      
     let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') && esAdmin)
       ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
-
-    let btnBloquear = (s.estado === 'DESBLOQUEADA' && esAdmin)
-      ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
-
+    let btnBloquear = (s.estado === 'DESBLOQUEADA' && esAdmin) ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
     const puedeModificar = (s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') || s.estado === 'DESBLOQUEADA';
-
-    let btnEliminar = (puedeModificar && esAdmin)
-      ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
-
-    let btnObservacion = (puedeModificar && esAdmin)
-      ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
-
-    let btnModificar = (puedeModificar && esAdmin)
-      ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : '';
-
-    let btnWhatsApp = (numeroWhatsAppDestino && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO'))
-      ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
-
-    let btnGenerarOrden = (s.estado === 'APROBADA' && esAdmin)
+    let btnEliminar = (puedeModificar && esAdmin) ? `<button onclick="eliminarSolicitud(${s.id})" class="btn-eliminar">🗑️ Eliminar</button>` : '';
+    let btnObservacion = (puedeModificar && esAdmin) ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
+    let btnModificar = (puedeModificar && esAdmin) ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : '';
+    let btnWhatsApp = (numeroWhatsAppDestino && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO')) ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
+    
+    // El botón de generar orden SOLO para servicios
+    let btnGenerarOrden = (s.estado === 'APROBADA' && s.tipo === 'servicio' && esAdmin)
       ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
-
+      
     let obsHTML = '';
     if (s.observaciones && s.observaciones.length > 0) {
       obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
-      s.observaciones.forEach((obs, i) => {
-        obsHTML += `
-          <div class="observacion-item">
-            <div>
-              <div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div>
-              <div class="obs-texto">${obs.texto}</div>
-            </div>
-          </div>`;
-      });
+      s.observaciones.forEach((obs, i) => { obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div><div class="obs-texto">${obs.texto}</div></div></div>`; });
       obsHTML += `</div>`;
     }
-
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${clase} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1683,7 +1188,7 @@ function filtrarSolicitudesCoordinacion() {
         <div class="mt-2 flex flex-wrap gap-2 items-center">
           <span class="font-semibold text-sm">${est} ${badge}</span>
           <button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-          ${btnModificar}${btnWhatsApp}${btnGenerarOrden}${btnConcluirDirecto}${btnDesbloquear}${btnBloquear}${btnEliminar}${btnObservacion}
+          ${btnModificar}${btnWhatsApp}${btnGenerarOrden}${btnConcluir}${btnConcluirEvento}${btnDesbloquear}${btnBloquear}${btnEliminar}${btnObservacion}
         </div>
         ${obsHTML}
         ${s.estado === 'DESBLOQUEADA' && s.desbloqueadoPor ? `<div class="text-xs text-gray-500 mt-1">Desbloqueada por: ${s.desbloqueadoPor}</div>` : ''}
@@ -1700,37 +1205,20 @@ function limpiarFiltros() {
   filtrarSolicitudesCoordinacion();
 }
 
-/* ============================================================
-   OBSERVACIONES
-============================================================ */
 async function agregarObservacion(id) {
   const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'));
-  if (!tienePermiso) {
-    alert('⚠️ Sin permiso');
-    return;
-  }
+  if (!tienePermiso) { alert('⚠️ Sin permiso'); return; }
   const observacion = prompt('📝 Observación para #' + id + ':');
   if (!observacion) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', {
-      autor: usuarioActivo.nombre,
-      rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos',
-      texto: observacion.trim()
-    });
-    await cargarDatosIniciales();
-    alert('✅ Observación agregada');
-    recargarVistaActual();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos', texto: observacion.trim() });
+    await cargarDatosIniciales(); alert('✅ Observación agregada'); recargarVistaActual();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function enviarWhatsApp(id) {
   const s = solicitudes.find(x => x.id === id);
-  if (!numeroWhatsAppDestino) {
-    alert('⚠️ Sin número WhatsApp');
-    return;
-  }
+  if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
   let mensaje = `📋 *SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}*\n📌 Folio: #${s.id}\n`;
   if (s.tipo === 'evento') mensaje += `🎯 Evento: ${s.nombreEvento || 'N/A'}\n`;
   mensaje += `👤 Solicitante: ${s.solicitante}\n🏫 Sección: ${s.area}\n📅 Fecha: ${s.fechaSolicitud}\n📝 Descripción: ${s.descripcion}\n`;
@@ -1738,36 +1226,19 @@ function enviarWhatsApp(id) {
   mensaje += `\n📌 *Estado: ${s.estado}*`;
   if (s.autorizadoPor) mensaje += `\n✅ Autorizado por: ${s.autorizadoPor}`;
   if (s.concluidoPor) mensaje += `\n🔧 Concluido por: ${s.concluidoPor}`;
-  if (s.observaciones && s.observaciones.length > 0) {
-    mensaje += '\n\n📝 *Observaciones:*';
-    s.observaciones.forEach(obs => {
-      mensaje += `\n• ${obs.autor} (${obs.rol}): ${obs.texto}`;
-    });
-  }
+  if (s.observaciones && s.observaciones.length > 0) { mensaje += '\n\n📝 *Observaciones:*'; s.observaciones.forEach(obs => { mensaje += `\n• ${obs.autor} (${obs.rol}): ${obs.texto}`; }); }
   window.open('https://wa.me/' + numeroWhatsAppDestino + '?text=' + encodeURIComponent(mensaje), '_blank');
 }
 
-/* ============================================================
-   USUARIOS
-============================================================ */
 async function agregarUsuario() {
   const user = document.getElementById('nuevoUsuario').value.trim();
   const pass = document.getElementById('nuevoPass').value.trim();
   const nombre = document.getElementById('nombreCompletoUsuario').value.trim();
   const rol = document.getElementById('rolUsuario').value;
   const editando = document.getElementById('editandoUsuario').value;
-  const checkboxes = document.querySelectorAll('.permiso-checkbox:checked');
-  const permisos = Array.from(checkboxes).map(cb => cb.value);
-
-  if (!user || !nombre || (!editando && !pass)) {
-    alert('⚠️ Complete los campos');
-    return;
-  }
-  if (pass && pass.length < 6) {
-    alert('⚠️ La contraseña debe tener al menos 6 caracteres');
-    return;
-  }
-
+  const permisos = Array.from(document.querySelectorAll('.permiso-checkbox:checked')).map(cb => cb.value);
+  if (!user || !nombre || (!editando && !pass)) { alert('⚠️ Complete los campos'); return; }
+  if (pass && pass.length < 6) { alert('⚠️ La contraseña debe tener al menos 6 caracteres'); return; }
   try {
     if (editando) {
       await apiRequest(`/api/usuarios/${editando}`, 'PUT', { usuario: user, password: pass, nombre, rol, permisos });
@@ -1779,12 +1250,8 @@ async function agregarUsuario() {
       await apiRequest('/api/usuarios', 'POST', { usuario: user, password: pass, nombre, rol, permisos });
       alert('✅ Usuario agregado');
     }
-    await cargarDatosIniciales();
-    cargarListaUsuarios();
-    limpiarFormularioUsuario();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    await cargarDatosIniciales(); cargarListaUsuarios(); limpiarFormularioUsuario();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function editarUsuario(username) {
@@ -1797,9 +1264,7 @@ function editarUsuario(username) {
   document.getElementById('editandoUsuario').value = username;
   document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
   document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
-  document.querySelectorAll('.permiso-checkbox').forEach(cb => {
-    cb.checked = (user.permisos || []).includes(cb.value);
-  });
+  document.querySelectorAll('.permiso-checkbox').forEach(cb => { cb.checked = (user.permisos || []).includes(cb.value); });
 }
 
 function cancelarEdicionUsuario() {
@@ -1820,38 +1285,18 @@ function limpiarFormularioUsuario() {
 function cargarListaUsuarios() {
   const c = document.getElementById('listaUsuarios');
   c.innerHTML = '';
-  if (Object.keys(usuarios).length === 0) {
-    c.innerHTML = '<p class="text-gray-500">No hay usuarios.</p>';
-    return;
-  }
+  if (Object.keys(usuarios).length === 0) { c.innerHTML = '<p class="text-gray-500">No hay usuarios.</p>'; return; }
   for (const [k, v] of Object.entries(usuarios)) {
     let rolTexto = v.rol === 'admin' ? 'Administrador' : (v.rol === 'proyectos' ? 'Supervisor' : 'Operador');
-    c.innerHTML += `
-      <div class="border rounded p-3 bg-white flex justify-between items-center mb-2">
-        <div><b>${v.nombre}</b><br>Usuario: ${k} | Rol Base: ${rolTexto}</div>
-        <div class="flex gap-2">
-          <button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button>
-          <button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>
-        </div>
-      </div>`;
+    c.innerHTML += `<div class="border rounded p-3 bg-white flex justify-between items-center mb-2"><div><b>${v.nombre}</b><br>Usuario: ${k} | Rol Base: ${rolTexto}</div><div class="flex gap-2"><button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button><button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`;
   }
 }
 
 async function eliminarUsuario(u) {
   if (!confirm(`⚠️ ¿ELIMINAR al usuario "${u}"?`)) return;
-  try {
-    await apiRequest(`/api/usuarios/${u}`, 'DELETE');
-    await cargarDatosIniciales();
-    cargarListaUsuarios();
-    alert('🗑️ Eliminado');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/usuarios/${u}`, 'DELETE'); await cargarDatosIniciales(); cargarListaUsuarios(); alert('🗑️ Eliminado'); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-/* ============================================================
-   CONFIGURACIÓN
-============================================================ */
 async function guardarNombreMantenimiento() {
   const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
   if (!nuevoNombre) return;
@@ -1859,22 +1304,12 @@ async function guardarNombreMantenimiento() {
     await apiRequest('/api/configuracion', 'PUT', { nombreResponsableMantenimiento: nuevoNombre });
     nombreResponsableMantenimiento = nuevoNombre;
     if (usuarios.admin) usuarios.admin.nombre = nuevoNombre;
-    if (usuarioActivo && usuarioActivo.id === 'admin') {
-      usuarioActivo.nombre = nuevoNombre;
-      localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-      document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre;
-    }
-    await cargarDatosIniciales();
-    cargarListaUsuarios();
-    alert('✅ Actualizado');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    if (usuarioActivo && usuarioActivo.id === 'admin') { usuarioActivo.nombre = nuevoNombre; localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo)); document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre; }
+    await cargarDatosIniciales(); cargarListaUsuarios(); alert('✅ Actualizado');
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-function cargarNombreMantenimiento() {
-  document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento;
-}
+function cargarNombreMantenimiento() { document.getElementById('nombreMantenimiento').value = nombreResponsableMantenimiento; }
 
 function cargarLogo(input) {
   const file = input.files[0];
@@ -1882,13 +1317,7 @@ function cargarLogo(input) {
   const reader = new FileReader();
   reader.onload = async function (e) {
     logoDataURL = e.target.result;
-    try {
-      await apiRequest('/api/configuracion', 'PUT', { logoDataURL });
-      mostrarLogo();
-      alert('✅ Logo cargado');
-    } catch (error) {
-      alert('❌ Error: ' + error.message);
-    }
+    try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL }); mostrarLogo(); alert('✅ Logo cargado'); } catch (error) { alert('❌ Error: ' + error.message); }
   };
   reader.readAsDataURL(file);
 }
@@ -1896,27 +1325,14 @@ function cargarLogo(input) {
 function mostrarLogo() {
   const preview = document.getElementById('previewLogo');
   const txt = document.getElementById('sinLogoText');
-  if (logoDataURL) {
-    preview.src = logoDataURL;
-    preview.style.display = 'block';
-    txt.style.display = 'none';
-  } else {
-    preview.style.display = 'none';
-    txt.style.display = 'block';
-  }
+  if (logoDataURL) { preview.src = logoDataURL; preview.style.display = 'block'; txt.style.display = 'none'; }
+  else { preview.style.display = 'none'; txt.style.display = 'block'; }
 }
 
 async function eliminarLogo() {
   if (!confirm('⚠️ ¿Eliminar logo?')) return;
   logoDataURL = '';
-  try {
-    await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' });
-    mostrarLogo();
-    document.getElementById('inputLogo').value = '';
-    alert('🗑️ Logo eliminado');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest('/api/configuracion', 'PUT', { logoDataURL: '' }); mostrarLogo(); document.getElementById('inputLogo').value = ''; alert('🗑️ Logo eliminado'); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function actualizarWhatsApp() {
@@ -1927,135 +1343,31 @@ async function actualizarWhatsApp() {
     numeroWhatsAppDestino = numero;
     document.getElementById('numeroActualWhatsApp').textContent = numero;
     alert('✅ WhatsApp guardado');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-/* ============================================================
-   EXPORTAR EXCEL + RESET CICLO ESCOLAR
-============================================================ */
 async function exportarExcelAnalisis() {
   try {
-    const [sols, ordenes, compras, incidencias, empleados] = await Promise.all([
-      apiRequest('/api/solicitudes'),
-      apiRequest('/api/ordenes'),
-      apiRequest('/api/compras'),
-      apiRequest('/api/incidencias'),
-      apiRequest('/api/empleados')
-    ]);
-
-    const contar = (arr, key) => {
-      const m = {};
-      arr.forEach(x => {
-        const k = x[key] || 'Sin dato';
-        m[k] = (m[k] || 0) + 1;
-      });
-      return Object.entries(m).map(([k, v]) => ({ Categoria: k, Total: v }));
-    };
-
-    const porMes = {};
-    sols.forEach(s => {
-      const mes = (s.fechaSolicitud || '').slice(0, 7) || 'Sin fecha';
-      porMes[mes] = (porMes[mes] || 0) + 1;
-    });
+    const [sols, ordenes, compras, incidencias, empleados] = await Promise.all([apiRequest('/api/solicitudes'), apiRequest('/api/ordenes'), apiRequest('/api/compras'), apiRequest('/api/incidencias'), apiRequest('/api/empleados')]);
+    const contar = (arr, key) => { const m = {}; arr.forEach(x => { const k = x[key] || 'Sin dato'; m[k] = (m[k] || 0) + 1; }); return Object.entries(m).map(([k, v]) => ({ Categoria: k, Total: v })); };
+    const porMes = {}; sols.forEach(s => { const mes = (s.fechaSolicitud || '').slice(0, 7) || 'Sin fecha'; porMes[mes] = (porMes[mes] || 0) + 1; });
     const porMesArr = Object.entries(porMes).sort().map(([k, v]) => ({ Mes: k, Total: v }));
-
     const resumen = [
-      { Métrica: 'Ciclo Escolar', Valor: 'Julio - Junio' },
-      { Métrica: 'Fecha de exportación', Valor: new Date().toLocaleString('es-MX') },
-      { Métrica: 'Total Solicitudes', Valor: sols.length },
-      { Métrica: 'Servicios', Valor: sols.filter(s => s.tipo === 'servicio').length },
-      { Métrica: 'Eventos', Valor: sols.filter(s => s.tipo === 'evento').length },
-      { Métrica: 'Autorizadas', Valor: sols.filter(s => s.estado === 'APROBADA').length },
+      { Métrica: 'Ciclo Escolar', Valor: 'Julio - Junio' }, { Métrica: 'Fecha de exportación', Valor: new Date().toLocaleString('es-MX') },
+      { Métrica: 'Total Solicitudes', Valor: sols.length }, { Métrica: 'Servicios', Valor: sols.filter(s => s.tipo === 'servicio').length },
+      { Métrica: 'Eventos', Valor: sols.filter(s => s.tipo === 'evento').length }, { Métrica: 'Autorizadas', Valor: sols.filter(s => s.estado === 'APROBADA').length },
       { Métrica: 'En evaluación', Valor: sols.filter(s => s.estado === 'PENDIENTE_PROYECTOS').length },
-      { Métrica: 'Concluidas (Orden)', Valor: sols.filter(s => s.estado === 'CONCLUIDO').length },
-      { Métrica: 'Concluidas (Directo)', Valor: sols.filter(s => s.estado === 'CONCLUIDO_DIRECTO').length },
-      { Métrica: 'Rechazadas', Valor: sols.filter(s => s.estado === 'RECHAZADA').length },
-      { Métrica: 'Desbloqueadas', Valor: sols.filter(s => s.estado === 'DESBLOQUEADA').length },
-      { Métrica: 'Órdenes de Trabajo', Valor: ordenes.length },
-      { Métrica: 'Órdenes de Compra', Valor: compras.length },
-      { Métrica: 'Incidencias / Permisos', Valor: incidencias.length },
+      { Métrica: 'Concluidas (Orden)', Valor: sols.filter(s => s.estado === 'CONCLUIDO').length }, { Métrica: 'Concluidas (Directo)', Valor: sols.filter(s => s.estado === 'CONCLUIDO_DIRECTO').length },
+      { Métrica: 'Rechazadas', Valor: sols.filter(s => s.estado === 'RECHAZADA').length }, { Métrica: 'Desbloqueadas', Valor: sols.filter(s => s.estado === 'DESBLOQUEADA').length },
+      { Métrica: 'Órdenes de Trabajo', Valor: ordenes.length }, { Métrica: 'Órdenes de Compra', Valor: compras.length }, { Métrica: 'Incidencias / Permisos', Valor: incidencias.length },
     ];
-
     const hojaSols = sols.map(s => ({
-      Folio: s.id,
-      Tipo: s.tipo,
-      Area: s.area,
-      Solicitante: s.solicitante,
-      Fecha_Solicitud: s.fechaSolicitud,
-      Fecha_Evento: s.fechaEvento || '',
-      Nombre_Evento: s.nombreEvento || '',
-      Lugar_Evento: s.lugarEvento || '',
-      Descripcion: s.descripcion,
-      Estado: s.estado,
-      Autorizado_Por: s.autorizadoPor || '',
-      Fecha_Autorizacion: s.fechaAutorizacion || '',
-      Concluido_Por: s.concluidoPor || '',
-      Fecha_Conclusion: s.fechaConclusion || '',
-      Fecha_Creacion: s.fecha_creacion || '',
-      Num_Observaciones: (s.observaciones || []).length
+      Folio: s.id, Tipo: s.tipo, Area: s.area, Solicitante: s.solicitante, Fecha_Solicitud: s.fechaSolicitud, Fecha_Evento: s.fechaEvento || '', Nombre_Evento: s.nombreEvento || '', Lugar_Evento: s.lugarEvento || '', Descripcion: s.descripcion, Estado: s.estado, Autorizado_Por: s.autorizadoPor || '', Fecha_Autorizacion: s.fechaAutorizacion || '', Concluido_Por: s.concluidoPor || '', Fecha_Conclusion: s.fechaConclusion || '', Fecha_Creacion: s.fecha_creacion || '', Num_Observaciones: (s.observaciones || []).length
     }));
-
-    const hojaOrdenes = ordenes.map(o => ({
-      Orden: o.id,
-      Solicitud: o.solicitud_id,
-      Empleado: o.empleado_nombre || '',
-      Estado: o.estado,
-      Fecha_Creacion: o.fecha_creacion || '',
-      Fecha_Atencion: o.fechaAtencion || '',
-      Hora_Inicio: o.horaInicio || '',
-      Hora_Fin: o.horaFin || '',
-      Recibido_Por: o.recibidoPor || ''
-    }));
-
-    const hojaCompras = compras.map(c => ({
-      Folio: c.folio,
-      Proveedor: c.proveedor_nombre || '',
-      Fecha: c.fecha,
-      Solicitado_Por: c.solicitado_por || '',
-      Articulos: (c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ')
-    }));
-
-    const hojaIncidencias = incidencias.map(i => {
-      const emp = empleados.find(e => e.id === i.empleado_id);
-      const dur = calcularDuracionPermiso(i, emp);
-      return {
-        Folio: i.id,
-        Empleado: i.empleado_nombre || '',
-        Tipo: i.tipo,
-        Modalidad_Horas: i.modalidad_horas || '',
-        Fecha_Registro: i.fecha,
-        Fecha_Inicio: i.fecha_inicio || '',
-        Fecha_Fin: i.fecha_fin || '',
-        Hora_Llegada: i.hora_llegada || '',
-        Hora_Salida: i.hora_salida || '',
-        Hora_Regreso: i.hora_regreso || '',
-        Duracion_Minutos: dur.minutos,
-        Duracion_Texto: dur.texto,
-        Motivo: i.motivo || ''
-      };
-    });
-
-    const hojaEmpleados = empleados.map(e => ({
-      ID: e.id,
-      Nombre: e.nombre,
-      Puesto: e.puesto || '',
-      Lunes_Entrada: e.lunes_entrada || '',
-      Lunes_Salida: e.lunes_salida || '',
-      Martes_Entrada: e.martes_entrada || '',
-      Martes_Salida: e.martes_salida || '',
-      Miercoles_Entrada: e.miercoles_entrada || '',
-      Miercoles_Salida: e.miercoles_salida || '',
-      Jueves_Entrada: e.jueves_entrada || '',
-      Jueves_Salida: e.jueves_salida || '',
-      Viernes_Entrada: e.viernes_entrada || '',
-      Viernes_Salida: e.viernes_salida || '',
-      Sabado_Entrada: e.sabado_entrada || '',
-      Sabado_Salida: e.sabado_salida || '',
-      Activo: e.activo
-    }));
-
+    const hojaOrdenes = ordenes.map(o => ({ Orden: o.id, Solicitud: o.solicitud_id, Empleado: o.empleado_nombre || '', Estado: o.estado, Fecha_Creacion: o.fecha_creacion || '', Fecha_Atencion: o.fechaAtencion || '', Hora_Inicio: o.horaInicio || '', Hora_Fin: o.horaFin || '', Recibido_Por: o.recibidoPor || '' }));
+    const hojaCompras = compras.map(c => ({ Folio: c.folio, Proveedor: c.proveedor_nombre || '', Fecha: c.fecha, Solicitado_Por: c.solicitado_por || '', Articulos: (c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ') }));
+    const hojaIncidencias = incidencias.map(i => { const emp = empleados.find(e => e.id === i.empleado_id); const dur = calcularDuracionPermiso(i, emp); return { Folio: i.id, Empleado: i.empleado_nombre || '', Tipo: i.tipo, Modalidad_Horas: i.modalidad_horas || '', Fecha_Registro: i.fecha, Fecha_Inicio: i.fecha_inicio || '', Fecha_Fin: i.fecha_fin || '', Hora_Llegada: i.hora_llegada || '', Hora_Salida: i.hora_salida || '', Hora_Regreso: i.hora_regreso || '', Duracion_Minutos: dur.minutos, Duracion_Texto: dur.texto, Motivo: i.motivo || '' }; });
+    const hojaEmpleados = empleados.map(e => ({ ID: e.id, Nombre: e.nombre, Puesto: e.puesto || '', Lunes_Entrada: e.lunes_entrada || '', Lunes_Salida: e.lunes_salida || '', Martes_Entrada: e.martes_entrada || '', Martes_Salida: e.martes_salida || '', Miercoles_Entrada: e.miercoles_entrada || '', Miercoles_Salida: e.miercoles_salida || '', Jueves_Entrada: e.jueves_entrada || '', Jueves_Salida: e.jueves_salida || '', Viernes_Entrada: e.viernes_entrada || '', Viernes_Salida: e.viernes_salida || '', Sabado_Entrada: e.sabado_entrada || '', Sabado_Salida: e.sabado_salida || '', Activo: e.activo }));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumen), "Resumen");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaSols), "Solicitudes");
@@ -2068,41 +1380,21 @@ async function exportarExcelAnalisis() {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaCompras), "Compras");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaIncidencias), "Incidencias");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hojaEmpleados), "Empleados");
-
     const nombre = `Analisis_Ciclo_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    XLSX.writeFile(wb, nombre);
-    alert('✅ Excel descargado.');
-  } catch (e) {
-    alert('❌ Error al exportar: ' + e.message);
-  }
+    XLSX.writeFile(wb, nombre); alert('✅ Excel descargado.');
+  } catch (e) { alert('❌ Error al exportar: ' + e.message); }
 }
 
 async function resetCicloEscolar() {
   const paso1 = confirm('⚠️ ¿RESET DE CICLO ESCOLAR?\n\nSe borrará TODO:\n• Solicitudes de Servicios y Eventos\n• Órdenes de Trabajo\n• Órdenes de Compra\n• Incidencias / Permisos\n\nNO se borrarán usuarios, empleados, secciones ni proveedores.\n\n¿Deseas continuar?');
   if (!paso1) return;
-
   const texto = prompt('Para confirmar, escribe exactamente:  RESET-CICLO');
-  if (texto !== 'RESET-CICLO') {
-    alert('❌ Cancelado. No escribiste RESET-CICLO');
-    return;
-  }
-
+  if (texto !== 'RESET-CICLO') { alert('❌ Cancelado. No escribiste RESET-CICLO'); return; }
   const paso3 = confirm('🔴 ÚLTIMA CONFIRMACIÓN\n\n¿Seguro que quieres dejar el sistema limpio para el nuevo ciclo (Julio - Junio)?\n\nPrimero asegúrate de haber descargado el Excel y el Respaldo.');
   if (!paso3) return;
-
-  try {
-    await apiRequest('/api/reset-ciclo', 'POST', { confirmacion: 'RESET-CICLO' });
-    alert('✅ Ciclo reiniciado.\nEl sistema quedó limpio, los usuarios se conservaron.');
-    await cargarDatosIniciales();
-    recargarVistaActual();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest('/api/reset-ciclo', 'POST', { confirmacion: 'RESET-CICLO' }); alert('✅ Ciclo reiniciado.\nEl sistema quedó limpio, los usuarios se conservaron.'); await cargarDatosIniciales(); recargarVistaActual(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-/* ============================================================
-   RESPALDOS
-============================================================ */
 async function crearRespaldo() {
   try {
     const response = await fetch(`${API_URL}/api/respaldo`);
@@ -2110,82 +1402,47 @@ async function crearRespaldo() {
     const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `Respaldo_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    a.href = url; a.download = `Respaldo_${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(url);
     alert('✅ Respaldo descargado');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function restaurarRespaldo(input) {
   const archivo = input.files[0];
   if (!archivo) return;
   if (!confirm('⚠️ Esto reemplazará TODA la información actual. ¿Deseas continuar?')) return;
-
   const lector = new FileReader();
   lector.onload = async function (e) {
     try {
       const datos = JSON.parse(e.target.result);
-      if (!datos.usuarios || !datos.solicitudes) {
-        alert('❌ Archivo no válido');
-        return;
-      }
-      const response = await fetch(`${API_URL}/api/restaurar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos)
-      });
+      if (!datos.usuarios || !datos.solicitudes) { alert('❌ Archivo no válido'); return; }
+      const response = await fetch(`${API_URL}/api/restaurar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
       const result = await response.json();
-      if (result.success) {
-        alert(`✅ Restaurado\nUsuarios: ${result.usuarios}\nSolicitudes: ${result.solicitudes}`);
-        location.reload();
-      } else {
-        alert('❌ ' + result.error);
-      }
-    } catch (err) {
-      alert('❌ Archivo dañado: ' + err.message);
-    }
+      if (result.success) { alert(`✅ Restaurado\nUsuarios: ${result.usuarios}\nSolicitudes: ${result.solicitudes}`); location.reload(); }
+      else { alert('❌ ' + result.error); }
+    } catch (err) { alert('❌ Archivo dañado: ' + err.message); }
   };
   lector.readAsText(archivo);
 }
 
-/* ============================================================
-   EMPLEADOS
-============================================================ */
 async function cargarEmpleados() {
   const lista = document.getElementById('listaEmpleados');
   lista.innerHTML = 'Cargando...';
   try {
     const empleados = await apiRequest('/api/empleados');
     empleadosCache = empleados;
-    if (empleados.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay empleados.</p>';
-      return;
-    }
+    if (empleados.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay empleados.</p>'; return; }
     const dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];
     const nombresDias = {lunes:'Lun',martes:'Mar',miercoles:'Mié',jueves:'Jue',viernes:'Vie',sabado:'Sáb'};
-
     lista.innerHTML = empleados.map(e => {
       let horariosHTML = '';
-      dias.forEach(d => {
-        const ent = e[`${d}_entrada`];
-        const sal = e[`${d}_salida`];
-        if (ent || sal) {
-          horariosHTML += `<span class="text-xs bg-blue-50 text-blue-800 px-2 py-1 rounded mr-1 mb-1 inline-block">${nombresDias[d]}: ${ent || '--:--'}-${sal || '--:--'}</span>`;
-        }
-      });
-
+      dias.forEach(d => { const ent = e[`${d}_entrada`]; const sal = e[`${d}_salida`]; if (ent || sal) horariosHTML += `<span class="text-xs bg-blue-50 text-blue-800 px-2 py-1 rounded mr-1 mb-1 inline-block">${nombresDias[d]}: ${ent || '--:--'}-${sal || '--:--'}</span>`; });
       return `
       <div class="border rounded p-3 bg-white ${e.activo ? '' : 'opacity-50'}">
         <div class="flex justify-between items-start flex-wrap gap-2">
           <div class="flex-1">
             <div><b>${e.nombre}</b> - ${e.puesto || 'Sin puesto'}
-              ${e.activo
-                ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>'
-                : '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
+              ${e.activo ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs ml-2">Activo</span>' : '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs ml-2">Inactivo</span>'}
             </div>
             <div class="mt-2">${horariosHTML || '<span class="text-xs text-gray-400">Sin horarios configurados</span>'}</div>
           </div>
@@ -2196,9 +1453,7 @@ async function cargarEmpleados() {
         </div>
       </div>
     `}).join('');
-  } catch (e) {
-    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
-  }
+  } catch (e) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 
 async function guardarEmpleado() {
@@ -2206,40 +1461,20 @@ async function guardarEmpleado() {
   const nombre = document.getElementById('nombreEmpleado').value.trim();
   const puesto = document.getElementById('puestoEmpleado').value.trim();
   const activo = document.getElementById('activoEmpleado').checked ? 1 : 0;
-
   const horarios = {
-    lunes_entrada: document.getElementById('lunesEntrada').value,
-    lunes_salida: document.getElementById('lunesSalida').value,
-    martes_entrada: document.getElementById('martesEntrada').value,
-    martes_salida: document.getElementById('martesSalida').value,
-    miercoles_entrada: document.getElementById('miercolesEntrada').value,
-    miercoles_salida: document.getElementById('miercolesSalida').value,
-    jueves_entrada: document.getElementById('juevesEntrada').value,
-    jueves_salida: document.getElementById('juevesSalida').value,
-    viernes_entrada: document.getElementById('viernesEntrada').value,
-    viernes_salida: document.getElementById('viernesSalida').value,
-    sabado_entrada: document.getElementById('sabadoEntrada').value,
-    sabado_salida: document.getElementById('sabadoSalida').value,
+    lunes_entrada: document.getElementById('lunesEntrada').value, lunes_salida: document.getElementById('lunesSalida').value,
+    martes_entrada: document.getElementById('martesEntrada').value, martes_salida: document.getElementById('martesSalida').value,
+    miercoles_entrada: document.getElementById('miercolesEntrada').value, miercoles_salida: document.getElementById('miercolesSalida').value,
+    jueves_entrada: document.getElementById('juevesEntrada').value, jueves_salida: document.getElementById('juevesSalida').value,
+    viernes_entrada: document.getElementById('viernesEntrada').value, viernes_salida: document.getElementById('viernesSalida').value,
+    sabado_entrada: document.getElementById('sabadoEntrada').value, sabado_salida: document.getElementById('sabadoSalida').value,
   };
-
-  if (!nombre) {
-    alert('⚠️ El nombre es obligatorio');
-    return;
-  }
-
+  if (!nombre) { alert('⚠️ El nombre es obligatorio'); return; }
   try {
-    if (id) {
-      await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo, ...horarios });
-      alert('✅ Actualizado');
-    } else {
-      await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo, ...horarios });
-      alert('✅ Agregado');
-    }
-    cancelarEdicionEmpleado();
-    cargarEmpleados();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    if (id) { await apiRequest(`/api/empleados/${id}`, 'PUT', { nombre, puesto, activo, ...horarios }); alert('✅ Actualizado'); }
+    else { await apiRequest('/api/empleados', 'POST', { nombre, puesto, activo, ...horarios }); alert('✅ Agregado'); }
+    cancelarEdicionEmpleado(); cargarEmpleados();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function editarEmpleado(emp) {
@@ -2247,78 +1482,44 @@ function editarEmpleado(emp) {
   document.getElementById('nombreEmpleado').value = emp.nombre;
   document.getElementById('puestoEmpleado').value = emp.puesto || '';
   document.getElementById('activoEmpleado').checked = emp.activo === 1;
-
-  document.getElementById('lunesEntrada').value = emp.lunes_entrada || '';
-  document.getElementById('lunesSalida').value = emp.lunes_salida || '';
-  document.getElementById('martesEntrada').value = emp.martes_entrada || '';
-  document.getElementById('martesSalida').value = emp.martes_salida || '';
-  document.getElementById('miercolesEntrada').value = emp.miercoles_entrada || '';
-  document.getElementById('miercolesSalida').value = emp.miercoles_salida || '';
-  document.getElementById('juevesEntrada').value = emp.jueves_entrada || '';
-  document.getElementById('juevesSalida').value = emp.jueves_salida || '';
-  document.getElementById('viernesEntrada').value = emp.viernes_entrada || '';
-  document.getElementById('viernesSalida').value = emp.viernes_salida || '';
-  document.getElementById('sabadoEntrada').value = emp.sabado_entrada || '';
-  document.getElementById('sabadoSalida').value = emp.sabado_salida || '';
-
+  document.getElementById('lunesEntrada').value = emp.lunes_entrada || ''; document.getElementById('lunesSalida').value = emp.lunes_salida || '';
+  document.getElementById('martesEntrada').value = emp.martes_entrada || ''; document.getElementById('martesSalida').value = emp.martes_salida || '';
+  document.getElementById('miercolesEntrada').value = emp.miercoles_entrada || ''; document.getElementById('miercolesSalida').value = emp.miercoles_salida || '';
+  document.getElementById('juevesEntrada').value = emp.jueves_entrada || ''; document.getElementById('juevesSalida').value = emp.jueves_salida || '';
+  document.getElementById('viernesEntrada').value = emp.viernes_entrada || ''; document.getElementById('viernesSalida').value = emp.viernes_salida || '';
+  document.getElementById('sabadoEntrada').value = emp.sabado_entrada || ''; document.getElementById('sabadoSalida').value = emp.sabado_salida || '';
   document.getElementById('btnGuardarEmpleado').innerHTML = '💾 Actualizar';
   document.getElementById('btnCancelarEmpleado').classList.remove('hidden');
 }
 
 function cancelarEdicionEmpleado() {
   document.getElementById('idEditarEmpleado').value = '';
-  document.getElementById('nombreEmpleado').value = '';
-  document.getElementById('puestoEmpleado').value = '';
+  document.getElementById('nombreEmpleado').value = ''; document.getElementById('puestoEmpleado').value = '';
   document.getElementById('activoEmpleado').checked = true;
-
-  ['lunesEntrada','lunesSalida','martesEntrada','martesSalida',
-   'miercolesEntrada','miercolesSalida','juevesEntrada','juevesSalida',
-   'viernesEntrada','viernesSalida','sabadoEntrada','sabadoSalida']
-   .forEach(id => document.getElementById(id).value = '');
-
+  ['lunesEntrada','lunesSalida','martesEntrada','martesSalida','miercolesEntrada','miercolesSalida','juevesEntrada','juevesSalida','viernesEntrada','viernesSalida','sabadoEntrada','sabadoSalida'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('btnGuardarEmpleado').innerHTML = 'Agregar Empleado';
   document.getElementById('btnCancelarEmpleado').classList.add('hidden');
 }
 
 async function eliminarEmpleado(id) {
   if (!confirm('⚠️ ¿Eliminar empleado?')) return;
-  try {
-    await apiRequest(`/api/empleados/${id}`, 'DELETE');
-    cargarEmpleados();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/empleados/${id}`, 'DELETE'); cargarEmpleados(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-/* ============================================================
-   ÓRDENES DE TRABAJO
-============================================================ */
 function cargarOrdenes() {
   const lista = document.getElementById('listaOrdenes');
   lista.innerHTML = 'Cargando...';
-
   const fEmpleado = document.getElementById('filtroOrdenEmpleado').value.toLowerCase().trim();
   const fSolicitante = document.getElementById('filtroOrdenSolicitante').value.toLowerCase().trim();
   const fEstado = document.getElementById('filtroOrdenEstado').value;
-
   apiRequest('/api/ordenes').then(ordenes => {
-    if (ordenes.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>';
-      return;
-    }
-
+    if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
     let filtradas = ordenes;
     if (fEmpleado) filtradas = filtradas.filter(o => o.empleado_nombre && o.empleado_nombre.toLowerCase().includes(fEmpleado));
     if (fSolicitante) filtradas = filtradas.filter(o => o.solicitante && o.solicitante.toLowerCase().includes(fSolicitante));
     if (fEstado) filtradas = filtradas.filter(o => o.estado === fEstado);
-
     filtradas.sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
-
-    if (filtradas.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay órdenes con esos filtros.</p>';
-      return;
-    }
-
+    if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes con esos filtros.</p>'; return; }
     lista.innerHTML = filtradas.map(o => `
       <div class="border rounded p-4 bg-white shadow-sm">
         <div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
@@ -2327,22 +1528,16 @@ function cargarOrdenes() {
         <div class="mt-2 text-xs text-gray-500">Solicitante: ${o.solicitante} | Creada el: ${formatearFechaLocal(o.fecha_creacion)}</div>
         <div class="mt-3 flex gap-2 flex-wrap">
           <button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-          ${o.estado !== 'CONCLUIDO'
-            ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>`
-            : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
+          ${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
           <button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
         </div>
       </div>
     `).join('');
-  }).catch(() => {
-    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
-  });
+  }).catch(() => { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; });
 }
 
 function limpiarFiltrosOrdenes() {
-  document.getElementById('filtroOrdenEmpleado').value = '';
-  document.getElementById('filtroOrdenSolicitante').value = '';
-  document.getElementById('filtroOrdenEstado').value = '';
+  document.getElementById('filtroOrdenEmpleado').value = ''; document.getElementById('filtroOrdenSolicitante').value = ''; document.getElementById('filtroOrdenEstado').value = '';
   cargarOrdenes();
 }
 
@@ -2350,10 +1545,7 @@ async function cargarOrdenesSilencioso() {
   try {
     const ordenes = await apiRequest('/api/ordenes');
     const lista = document.getElementById('listaOrdenes');
-    if (ordenes.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>';
-      return;
-    }
+    if (ordenes.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay órdenes.</p>'; return; }
     lista.innerHTML = ordenes.map(o => `
       <div class="border rounded p-4 bg-white shadow-sm">
         <div class="font-bold">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
@@ -2362,9 +1554,7 @@ async function cargarOrdenesSilencioso() {
         <div class="mt-2 text-xs text-gray-500">Creada el: ${formatearFechaLocal(o.fecha_creacion)}</div>
         <div class="mt-3 flex gap-2 flex-wrap">
           <button onclick="imprimirOrdenTrabajo(${o.id})" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">🖨️ Imprimir</button>
-          ${o.estado !== 'CONCLUIDO'
-            ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>`
-            : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
+          ${o.estado !== 'CONCLUIDO' ? `<button onclick="capturarOrden(${o.id}, ${o.solicitud_id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm">✅ Capturar y Concluir</button>` : '<span class="text-green-600 font-bold text-sm self-center">✅ Concluida</span>'}
           <button onclick="eliminarOrden(${o.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
         </div>
       </div>
@@ -2376,18 +1566,13 @@ async function abrirModalOrden(solicitudId) {
   try {
     const empleados = await apiRequest('/api/empleados');
     const activos = empleados.filter(e => e.activo === 1);
-    if (activos.length === 0) {
-      alert('⚠️ No hay empleados activos.');
-      return;
-    }
+    if (activos.length === 0) { alert('⚠️ No hay empleados activos.'); return; }
     const select = document.getElementById('selectEmpleadoOrden');
     select.innerHTML = activos.map(e => `<option value="${e.id}">${e.nombre} (${e.puesto || 'Sin puesto'})</option>`).join('');
     document.getElementById('solicitudIdParaOrden').value = solicitudId;
     document.getElementById('modalGenerarOrden').classList.remove('hidden');
     document.getElementById('modalGenerarOrden').classList.add('flex');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function cerrarModalGenerarOrden() {
@@ -2400,28 +1585,16 @@ async function confirmarGenerarOrden() {
   const empleadoId = document.getElementById('selectEmpleadoOrden').value;
   if (!empleadoId) return;
   try {
-    await apiRequest('/api/ordenes', 'POST', {
-      solicitud_id: parseInt(solicitudId),
-      empleado_id: parseInt(empleadoId)
-    });
+    await apiRequest('/api/ordenes', 'POST', { solicitud_id: parseInt(solicitudId), empleado_id: parseInt(empleadoId) });
     alert('✅ Orden generada');
     cerrarModalGenerarOrden();
     mostrarSeccion('panelOrdenes');
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function eliminarOrden(id) {
   if (!confirm('⚠️ ¿Eliminar orden? La solicitud volverá a estar disponible.')) return;
-  try {
-    await apiRequest(`/api/ordenes/${id}`, 'DELETE');
-    alert('🗑️ Eliminada');
-    cargarOrdenes();
-    await cargarDatosIniciales();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/ordenes/${id}`, 'DELETE'); alert('🗑️ Eliminada'); cargarOrdenes(); await cargarDatosIniciales(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function capturarOrden(ordenId, solicitudId) {
@@ -2447,52 +1620,26 @@ async function guardarCapturaOrden() {
   const horaInicio = document.getElementById('capturaHoraInicio').value;
   const horaFin = document.getElementById('capturaHoraFin').value;
   const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
-
-  if (!fecha || !horaInicio || !horaFin || !recibidoPor) {
-    alert('⚠️ Llena todos los campos.');
-    return;
-  }
-
+  if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
   try {
-    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', {
-      fechaAtencion: fecha,
-      horaInicio,
-      horaFin,
-      recibidoPor,
-      solicitud_id: solicitudId,
-      concluidoPor: usuarioActivo.nombre
-    });
+    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: usuarioActivo.nombre });
     alert('✅ Concluida');
     cerrarModalCaptura();
     cargarOrdenes();
     await cargarDatosIniciales();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-/* ============================================================
-   INCIDENCIAS / PERMISOS
-============================================================ */
 async function cargarIncidencias() {
   const lista = document.getElementById('listaIncidencias');
   const selectEmp = document.getElementById('incidenciaEmpleado');
-
   try {
     const empleados = await apiRequest('/api/empleados');
     empleadosCache = empleados;
-    selectEmp.innerHTML = '<option value="">Selecciona...</option>' +
-      empleados.filter(e => e.activo === 1)
-        .map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-
+    selectEmp.innerHTML = '<option value="">Selecciona...</option>' + empleados.filter(e => e.activo === 1).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
     const incidencias = await apiRequest('/api/incidencias');
     incidenciasCache = incidencias;
-
-    if (incidencias.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>';
-      return;
-    }
-
+    if (incidencias.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay incidencias.</p>'; return; }
     lista.innerHTML = incidencias.map(i => {
       const emp = empleados.find(e => e.id === i.empleado_id);
       const dur = calcularDuracionPermiso(i, emp);
@@ -2514,40 +1661,23 @@ async function cargarIncidencias() {
         </div>
       </div>
     `}).join('');
-  } catch (e) {
-    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
-  }
+  } catch (e) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 
 function cambiarCamposIncidencia() {
   const tipo = document.getElementById('incidenciaTipo').value;
-  document.getElementById('camposFechas').classList.add('hidden');
-  document.getElementById('camposModalidadHoras').classList.add('hidden');
-  document.getElementById('camposHorasEntrada').classList.add('hidden');
-  document.getElementById('camposHorasSalida').classList.add('hidden');
-  document.getElementById('camposHorasJornada').classList.add('hidden');
-
-  if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') {
-    document.getElementById('camposFechas').classList.remove('hidden');
-  } else if (tipo === 'Permiso por horas') {
-    document.getElementById('camposModalidadHoras').classList.remove('hidden');
-    cambiarModalidadHoras();
-  }
+  document.getElementById('camposFechas').classList.add('hidden'); document.getElementById('camposModalidadHoras').classList.add('hidden');
+  document.getElementById('camposHorasEntrada').classList.add('hidden'); document.getElementById('camposHorasSalida').classList.add('hidden'); document.getElementById('camposHorasJornada').classList.add('hidden');
+  if (tipo === 'Vacaciones' || tipo === 'Permiso por días' || tipo === 'Incapacidad') document.getElementById('camposFechas').classList.remove('hidden');
+  else if (tipo === 'Permiso por horas') { document.getElementById('camposModalidadHoras').classList.remove('hidden'); cambiarModalidadHoras(); }
 }
 
 function cambiarModalidadHoras() {
   const modalidad = document.getElementById('incidenciaModalidadHoras').value;
-  document.getElementById('camposHorasEntrada').classList.add('hidden');
-  document.getElementById('camposHorasSalida').classList.add('hidden');
-  document.getElementById('camposHorasJornada').classList.add('hidden');
-
-  if (modalidad === 'entrada') {
-    document.getElementById('camposHorasEntrada').classList.remove('hidden');
-  } else if (modalidad === 'salida') {
-    document.getElementById('camposHorasSalida').classList.remove('hidden');
-  } else if (modalidad === 'jornada') {
-    document.getElementById('camposHorasJornada').classList.remove('hidden');
-  }
+  document.getElementById('camposHorasEntrada').classList.add('hidden'); document.getElementById('camposHorasSalida').classList.add('hidden'); document.getElementById('camposHorasJornada').classList.add('hidden');
+  if (modalidad === 'entrada') document.getElementById('camposHorasEntrada').classList.remove('hidden');
+  else if (modalidad === 'salida') document.getElementById('camposHorasSalida').classList.remove('hidden');
+  else if (modalidad === 'jornada') document.getElementById('camposHorasJornada').classList.remove('hidden');
 }
 
 async function guardarIncidencia() {
@@ -2563,52 +1693,21 @@ async function guardarIncidencia() {
   const hora_salida_jornada = document.getElementById('incidenciaHoraSalidaJornada').value;
   const hora_regreso = document.getElementById('incidenciaHoraRegreso').value;
   const motivo = document.getElementById('incidenciaMotivo').value.trim();
-
-  if (!empleado_id || !tipo || !fecha) {
-    alert('⚠️ Completa empleado, tipo y fecha de registro');
-    return;
-  }
-
+  if (!empleado_id || !tipo || !fecha) { alert('⚠️ Completa empleado, tipo y fecha de registro'); return; }
   const emp = empleadosCache.find(e => e.id === empleado_id);
-  const incidenciaTemp = {
-    tipo, fecha, fecha_inicio, fecha_fin,
-    modalidad_horas,
-    hora_llegada,
-    hora_salida: modalidad_horas === 'jornada' ? hora_salida_jornada : hora_salida,
-    hora_regreso
-  };
+  const incidenciaTemp = { tipo, fecha, fecha_inicio, fecha_fin, modalidad_horas, hora_llegada, hora_salida: modalidad_horas === 'jornada' ? hora_salida_jornada : hora_salida, hora_regreso };
   const dur = calcularDuracionPermiso(incidenciaTemp, emp);
-
-  const payload = {
-    empleado_id, tipo, fecha, fecha_inicio, fecha_fin,
-    modalidad_horas,
-    hora_llegada,
-    hora_salida: modalidad_horas === 'jornada' ? hora_salida_jornada : hora_salida,
-    hora_regreso,
-    motivo,
-    duracion_minutos: dur.minutos,
-    duracion_texto: dur.texto
-  };
-
+  const payload = { empleado_id, tipo, fecha, fecha_inicio, fecha_fin, modalidad_horas, hora_llegada, hora_salida: modalidad_horas === 'jornada' ? hora_salida_jornada : hora_salida, hora_regreso, motivo, duracion_minutos: dur.minutos, duracion_texto: dur.texto };
   try {
-    if (idEditar) {
-      await apiRequest(`/api/incidencias/${idEditar}`, 'PUT', payload);
-      alert('✅ Incidencia actualizada');
-    } else {
-      await apiRequest('/api/incidencias', 'POST', payload);
-      alert('✅ Incidencia agregada');
-    }
-    cancelarEdicionIncidencia();
-    cargarIncidencias();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+    if (idEditar) { await apiRequest(`/api/incidencias/${idEditar}`, 'PUT', payload); alert('✅ Incidencia actualizada'); }
+    else { await apiRequest('/api/incidencias', 'POST', payload); alert('✅ Incidencia agregada'); }
+    cancelarEdicionIncidencia(); cargarIncidencias();
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 function editarIncidencia(id) {
   const i = incidenciasCache.find(x => x.id === id);
   if (!i) return;
-
   document.getElementById('idEditarIncidencia').value = i.id;
   document.getElementById('tituloFormIncidencia').textContent = 'Editar Incidencia #' + i.id;
   document.getElementById('incidenciaEmpleado').value = i.empleado_id;
@@ -2622,10 +1721,8 @@ function editarIncidencia(id) {
   document.getElementById('incidenciaHoraSalidaJornada').value = i.modalidad_horas === 'jornada' ? i.hora_salida : '';
   document.getElementById('incidenciaHoraRegreso').value = i.hora_regreso || '';
   document.getElementById('incidenciaMotivo').value = i.motivo || '';
-
   cambiarCamposIncidencia();
   if (i.tipo === 'Permiso por horas') cambiarModalidadHoras();
-
   document.getElementById('btnGuardarIncidencia').textContent = '💾 Actualizar Incidencia';
   document.getElementById('btnCancelarIncidencia').classList.remove('hidden');
   document.getElementById('panelIncidencias').scrollIntoView({ behavior: 'smooth' });
@@ -2634,17 +1731,11 @@ function editarIncidencia(id) {
 function cancelarEdicionIncidencia() {
   document.getElementById('idEditarIncidencia').value = '';
   document.getElementById('tituloFormIncidencia').textContent = 'Nueva Incidencia';
-  document.getElementById('incidenciaEmpleado').value = '';
-  document.getElementById('incidenciaTipo').value = 'Vacaciones';
-  document.getElementById('incidenciaFecha').value = '';
-  document.getElementById('incidenciaFechaInicio').value = '';
-  document.getElementById('incidenciaFechaFin').value = '';
-  document.getElementById('incidenciaModalidadHoras').value = '';
-  document.getElementById('incidenciaHoraLlegada').value = '';
-  document.getElementById('incidenciaHoraSalida').value = '';
-  document.getElementById('incidenciaHoraSalidaJornada').value = '';
-  document.getElementById('incidenciaHoraRegreso').value = '';
-  document.getElementById('incidenciaMotivo').value = '';
+  document.getElementById('incidenciaEmpleado').value = ''; document.getElementById('incidenciaTipo').value = 'Vacaciones'; document.getElementById('incidenciaFecha').value = '';
+  document.getElementById('incidenciaFechaInicio').value = ''; document.getElementById('incidenciaFechaFin').value = '';
+  document.getElementById('incidenciaModalidadHoras').value = ''; document.getElementById('incidenciaHoraLlegada').value = '';
+  document.getElementById('incidenciaHoraSalida').value = ''; document.getElementById('incidenciaHoraSalidaJornada').value = '';
+  document.getElementById('incidenciaHoraRegreso').value = ''; document.getElementById('incidenciaMotivo').value = '';
   cambiarCamposIncidencia();
   document.getElementById('btnGuardarIncidencia').textContent = 'Agregar Incidencia';
   document.getElementById('btnCancelarIncidencia').classList.add('hidden');
@@ -2652,34 +1743,18 @@ function cancelarEdicionIncidencia() {
 
 async function eliminarIncidencia(id) {
   if (!confirm('⚠️ ¿Eliminar incidencia?')) return;
-  try {
-    await apiRequest(`/api/incidencias/${id}`, 'DELETE');
-    cargarIncidencias();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/incidencias/${id}`, 'DELETE'); cargarIncidencias(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function imprimirIncidencia(id) {
   const i = incidenciasCache.find(x => x.id === id);
   if (!i) return;
-
   const emp = empleadosCache.find(e => e.id === i.empleado_id);
   const dur = calcularDuracionPermiso(i, emp);
-
   const formato = document.getElementById('formatoImpresion');
   formato.innerHTML = `
-    <div class="header-impresion">
-      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
-      <div>
-        <div class="titulo-principal">Permiso / Incidencia</div>
-        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
-        <div class="folio-header">Folio: #${i.id}</div>
-      </div>
-    </div>
-
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Permiso / Incidencia</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${i.id}</div></div></div>
     <div class="titulo-central">FORMATO DE PERMISO</div>
-
     <table>
       <tr><td>Empleado</td><td>${i.empleado_nombre || ''}</td></tr>
       <tr><td>Puesto</td><td>${emp?.puesto || '—'}</td></tr>
@@ -2689,52 +1764,27 @@ async function imprimirIncidencia(id) {
       <tr><td><b>Duración del permiso</b></td><td><b>⏱️ ${dur.texto}</b></td></tr>
       <tr><td>Motivo</td><td>${i.motivo || '—'}</td></tr>
     </table>
-
     <div class="firmas">
-      <div class="firma-item">
-        <div class="firma-nombre">${i.empleado_nombre || ''}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Empleado</div>
-        <div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div>
-      </div>
-      <div class="firma-item">
-        <div class="firma-nombre">${nombreResponsableMantenimiento}</div>
-        <div class="linea"></div>
-        <div class="firma-cargo">Mantenimiento</div>
-        <div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div>
-      </div>
-    </div>
-  `;
+      <div class="firma-item"><div class="firma-nombre">${i.empleado_nombre || ''}</div><div class="linea"></div><div class="firma-cargo">Empleado</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
+      <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Mantenimiento</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
+    </div>`;
   window.print();
 }
 
-/* ============================================================
-   COMPRAS
-============================================================ */
 async function cargarCompras() {
   const lista = document.getElementById('listaCompras');
   lista.innerHTML = 'Cargando...';
   try {
     const compras = await apiRequest('/api/compras');
-    if (compras.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>';
-      return;
-    }
-
+    if (compras.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay compras.</p>'; return; }
     const fProv = document.getElementById('filtroCompraProveedor').value.toLowerCase().trim();
     const fSol = document.getElementById('filtroCompraSolicitante').value.toLowerCase().trim();
     const fFecha = document.getElementById('filtroCompraFecha').value;
-
     let filtradas = compras;
     if (fProv) filtradas = filtradas.filter(c => (c.proveedor_nombre || '').toLowerCase().includes(fProv));
     if (fSol) filtradas = filtradas.filter(c => (c.solicitado_por || '').toLowerCase().includes(fSol));
     if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
-
-    if (filtradas.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">Sin compras con esos filtros.</p>';
-      return;
-    }
-
+    if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin compras con esos filtros.</p>'; return; }
     lista.innerHTML = filtradas.map(c => `
       <div class="border rounded p-4 bg-white shadow-sm">
         <div class="font-bold">Compra #${c.folio} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
@@ -2747,17 +1797,13 @@ async function cargarCompras() {
         </div>
       </div>
     `).join('');
-  } catch (e) {
-    lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>';
-  }
+  } catch (e) { lista.innerHTML = '<p class="text-red-500">Error al cargar.</p>'; }
 }
 
 async function cargarComprasSilencioso() { cargarCompras(); }
 
 function limpiarFiltrosCompras() {
-  document.getElementById('filtroCompraProveedor').value = '';
-  document.getElementById('filtroCompraSolicitante').value = '';
-  document.getElementById('filtroCompraFecha').value = '';
+  document.getElementById('filtroCompraProveedor').value = ''; document.getElementById('filtroCompraSolicitante').value = ''; document.getElementById('filtroCompraFecha').value = '';
   cargarCompras();
 }
 
@@ -2765,8 +1811,7 @@ async function cargarProveedores() {
   try {
     const provs = await apiRequest('/api/proveedores');
     const sel = document.getElementById('compraProveedor');
-    sel.innerHTML = '<option value="">Selecciona...</option>' +
-      provs.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+    sel.innerHTML = '<option value="">Selecciona...</option>' + provs.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
   } catch (e) {}
 }
 
@@ -2774,11 +1819,7 @@ function agregarArticuloCompra() {
   const cont = document.getElementById('listaArticulosCompra');
   const div = document.createElement('div');
   div.className = 'flex gap-2 mb-2';
-  div.innerHTML = `
-    <input placeholder="Cantidad" class="w-24 border rounded px-2 py-1 text-sm cantidad-articulo">
-    <input placeholder="Artículo" class="flex-1 border rounded px-2 py-1 text-sm nombre-articulo">
-    <button onclick="this.parentElement.remove()" class="bg-red-100 text-red-700 px-2 rounded text-sm">✕</button>
-  `;
+  div.innerHTML = `<input placeholder="Cantidad" class="w-24 border rounded px-2 py-1 text-sm cantidad-articulo"><input placeholder="Artículo" class="flex-1 border rounded px-2 py-1 text-sm nombre-articulo"><button onclick="this.parentElement.remove()" class="bg-red-100 text-red-700 px-2 rounded text-sm">✕</button>`;
   cont.appendChild(div);
 }
 
@@ -2786,59 +1827,31 @@ async function guardarOrdenCompra() {
   const proveedor_id = document.getElementById('compraProveedor').value;
   const solicitado_por = document.getElementById('compraSolicitadoPor').value.trim();
   const observaciones = document.getElementById('compraObservaciones').value.trim();
-
   const articulos = [];
   document.querySelectorAll('#listaArticulosCompra .nombre-articulo').forEach((inp, idx) => {
     const cant = document.querySelectorAll('#listaArticulosCompra .cantidad-articulo')[idx].value;
     if (inp.value.trim()) articulos.push({ cantidad: cant || '1', articulo: inp.value.trim() });
   });
-
-  if (!proveedor_id || articulos.length === 0) {
-    alert('⚠️ Selecciona proveedor y agrega al menos un artículo');
-    return;
-  }
-
+  if (!proveedor_id || articulos.length === 0) { alert('⚠️ Selecciona proveedor y agrega al menos un artículo'); return; }
   try {
-    await apiRequest('/api/compras', 'POST', {
-      proveedor_id: parseInt(proveedor_id),
-      solicitado_por,
-      articulos,
-      observaciones,
-      fecha: new Date().toISOString().slice(0, 10)
-    });
+    await apiRequest('/api/compras', 'POST', { proveedor_id: parseInt(proveedor_id), solicitado_por, articulos, observaciones, fecha: new Date().toISOString().slice(0, 10) });
     alert('✅ Compra registrada');
-    document.getElementById('listaArticulosCompra').innerHTML = '';
-    document.getElementById('compraObservaciones').value = '';
+    document.getElementById('listaArticulosCompra').innerHTML = ''; document.getElementById('compraObservaciones').value = '';
     cargarCompras();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function eliminarCompra(folio) {
   if (!confirm('⚠️ ¿Eliminar compra?')) return;
-  try {
-    await apiRequest(`/api/compras/${folio}`, 'DELETE');
-    cargarCompras();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/compras/${folio}`, 'DELETE'); cargarCompras(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function imprimirCompra(folio) {
   const compras = await apiRequest('/api/compras');
   const c = compras.find(x => x.folio === folio);
   if (!c) return;
-
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">
-      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
-      <div>
-        <div class="titulo-principal">Orden de Compra</div>
-        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
-        <div class="folio-header">Folio: #${c.folio}</div>
-      </div>
-    </div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${c.folio}</div></div></div>
     <table>
       <tr><td>Proveedor</td><td>${c.proveedor_nombre || ''}</td></tr>
       <tr><td>Fecha</td><td>${c.fecha}</td></tr>
@@ -2846,24 +1859,15 @@ async function imprimirCompra(folio) {
       <tr><td>Artículos</td><td>${(c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join('<br>')}</td></tr>
       <tr><td>Observaciones</td><td>${c.observaciones || '—'}</td></tr>
     </table>
-    <div class="firmas">
-      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
-      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Autorizó</div></div>
-    </div>
-  `;
+    <div class="firmas"><div class="firma-item"><div class="linea"></div><div class="firma-cargo">Solicitó</div></div><div class="firma-item"><div class="linea"></div><div class="firma-cargo">Autorizó</div></div></div>`;
   window.print();
 }
 
-/* ============================================================
-   SECCIONES Y PROVEEDORES
-============================================================ */
 async function cargarSecciones() {
   try {
     const secciones = await apiRequest('/api/secciones');
     const select = document.getElementById('areaSolicitante');
-    if (select) {
-      select.innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
-    }
+    if (select) select.innerHTML = secciones.map(s => `<option value="${s.nombre}">${s.nombre}</option>`).join('');
   } catch (e) {}
 }
 
@@ -2872,43 +1876,20 @@ async function cargarListaSecciones() {
   lista.innerHTML = 'Cargando...';
   try {
     const secciones = await apiRequest('/api/secciones');
-    if (secciones.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay secciones.</p>';
-      return;
-    }
-    lista.innerHTML = secciones.map(s => `
-      <div class="border rounded p-3 bg-white flex justify-between items-center">
-        <span>${s.nombre}</span>
-        <button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-      </div>
-    `).join('');
-  } catch (e) {
-    lista.innerHTML = '<p class="text-red-500">Error.</p>';
-  }
+    if (secciones.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay secciones.</p>'; return; }
+    lista.innerHTML = secciones.map(s => `<div class="border rounded p-3 bg-white flex justify-between items-center"><span>${s.nombre}</span><button onclick="eliminarSeccion(${s.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div>`).join('');
+  } catch (e) { lista.innerHTML = '<p class="text-red-500">Error.</p>'; }
 }
 
 async function guardarSeccion() {
   const nombre = document.getElementById('nuevaSeccionNombre').value.trim();
   if (!nombre) return;
-  try {
-    await apiRequest('/api/secciones', 'POST', { nombre });
-    document.getElementById('nuevaSeccionNombre').value = '';
-    cargarListaSecciones();
-    cargarSecciones();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest('/api/secciones', 'POST', { nombre }); document.getElementById('nuevaSeccionNombre').value = ''; cargarListaSecciones(); cargarSecciones(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function eliminarSeccion(id) {
   if (!confirm('⚠️ ¿Eliminar sección?')) return;
-  try {
-    await apiRequest(`/api/secciones/${id}`, 'DELETE');
-    cargarListaSecciones();
-    cargarSecciones();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/secciones/${id}`, 'DELETE'); cargarListaSecciones(); cargarSecciones(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function cargarListaProveedores() {
@@ -2916,68 +1897,32 @@ async function cargarListaProveedores() {
   lista.innerHTML = 'Cargando...';
   try {
     const provs = await apiRequest('/api/proveedores');
-    if (provs.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500">No hay proveedores.</p>';
-      return;
-    }
-    lista.innerHTML = provs.map(p => `
-      <div class="border rounded p-3 bg-white flex justify-between items-center">
-        <span>${p.nombre}</span>
-        <button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button>
-      </div>
-    `).join('');
-  } catch (e) {
-    lista.innerHTML = '<p class="text-red-500">Error.</p>';
-  }
+    if (provs.length === 0) { lista.innerHTML = '<p class="text-gray-500">No hay proveedores.</p>'; return; }
+    lista.innerHTML = provs.map(p => `<div class="border rounded p-3 bg-white flex justify-between items-center"><span>${p.nombre}</span><button onclick="eliminarProveedor(${p.id})" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm">🗑️ Eliminar</button></div>`).join('');
+  } catch (e) { lista.innerHTML = '<p class="text-red-500">Error.</p>'; }
 }
 
 async function guardarProveedor() {
   const nombre = document.getElementById('nuevoProveedorNombre').value.trim();
   if (!nombre) return;
-  try {
-    await apiRequest('/api/proveedores', 'POST', { nombre });
-    document.getElementById('nuevoProveedorNombre').value = '';
-    cargarListaProveedores();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest('/api/proveedores', 'POST', { nombre }); document.getElementById('nuevoProveedorNombre').value = ''; cargarListaProveedores(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function eliminarProveedor(id) {
   if (!confirm('⚠️ ¿Eliminar proveedor?')) return;
-  try {
-    await apiRequest(`/api/proveedores/${id}`, 'DELETE');
-    cargarListaProveedores();
-  } catch (e) {
-    alert('❌ Error: ' + e.message);
-  }
+  try { await apiRequest(`/api/proveedores/${id}`, 'DELETE'); cargarListaProveedores(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
-/* ============================================================
-   IMPRESIÓN DE SOLICITUD Y ORDEN
-============================================================ */
 async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
-
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">
-      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
-      <div>
-        <div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div>
-        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
-        <div class="folio-header">Folio: #${s.id}</div>
-      </div>
-    </div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${s.id}</div></div></div>
     <table>
       <tr><td>Sección / Área</td><td>${s.area}</td></tr>
       <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
       <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr>
-      ${s.tipo === 'evento' ? `
-        <tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr>
-        <tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr>
-        <tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr>
-      ` : ''}
+      ${s.tipo === 'evento' ? `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr>` : ''}
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
       <tr><td>Autorizado por (Proyectos)</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
@@ -2987,8 +1932,7 @@ async function imprimirSolicitud(id) {
       <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
       <div class="firma-item"><div class="firma-nombre">${s.autorizadoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Autorizó (Proyectos)</div></div>
       <div class="firma-item"><div class="firma-nombre">${s.concluidoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Coordinador (Mantenimiento)</div></div>
-    </div>
-  `;
+    </div>`;
   window.print();
 }
 
@@ -2996,16 +1940,8 @@ async function imprimirOrdenTrabajo(id) {
   const ordenes = await apiRequest('/api/ordenes');
   const o = ordenes.find(x => x.id === id);
   if (!o) return;
-
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">
-      ${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}
-      <div>
-        <div class="titulo-principal">Orden de Trabajo</div>
-        <div class="subtitulo-header">${nombreResponsableMantenimiento}</div>
-        <div class="folio-header">Orden #${o.id} - Solicitud #${o.solicitud_id}</div>
-      </div>
-    </div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Trabajo</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Orden #${o.id} - Solicitud #${o.solicitud_id}</div></div></div>
     <table>
       <tr><td>Asignado a</td><td>${o.empleado_nombre || '—'}</td></tr>
       <tr><td>Descripción</td><td>${o.descripcion || ''}</td></tr>
@@ -3018,31 +1954,14 @@ async function imprimirOrdenTrabajo(id) {
       <tr><td>Recibido por</td><td>${o.recibidoPor || '_______________________________'}</td></tr>
     </table>
     <div class="firmas" style="margin-top: 80px;">
-      <div class="firma-item">
-        <div class="linea"></div>
-        <div class="firma-cargo">Firma del Técnico (Mantenimiento)</div>
-        <div class="firma-nombre">${o.empleado_nombre || ''}</div>
-      </div>
-      <div class="firma-item">
-        <div class="linea"></div>
-        <div class="firma-cargo">Firma de quien recibe el trabajo</div>
-        <div class="firma-nombre">${o.recibidoPor || 'Nombre y Firma'}</div>
-      </div>
+      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Firma del Técnico (Mantenimiento)</div><div class="firma-nombre">${o.empleado_nombre || ''}</div></div>
+      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Firma de quien recibe el trabajo</div><div class="firma-nombre">${o.recibidoPor || 'Nombre y Firma'}</div></div>
     </div>
-    <div class="pie-pagina">
-      <span>Sistema de Mantenimiento</span>
-      <span>Generado: ${new Date().toLocaleString('es-MX')}</span>
-    </div>
-  `;
+    <div class="pie-pagina"><span>Sistema de Mantenimiento</span><span>Generado: ${new Date().toLocaleString('es-MX')}</span></div>`;
   window.print();
 }
 
-/* ============================================================
-   INICIALIZACIÓN
-============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  recuperarSesion();
-});
+document.addEventListener('DOMContentLoaded', () => { recuperarSesion(); });
 </script>
 </body>
 </html>
