@@ -1028,7 +1028,8 @@ async function rechazar(id) {
 async function marcarConcluidaDirecto(id) {
   if (!confirm('✅ ¿Marcar como CONCLUIDA DIRECTA?\n\nEsto cerrará la solicitud SIN generar una Orden de Trabajo.')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    // CORRECCIÓN: Guarda el nombre configurado del titular de mantenimiento
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: nombreResponsableMantenimiento, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Solicitud concluida directamente'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1036,7 +1037,8 @@ async function marcarConcluidaDirecto(id) {
 async function concluirEvento(id) {
   if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    // CORRECCIÓN: Guarda el nombre configurado del titular de mantenimiento
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: nombreResponsableMantenimiento, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Evento concluido'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1241,7 +1243,6 @@ function enviarWhatsApp(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
   
-  // Mensaje con formato limpio para WhatsApp (sin caracteres extraños)
   let mensaje = `*SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}*\n`;
   mensaje += `Folio: #${s.id}\n`;
   if (s.tipo === 'evento') mensaje += `Evento: ${s.nombreEvento || 'N/A'}\n`;
@@ -1656,7 +1657,7 @@ async function guardarCapturaOrden() {
   const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
   if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
   try {
-    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: usuarioActivo.nombre });
+    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: nombreResponsableMantenimiento });
     alert('✅ Concluida');
     cerrarModalCaptura();
     cargarOrdenes();
@@ -1820,7 +1821,6 @@ async function cargarCompras() {
     if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin compras con esos filtros.</p>'; return; }
     
-    // CORRECCIÓN: Usar c.id para los botones
     lista.innerHTML = filtradas.map(c => `
       <div class="border rounded p-4 bg-white shadow-sm">
         <div class="font-bold">Compra #${c.id} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
@@ -1952,6 +1952,12 @@ async function eliminarProveedor(id) {
 async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
+
+  // CORRECCIÓN: Verifica si el autorizador es de proyectos
+  const usuarioAutorizador = Object.values(usuarios).find(u => u.nombre === s.autorizadoPor);
+  const esDeProyectos = usuarioAutorizador && (usuarioAutorizador.rol === 'proyectos' || (usuarioAutorizador.permisos && usuarioAutorizador.permisos.includes('proyectos')));
+  const leyendaAutorizo = esDeProyectos ? 'Autorizó (Proyectos)' : 'Autorizó';
+
   document.getElementById('formatoImpresion').innerHTML = `
     <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${s.id}</div></div></div>
     <table>
@@ -1961,12 +1967,12 @@ async function imprimirSolicitud(id) {
       ${s.tipo === 'evento' ? `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr>` : ''}
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
-      <tr><td>Autorizado por (Proyectos)</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
+      <tr><td>${leyendaAutorizo}</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
       <tr><td>Coordinador (Mantenimiento)</td><td><b>${s.concluidoPor || '—'}</b></td></tr>
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
-      <div class="firma-item"><div class="firma-nombre">${s.autorizadoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Autorizó (Proyectos)</div></div>
+      <div class="firma-item"><div class="firma-nombre">${s.autorizadoPor || ''}</div><div class="linea"></div><div class="firma-cargo">${leyendaAutorizo}</div></div>
       <div class="firma-item"><div class="firma-nombre">${s.concluidoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Coordinador (Mantenimiento)</div></div>
     </div>`;
   window.print();
