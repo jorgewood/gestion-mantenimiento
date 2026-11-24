@@ -154,12 +154,13 @@
         </div>
       </div>
 
-      <div id="camposEvento" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div><label class="font-semibold text-sm">Nombre del evento</label><input id="nombreEvento" class="w-full border rounded px-3 py-2"></div>
-        <div><label class="font-semibold text-sm">Fecha del evento</label><input type="date" id="fechaEvento" class="w-full border rounded px-3 py-2"></div>
-        <div><label class="font-semibold text-sm">Lugar del evento</label><input id="lugarEvento" class="w-full border rounded px-3 py-2"></div>
+      <div id="camposEvento" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+          <div><label class="font-semibold text-sm">Nombre del evento</label><input id="nombreEvento" class="w-full border rounded px-3 py-2"></div>
+          <div><label class="font-semibold text-sm">Fecha del evento</label><input type="date" id="fechaEvento" class="w-full border rounded px-3 py-2"></div>
+          <div><label class="font-semibold text-sm">Lugar del evento</label><input id="lugarEvento" class="w-full border rounded px-3 py-2"></div>
+          <div><label class="font-semibold text-sm">Ubicación Exacta</label><input id="ubicacionExacta" class="w-full border rounded px-3 py-2" placeholder="Salón, pasillo, patio, oficina, etc."></div>
       </div>
-
+      
       <label class="font-semibold text-sm">Descripción</label>
       <textarea id="descripcionSol" rows="4" class="w-full border rounded px-3 py-2 mb-3"></textarea>
 
@@ -879,6 +880,7 @@ async function guardarSolicitud() {
     fechaEvento: tipo === 'evento' ? document.getElementById('fechaEvento').value : '',
     nombreEvento: tipo === 'evento' ? document.getElementById('nombreEvento').value.trim() : '',
     lugarEvento: tipo === 'evento' ? document.getElementById('lugarEvento').value.trim() : '',
+    ubicacionExacta: tipo === 'evento' ? document.getElementById('ubicacionExacta').value.trim() : '',
     solicitante: document.getElementById('nombreSolicitante').value,
     observaciones: [],
     rolCreador: usuarioActivo.rol
@@ -1070,7 +1072,7 @@ function cargarBandejaProyectos() {
         <div class="text-sm text-gray-600">Autorizó: <b>${s.autorizadoPor || 'Pendiente'}</b></div>
         <div class="text-sm text-gray-600">Coordinador Mantenimiento: <b>${s.concluidoPor || 'Pendiente'}</b></div>
         <div class="text-sm text-gray-600">Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
-        ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>` : ''}
+        ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha: ${s.fechaEvento} | Lugar: ${s.lugarEvento} | Ubicación: ${s.ubicacionExacta || '—'}</div>` : ''}
         <div class="text-sm mt-1">${s.descripcion}</div>
         <div class="mt-2 font-semibold">${etiqueta} ${badge}</div>
         <div class="mt-3 flex flex-wrap gap-2">${botones}</div>
@@ -1195,12 +1197,14 @@ function cargarDatosEdicion(s) {
     document.getElementById('nombreEvento').value = s.nombreEvento || '';
     document.getElementById('fechaEvento').value = s.fechaEvento || '';
     document.getElementById('lugarEvento').value = s.lugarEvento || '';
+    document.getElementById('ubicacionExacta').value = s.ubicacionExacta || '';
     document.getElementById('camposEvento').classList.remove('hidden');
   } else {
-    document.getElementById('nombreEvento').value = '';
-    document.getElementById('fechaEvento').value = '';
-    document.getElementById('lugarEvento').value = '';
-    document.getElementById('camposEvento').classList.add('hidden');
+  document.getElementById('nombreEvento').value = '';
+  document.getElementById('fechaEvento').value = '';
+  document.getElementById('lugarEvento').value = '';
+  document.getElementById('ubicacionExacta').value = '';
+  document.getElementById('camposEvento').classList.add('hidden');
   }
   document.getElementById('btnGuardarSol').className = 'btn-guardar-edicion';
   document.getElementById('btnIconoGuardar').className = 'fas fa-save';
@@ -1294,7 +1298,7 @@ function filtrarSolicitudesCoordinacion() {
         <div class="text-sm text-gray-600">Autorizó: <b>${s.autorizadoPor || 'Pendiente'}</b></div>
         <div class="text-sm text-gray-600">Coordinador Mantenimiento: <b>${s.concluidoPor || 'Pendiente'}</b></div>
         <div class="text-sm text-gray-600">Creada: ${formatearFechaLocal(s.fecha_creacion || s.fechaSolicitud)}</div>
-        ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha del Evento: ${s.fechaEvento} | Lugar: ${s.lugarEvento}</div>` : ''}
+        ${s.tipo === 'evento' ? `<div class="text-sm text-colegio-naranja font-bold mt-1">📅 Fecha: ${s.fechaEvento} | Lugar: ${s.lugarEvento} | Ubicación: ${s.ubicacionExacta || '—'}</div>` : ''}
         <div class="text-sm mt-1">${s.descripcion}</div>
         <div class="mt-2 flex flex-wrap gap-2 items-center">
           <span class="font-semibold text-sm">${est} ${badge}</span>
@@ -1348,6 +1352,7 @@ function enviarWhatsApp(id) {
   if (s.tipo === 'evento') {
     mensaje += `Fecha evento: ${s.fechaEvento || 'N/A'}\n`;
     mensaje += `Lugar: ${s.lugarEvento || 'N/A'}\n`;
+    mensaje += `Ubicación Exacta: ${s.ubicacionExacta || '—'}\n`;
   }
   mensaje += `\n*Estado: ${s.estado}*\n`;
   if (s.autorizadoPor) mensaje += `Autorizado por: ${s.autorizadoPor}\n`;
@@ -1516,7 +1521,7 @@ async function exportarExcelAnalisis() {
       { Métrica: 'Órdenes de Trabajo', Valor: ordenes.length }, { Métrica: 'Órdenes de Compra', Valor: compras.length }, { Métrica: 'Incidencias / Permisos', Valor: incidencias.length },
     ];
     const hojaSols = sols.map(s => ({
-      Folio: s.id, Tipo: s.tipo, Area: s.area, Solicitante: s.solicitante, Fecha_Solicitud: s.fechaSolicitud, Fecha_Evento: s.fechaEvento || '', Nombre_Evento: s.nombreEvento || '', Lugar_Evento: s.lugarEvento || '', Descripcion: s.descripcion, Estado: s.estado, Autorizado_Por: s.autorizadoPor || '', Fecha_Autorizacion: s.fechaAutorizacion || '', Concluido_Por: s.concluidoPor || '', Fecha_Conclusion: s.fechaConclusion || '', Fecha_Creacion: s.fecha_creacion || '', Num_Observaciones: (s.observaciones || []).length
+      Folio: s.id, Tipo: s.tipo, Area: s.area, Solicitante: s.solicitante, Fecha_Solicitud: s.fechaSolicitud, Fecha_Evento: s.fechaEvento || '', Nombre_Evento: s.nombreEvento || '', Lugar_Evento: s.lugarEvento || '', Ubicacion_Exacta: s.ubicacionExacta || '', Descripcion: s.descripcion, Estado: s.estado, Autorizado_Por: s.autorizadoPor || '', Fecha_Autorizacion: s.fechaAutorizacion || '', Concluido_Por: s.concluidoPor || '', Fecha_Conclusion: s.fechaConclusion || '', Fecha_Creacion: s.fecha_creacion || '', Num_Observaciones: (s.observaciones || []).length
     }));
     const hojaOrdenes = ordenes.map(o => ({ Orden: o.id, Solicitud: o.solicitud_id, Empleado: o.empleado_nombre || '', Estado: o.estado, Fecha_Creacion: o.fecha_creacion || '', Fecha_Atencion: o.fechaAtencion || '', Hora_Inicio: o.horaInicio || '', Hora_Fin: o.horaFin || '', Recibido_Por: o.recibidoPor || '' }));
     const hojaCompras = compras.map(c => ({ Folio: c.folio, Proveedor: c.proveedor_nombre || '', Fecha: c.fecha, Solicitado_Por: c.solicitado_por || '', Articulos: (c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ') }));
@@ -2120,7 +2125,7 @@ async function imprimirSolicitud(id) {
       <tr><td>Sección / Área</td><td>${s.area}</td></tr>
       <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
       <tr><td>Fecha de solicitud</td><td>${s.fechaSolicitud}</td></tr>
-      ${s.tipo === 'evento' ? `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr>` : ''}
+      ${s.tipo === 'evento' ? `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr><tr><td>Ubicación Exacta</td><td>${s.ubicacionExacta || '—'}</td></tr>` : ''}
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
       <tr><td>${leyendaAutorizo}</td><td><b>${s.autorizadoPor || 'Pendiente'}</b></td></tr>
