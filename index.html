@@ -286,7 +286,7 @@
       <div class="bg-white rounded shadow p-4 space-y-4">
         <div>
           <label class="font-semibold">Nombre Responsable Mantenimiento</label>
-          <input id="nombreMantenimiento" class="w-full border rounded px-3 py-2">
+          <input id="nombreMantenimiento" class="w-full border rounded px-3 py-2" value="" placeholder="Se llena automáticamente al concluir solicitudes">
           <button onclick="guardarNombreMantenimiento()" class="mt-2 bg-colegio-azul text-white px-4 py-2 rounded text-sm">Guardar Nombre</button>
         </div>
         <div>
@@ -498,7 +498,7 @@ let solicitudes = [];
 let usuarioActivo = null;
 let numeroWhatsAppDestino = '';
 let logoDataURL = '';
-let nombreResponsableMantenimiento = 'Ricardo Madera';
+let nombreResponsableMantenimiento = '';
 let tabMisActiva = 'servicio';
 let tabProyActiva = 'servicio';
 let tabCoordActiva = 'servicio';
@@ -1102,17 +1102,31 @@ async function rechazar(id) {
 }
 
 async function marcarConcluidaDirecto(id) {
-  if (!confirm('✅ ¿Marcar como CONCLUIDA DIRECTA?\n\nEsto cerrará la solicitud SIN generar una Orden de Trabajo.')) return;
+  const nombreResp = prompt('Ingrese el nombre del Responsable de Mantenimiento:');
+  if (!nombreResp) return;
+  if (!confirm(`✅ ¿Marcar como CONCLUIDA DIRECTA?\n\nResponsable: ${nombreResp}\n\nEsto cerrará la solicitud SIN generar una Orden de Trabajo.`)) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { 
+      estado: 'CONCLUIDO_DIRECTO', 
+      concluidoPor: nombreResp,
+      responsableMantenimiento: nombreResp,
+      fechaConclusion: new Date().toISOString() 
+    });
     await cargarDatosIniciales(); alert('✅ Solicitud concluida directamente'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
 async function concluirEvento(id) {
-  if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
+  const nombreResp = prompt('Ingrese el nombre del Responsable de Mantenimiento:');
+  if (!nombreResp) return;
+  if (!confirm(`✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nResponsable: ${nombreResp}`)) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { 
+      estado: 'CONCLUIDO_DIRECTO', 
+      concluidoPor: nombreResp,
+      responsableMantenimiento: nombreResp,
+      fechaConclusion: new Date().toISOString() 
+    });
     await cargarDatosIniciales(); alert('✅ Evento concluido'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1768,7 +1782,15 @@ async function guardarCapturaOrden() {
   const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
   if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
   try {
-    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: usuarioActivo.nombre });
+    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { 
+      fechaAtencion: fecha, 
+      horaInicio, 
+      horaFin, 
+      recibidoPor, 
+      solicitud_id: solicitudId, 
+      concluidoPor: recibidoPor,
+      responsableMantenimiento: recibidoPor
+    });
     alert('✅ Concluida');
     cerrarModalCaptura();
     cargarOrdenes();
@@ -2101,8 +2123,8 @@ async function imprimirSolicitud(id) {
       ${s.tipo === 'evento' ? `<tr><td>Nombre del evento</td><td>${s.nombreEvento || ''}</td></tr><tr><td>Fecha del evento</td><td>${s.fechaEvento || ''}</td></tr><tr><td>Lugar del evento</td><td>${s.lugarEvento || ''}</td></tr>` : ''}
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
-      <tr><td>${leyendaAutorizo}</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
-      <tr><td>Responsable (Mantenimiento)</td><td><b>${s.concluidoPor || '—'}</b></td></tr>
+      <tr><td>${leyendaAutorizo}</td><td><b>${s.autorizadoPor || 'Pendiente'}</b></td></tr>
+      <tr><td>Responsable de Mantenimiento</td><td><b>${s.responsableMantenimiento || 'Pendiente'}</b></td></tr>
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
