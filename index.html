@@ -219,14 +219,15 @@
   <section id="panelCoordinacion" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">⚙️ Coordinación</h2>
     <div id="adminSolicitudes">
+      <!-- CAMBIO 1: Pestañas agregadas en Bandeja Coordinación -->
+      <div class="flex gap-2 mb-3">
+        <button id="tabCoordServicios" onclick="cambiarTabCoord('servicio')" class="px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul">Servicios</button>
+        <button id="tabCoordEventos" onclick="cambiarTabCoord('evento')" class="px-4 py-2 font-semibold text-gray-500">Eventos</button>
+      </div>
+
       <div class="bg-white rounded shadow p-3 mb-3 grid grid-cols-1 md:grid-cols-5 gap-2">
         <input id="filtroSolicitante" placeholder="Solicitante / evento" class="border rounded px-3 py-2" oninput="filtrarSolicitudesCoordinacion()">
         <input type="date" id="filtroFecha" class="border rounded px-3 py-2" onchange="filtrarSolicitudesCoordinacion()">
-        <select id="filtroTipo" class="border rounded px-3 py-2" onchange="filtrarSolicitudesCoordinacion()">
-          <option value="">Todos los tipos</option>
-          <option value="servicio">Servicio</option>
-          <option value="evento">Evento</option>
-        </select>
         <select id="filtroEstado" class="border rounded px-3 py-2" onchange="filtrarSolicitudesCoordinacion()">
           <option value="">Todos</option>
           <option value="PENDIENTE_PROYECTOS">En evaluación</option>
@@ -237,8 +238,9 @@
           <option value="RECHAZADA">Rechazada</option>
         </select>
         <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggleConcluidasCoordinacion" onchange="filtrarSolicitudesCoordinacion()"> Mostrar concluidas</label>
+        <button onclick="limpiarFiltros()" class="bg-gray-200 rounded px-3 py-2 text-sm">Limpiar</button>
       </div>
-      <button onclick="limpiarFiltros()" class="text-sm text-blue-600 mb-3">Limpiar filtros</button>
+      
       <div id="listaCoordinacion" class="space-y-3"></div>
     </div>
 
@@ -498,6 +500,7 @@ let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
 let tabMisActiva = 'servicio';
 let tabProyActiva = 'servicio';
+let tabCoordActiva = 'servicio'; // Variable para las nuevas pestañas de Coordinación
 let intervaloRefresco = null;
 let incidenciasCache = [];
 let empleadosCache = [];
@@ -798,7 +801,11 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
     document.getElementById('adminSolicitudes').classList.add('hidden');
     document.getElementById('adminUsuarios').classList.add('hidden');
     document.getElementById('adminConfiguracion').classList.add('hidden');
-    if (subpanel === 'solicitudes') { document.getElementById('adminSolicitudes').classList.remove('hidden'); filtrarSolicitudesCoordinacion(); }
+    if (subpanel === 'solicitudes') { 
+      document.getElementById('adminSolicitudes').classList.remove('hidden'); 
+      // Al mostrar, forzamos el tab a servicios por defecto
+      cambiarTabCoord('servicio');
+    }
     else if (subpanel === 'usuarios') { document.getElementById('adminUsuarios').classList.remove('hidden'); cargarListaUsuarios(); }
     else if (subpanel === 'configuracion') { document.getElementById('adminConfiguracion').classList.remove('hidden'); cargarNombreMantenimiento(); mostrarLogo(); }
   }
@@ -875,6 +882,14 @@ function cambiarTabProy(tipo) {
   cargarBandejaProyectos();
 }
 
+// NUEVA FUNCIÓN: Manejo de pestañas en Coordinación
+function cambiarTabCoord(tipo) {
+  tabCoordActiva = tipo;
+  document.getElementById('tabCoordServicios').className = tipo === 'servicio' ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul' : 'px-4 py-2 font-semibold text-gray-500';
+  document.getElementById('tabCoordEventos').className = tipo === 'evento' ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul' : 'px-4 py-2 font-semibold text-gray-500';
+  filtrarSolicitudesCoordinacion();
+}
+
 function cargarMisSolicitudes() {
   const lista = document.getElementById('listaMisSolicitudes');
   lista.innerHTML = '';
@@ -947,6 +962,18 @@ function cargarBandejaProyectos() {
   const fEstado = document.getElementById('filtroProyEstado').value;
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
+  
+  // CAMBIO 2: Si es supervisor (proyectos), ocultar solicitudes creadas por admin
+  if (usuarioActivo.rol === 'proyectos') {
+    proyectos = proyectos.filter(s => {
+      // Buscamos al creador (solicitante) en la lista de usuarios para ver su rol
+      const creadorInfo = Object.values(usuarios).find(u => u.nombre === s.solicitante);
+      // Si el creador es admin, lo excluimos de la bandeja del supervisor
+      if (creadorInfo && creadorInfo.rol === 'admin') return false;
+      return true;
+    });
+  }
+
   if (!mostrarConcluidas && !fEstado) proyectos = proyectos.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
   if (fBuscar) proyectos = proyectos.filter(s => s.solicitante.toLowerCase().includes(fBuscar) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fBuscar)));
   if (fFecha) proyectos = proyectos.filter(s => s.fechaEvento === fFecha || s.fechaSolicitud === fFecha);
@@ -1028,7 +1055,6 @@ async function rechazar(id) {
 async function marcarConcluidaDirecto(id) {
   if (!confirm('✅ ¿Marcar como CONCLUIDA DIRECTA?\n\nEsto cerrará la solicitud SIN generar una Orden de Trabajo.')) return;
   try {
-    // CORRECCIÓN: Guarda el nombre configurado del titular de mantenimiento
     await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: nombreResponsableMantenimiento, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Solicitud concluida directamente'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
@@ -1037,7 +1063,6 @@ async function marcarConcluidaDirecto(id) {
 async function concluirEvento(id) {
   if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
   try {
-    // CORRECCIÓN: Guarda el nombre configurado del titular de mantenimiento
     await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: nombreResponsableMantenimiento, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Evento concluido'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
@@ -1139,22 +1164,25 @@ function cancelarEdicionSol() {
 function filtrarSolicitudesCoordinacion() {
   const fSolicitante = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroFecha').value;
-  const fTipo = document.getElementById('filtroTipo').value;
   const fEstado = document.getElementById('filtroEstado').value;
   const mostrarConcluidas = document.getElementById('toggleConcluidasCoordinacion').checked;
   const lista = document.getElementById('listaCoordinacion');
   lista.innerHTML = '';
-  let filtradas = solicitudes;
+  
+  // Filtramos primero por el tab activo (servicio o evento)
+  let filtradas = solicitudes.filter(s => s.tipo === tabCoordActiva);
+
   if (!mostrarConcluidas && !fEstado) filtradas = filtradas.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
   if (fSolicitante) filtradas = filtradas.filter(s => s.solicitante.toLowerCase().includes(fSolicitante) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fSolicitante)));
   if (fFecha) filtradas = filtradas.filter(s => s.fechaSolicitud === fFecha || s.fechaEvento === fFecha);
-  if (fTipo) filtradas = filtradas.filter(s => s.tipo === fTipo);
   if (fEstado) filtradas = filtradas.filter(s => s.estado === fEstado);
+  
+  // Ordenamiento: Eventos por fecha_evento (más cercano), Servicios por fecha_solicitud (más reciente)
   filtradas.sort((a, b) => {
-    if (a.tipo === 'evento' && b.tipo === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
-    if (a.tipo === 'servicio' && b.tipo === 'servicio') return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
-    return 0;
+    if (tabCoordActiva === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
+    return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
+  
   if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
   
   filtradas.forEach(s => {
@@ -1222,7 +1250,6 @@ function filtrarSolicitudesCoordinacion() {
 function limpiarFiltros() {
   document.getElementById('filtroSolicitante').value = '';
   document.getElementById('filtroFecha').value = '';
-  document.getElementById('filtroTipo').value = '';
   document.getElementById('filtroEstado').value = '';
   document.getElementById('toggleConcluidasCoordinacion').checked = false;
   filtrarSolicitudesCoordinacion();
@@ -1823,7 +1850,7 @@ async function cargarCompras() {
     
     lista.innerHTML = filtradas.map(c => `
       <div class="border rounded p-4 bg-white shadow-sm">
-        <div class="font-bold">Compra #${c.id} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
+        <div class="font-bold">Compra ${c.folio || 'SC-' + c.id} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
         <div class="text-sm text-gray-600">Fecha: ${c.fecha} | Solicitado por: ${c.solicitado_por || '—'}</div>
         <div class="text-sm mt-2"><b>Artículos:</b> ${(c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join(' | ') || '—'}</div>
         <div class="text-sm mt-1">${c.observaciones || ''}</div>
@@ -1887,7 +1914,7 @@ async function imprimirCompra(id) {
   const c = compras.find(x => x.id === id);
   if (!c) return;
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${c.id}</div></div></div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: ${c.folio || 'SC-' + c.id}</div></div></div>
     <table>
       <tr><td>Proveedor</td><td>${c.proveedor_nombre || ''}</td></tr>
       <tr><td>Fecha</td><td>${c.fecha}</td></tr>
@@ -1953,7 +1980,7 @@ async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
 
-  // CORRECCIÓN: Verifica si el autorizador es de proyectos
+  // Detecta si el autorizador es de proyectos
   const usuarioAutorizador = Object.values(usuarios).find(u => u.nombre === s.autorizadoPor);
   const esDeProyectos = usuarioAutorizador && (usuarioAutorizador.rol === 'proyectos' || (usuarioAutorizador.permisos && usuarioAutorizador.permisos.includes('proyectos')));
   const leyendaAutorizo = esDeProyectos ? 'Autorizó (Proyectos)' : 'Autorizó';
