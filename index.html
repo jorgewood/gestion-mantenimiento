@@ -679,7 +679,7 @@ async function sincronizarDatos() {
 }
 
 // ============================================================
-// LOGIN (Cambio B)
+// LOGIN
 // ============================================================
 async function iniciarSesion() {
   const user = document.getElementById('usuarioLogin').value.trim();
@@ -709,7 +709,7 @@ async function iniciarSesion() {
 function cerrarSesion() { localStorage.removeItem('usuarioActivo'); location.reload(); }
 
 // ============================================================
-// PERMISOS UI (Cambio A)
+// PERMISOS UI — TODO por checkboxes (incluida la maestra)
 // ============================================================
 function aplicarPermisosUI() {
   document.getElementById('loginModal').classList.add('hidden');
@@ -717,7 +717,6 @@ function aplicarPermisosUI() {
   document.getElementById('menuNavegacion').classList.remove('hidden');
   document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
 
-  // Badge de cuenta maestra
   const badge = document.getElementById('badgeMaestra');
   if (esCuentaMaestra()) badge.classList.remove('hidden');
   else badge.classList.add('hidden');
@@ -727,25 +726,23 @@ function aplicarPermisosUI() {
   document.getElementById('navMantenimiento').classList.add('hidden');
 
   const p = usuarioActivo.permisos || [];
-  const maestra = esCuentaMaestra();
 
-  if (maestra || p.includes('solicitudes')) document.getElementById('navSolicitudes').classList.remove('hidden');
-  if (maestra || p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
+  if (p.includes('solicitudes')) document.getElementById('navSolicitudes').classList.remove('hidden');
+  if (p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
 
   const permisosMant = ['mantenimiento','empleados','ordenes','incidencias','compras','secciones','proveedores','configuracion'];
-  if (maestra || permisosMant.some(x => p.includes(x))) document.getElementById('navMantenimiento').classList.remove('hidden');
+  if (permisosMant.some(x => p.includes(x))) document.getElementById('navMantenimiento').classList.remove('hidden');
 
-  // Cada botón del submenú se controla por su data-perm
   document.querySelectorAll('#subMenuMantenimiento > button').forEach(btn => {
     const perm = btn.getAttribute('data-perm');
     if (!perm) { btn.classList.remove('hidden'); return; }
-    if (maestra || p.includes(perm)) btn.classList.remove('hidden');
+    if (p.includes(perm)) btn.classList.remove('hidden');
     else btn.classList.add('hidden');
   });
 }
 
 // ============================================================
-// RECUPERAR SESIÓN (Cambio C)
+// RECUPERAR SESIÓN
 // ============================================================
 async function recuperarSesion() {
   const guardado = localStorage.getItem('usuarioActivo');
@@ -805,7 +802,7 @@ function iniciarAutoRefresco() {
 }
 
 // ============================================================
-// TEXTO DEL BOTÓN (Cambio D)
+// TEXTO DEL BOTÓN (solo por permisos)
 // ============================================================
 function actualizarTextoBoton() {
   const btnTexto = document.getElementById('btnTextoGuardar');
@@ -815,8 +812,7 @@ function actualizarTextoBoton() {
   if (!btnTexto || !btnIcono || !btnGuardar) return;
   if (idEditar > 0) { btnTexto.textContent = 'Guardar Cambios'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-edicion'; return; }
   const p = usuarioActivo?.permisos || [];
-  const maestra = esCuentaMaestra();
-  if (maestra || p.includes('mantenimiento')) {
+  if (p.includes('mantenimiento')) {
     btnTexto.textContent = 'Guardar Solicitud'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-mantenimiento';
   } else if (p.includes('proyectos')) {
     btnTexto.textContent = 'Enviar a Mantenimiento'; btnIcono.className = 'fas fa-tools'; btnGuardar.className = 'btn-enviar-mantenimiento';
@@ -866,7 +862,7 @@ function mostrarCamposEvento() {
 }
 
 // ============================================================
-// GUARDAR SOLICITUD (Cambio E)
+// GUARDAR SOLICITUD (solo por permisos)
 // ============================================================
 async function guardarSolicitud() {
   const idEditar = parseInt(document.getElementById('idEditarSol').value);
@@ -886,8 +882,7 @@ async function guardarSolicitud() {
   if (!datos.descripcion || !datos.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
   if (tipo === 'evento' && (!datos.nombreEvento || !datos.fechaEvento || !datos.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
   const p = usuarioActivo.permisos || [];
-  const maestra = esCuentaMaestra();
-  const puedeAutoAprobar = maestra || p.includes('proyectos') || p.includes('mantenimiento');
+  const puedeAutoAprobar = p.includes('proyectos') || p.includes('mantenimiento');
   try {
     if (idEditar > 0) {
       const original = solicitudes.find(x => x.id === idEditar);
@@ -913,7 +908,7 @@ async function guardarSolicitud() {
     await cargarDatosIniciales();
     guardarRespaldoLocal();
     cancelarEdicionSol();
-    if (maestra || p.includes('mantenimiento')) mostrarSeccion('panelCoordinacion', 'solicitudes');
+    if (p.includes('mantenimiento')) mostrarSeccion('panelCoordinacion', 'solicitudes');
     else if (p.includes('proyectos')) mostrarSeccion('bandejaProyectos');
     else mostrarSeccion('misSolicitudes');
   } catch (error) { alert('❌ Error: ' + error.message); }
@@ -963,12 +958,8 @@ function cargarMisSolicitudes() {
     if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') est = '🟡 En evaluación (Proyectos)';
     else if (s.estado === 'APROBADA') est = '🟢 Autorizada';
-    else if (s.estado === 'CONCLUIDO') {
-      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)';
-    }
-    else if (s.estado === 'CONCLUIDO_DIRECTO') {
-      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)';
-    }
+    else if (s.estado === 'CONCLUIDO') { est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') { est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; }
     else if (s.estado === 'RECHAZADA') est = '🔴 Rechazada';
 
     let botonModificar = '';
@@ -1003,13 +994,13 @@ function limpiarFiltrosMis() {
 }
 
 // ============================================================
-// BANDEJA PROYECTOS (Cambio F)
+// BANDEJA PROYECTOS (solo por permisos)
 // ============================================================
 function cargarBandejaProyectos() {
   const lista = document.getElementById('listaProyectos');
   lista.innerHTML = '';
   const p = usuarioActivo.permisos || [];
-  const tienePermiso = esCuentaMaestra() || p.includes('proyectos');
+  const tienePermiso = p.includes('proyectos');
   if (!tienePermiso) { lista.innerHTML = '<p class="text-red-500 font-bold p-4 bg-red-50 rounded">⛔ Acceso Denegado.</p>'; return; }
   const fBuscar = document.getElementById('filtroProyBuscar').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroProyFecha').value;
@@ -1017,9 +1008,8 @@ function cargarBandejaProyectos() {
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
 
-  // Si NO es cuenta maestra y tiene permiso 'proyectos' (supervisor),
-  // ocultar solicitudes creadas por otros admins no-maestros.
-  if (!esCuentaMaestra() && p.includes('proyectos')) {
+  // Supervisores (no maestros): ocultan solicitudes creadas por otros admins no-maestros.
+  if (!esCuentaMaestra()) {
     proyectos = proyectos.filter(s => {
       const creadorInfo = Object.values(usuarios).find(u => u.nombre === s.solicitante);
       if (creadorInfo && creadorInfo.rol === 'admin' && !creadorInfo.esMaestra) return false;
@@ -1042,14 +1032,8 @@ function cargarBandejaProyectos() {
     if (s.estado === 'DESBLOQUEADA') { etiqueta = '🔓 Desbloqueada'; colorFila = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') { etiqueta = '🟡 En evaluación'; colorFila = 'bg-yellow-50'; }
     else if (s.estado === 'APROBADA') { etiqueta = '🟢 Autorizada'; colorFila = 'bg-green-50'; }
-    else if (s.estado === 'CONCLUIDO') {
-      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)';
-      colorFila = 'bg-gray-100 opacity-75';
-    }
-    else if (s.estado === 'CONCLUIDO_DIRECTO') {
-      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)';
-      colorFila = 'bg-gray-100 opacity-75';
-    }
+    else if (s.estado === 'CONCLUIDO') { etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; colorFila = 'bg-gray-100 opacity-75'; }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') { etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; colorFila = 'bg-gray-100 opacity-75'; }
     else if (s.estado === 'RECHAZADA') { etiqueta = '🔴 Rechazada'; colorFila = 'bg-red-50'; }
 
     let botones = '';
@@ -1160,8 +1144,7 @@ function editarSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
   const p = usuarioActivo.permisos || [];
-  const maestra = esCuentaMaestra();
-  const esSupervisor = maestra || p.includes('proyectos') || p.includes('mantenimiento');
+  const esSupervisor = p.includes('proyectos') || p.includes('mantenimiento');
   const esCreador = s.solicitante === usuarioActivo.nombre;
   if (esSupervisor) {
     if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') { if (confirm('⚠️ Esta solicitud ya está autorizada/concluida.\n\n¿Deseas abrir el editor para modificarla de todos modos?')) cargarDatosEdicion(s); return; }
@@ -1217,7 +1200,7 @@ function cancelarEdicionSol() {
 }
 
 // ============================================================
-// COORDINACIÓN (Cambio G)
+// COORDINACIÓN (solo por permisos)
 // ============================================================
 function filtrarSolicitudesCoordinacion() {
   const fSolicitante = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
@@ -1242,22 +1225,15 @@ function filtrarSolicitudesCoordinacion() {
   if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
 
   const p = usuarioActivo?.permisos || [];
-  const maestra = esCuentaMaestra();
-  const esAdmin = maestra || p.includes('mantenimiento');
+  const esAdmin = p.includes('mantenimiento');
 
   filtradas.forEach(s => {
     let est = '', clase = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; clase = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') { est = '🟡 En evaluación'; clase = 'bg-yellow-50'; badge = '<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>'; }
     else if (s.estado === 'APROBADA') { est = '🟢 Autorizada'; clase = 'bg-green-50'; }
-    else if (s.estado === 'CONCLUIDO') {
-      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)';
-      clase = 'bg-gray-100 opacity-75';
-    }
-    else if (s.estado === 'CONCLUIDO_DIRECTO') {
-      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)';
-      clase = 'bg-gray-100 opacity-75';
-    }
+    else if (s.estado === 'CONCLUIDO') { est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; clase = 'bg-gray-100 opacity-75'; }
+    else if (s.estado === 'CONCLUIDO_DIRECTO') { est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; clase = 'bg-gray-100 opacity-75'; }
     else if (s.estado === 'RECHAZADA') { est = '🔴 Rechazada'; clase = 'bg-red-50'; }
 
     let btnConcluir = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
@@ -1314,15 +1290,15 @@ function limpiarFiltros() {
 }
 
 // ============================================================
-// OBSERVACIONES (Cambio J)
+// OBSERVACIONES (solo por permisos)
 // ============================================================
 async function agregarObservacion(id) {
   const p = usuarioActivo.permisos || [];
-  const tienePermiso = esCuentaMaestra() || p.includes('proyectos') || p.includes('mantenimiento');
+  const tienePermiso = p.includes('proyectos') || p.includes('mantenimiento');
   if (!tienePermiso) { alert('⚠️ Sin permiso'); return; }
   const observacion = prompt('📝 Observación para #' + id + ':');
   if (!observacion) return;
-  const rolEtiqueta = esCuentaMaestra() ? 'Cuenta Maestra' : (p.includes('mantenimiento') ? 'Mantenimiento' : 'Proyectos');
+  const rolEtiqueta = p.includes('mantenimiento') ? 'Mantenimiento' : 'Proyectos';
   try {
     await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: rolEtiqueta, texto: observacion.trim() });
     await cargarDatosIniciales(); alert('✅ Observación agregada'); recargarVistaActual();
@@ -1330,7 +1306,7 @@ async function agregarObservacion(id) {
 }
 
 // ============================================================
-// WHATSAPP (Cambio K)
+// WHATSAPP
 // ============================================================
 function enviarWhatsApp(id) {
   const s = solicitudes.find(x => x.id === id);
@@ -1359,7 +1335,8 @@ function enviarWhatsApp(id) {
 }
 
 // ============================================================
-// USUARIOS (Cambio H)
+// USUARIOS — la maestra se puede editar (nombre/rol/permisos),
+// pero no renombrar ni borrar
 // ============================================================
 async function agregarUsuario() {
   const user = document.getElementById('nuevoUsuario').value.trim();
@@ -1368,8 +1345,9 @@ async function agregarUsuario() {
   const rol = document.getElementById('rolUsuario').value;
   const editando = document.getElementById('editandoUsuario').value;
   const permisos = Array.from(document.querySelectorAll('.permiso-checkbox:checked')).map(cb => cb.value);
-  if (editando === 'mantenimiento' || user === 'mantenimiento') {
-    alert('🔒 La cuenta maestra no se puede editar ni recrear desde el panel.');
+
+  if (!editando && user === 'mantenimiento') {
+    alert('🔒 El usuario "mantenimiento" ya existe y no se puede recrear.');
     return;
   }
   if (!user || !nombre || (!editando && !pass)) { alert('⚠️ Complete los campos'); return; }
@@ -1378,6 +1356,7 @@ async function agregarUsuario() {
     if (editando) {
       await apiRequest(`/api/usuarios/${editando}`, 'PUT', { usuario: user, password: pass, nombre, rol, permisos });
       document.getElementById('editandoUsuario').value = '';
+      document.getElementById('nuevoUsuario').disabled = false;
       document.getElementById('btnAgregarUsuario').innerHTML = '💾 Guardar Usuario';
       document.getElementById('btnCancelarEditarUsuario').classList.add('hidden');
       alert('✅ Usuario actualizado');
@@ -1390,13 +1369,10 @@ async function agregarUsuario() {
 }
 
 function editarUsuario(username) {
-  if (username === 'mantenimiento') {
-    alert('🔒 La cuenta maestra no se puede editar desde el panel.\n\nEdita su nombre directamente en la base de datos (D1) o usa la variable de entorno NOMBRE_TITULAR_MAESTRA del Worker.');
-    return;
-  }
   const user = usuarios[username];
   if (!user) return;
   document.getElementById('nuevoUsuario').value = username;
+  document.getElementById('nuevoUsuario').disabled = (username === 'mantenimiento');
   document.getElementById('nuevoPass').value = '';
   document.getElementById('nombreCompletoUsuario').value = user.nombre;
   document.getElementById('rolUsuario').value = user.rol;
@@ -1404,6 +1380,9 @@ function editarUsuario(username) {
   document.getElementById('btnAgregarUsuario').innerHTML = '💾 Actualizar Usuario';
   document.getElementById('btnCancelarEditarUsuario').classList.remove('hidden');
   document.querySelectorAll('.permiso-checkbox').forEach(cb => { cb.checked = (user.permisos || []).includes(cb.value); });
+  if (username === 'mantenimiento') {
+    alert('ℹ️ Cuenta maestra: puedes cambiar nombre, rol y permisos. El usuario y la contraseña se editan directamente en D1.');
+  }
 }
 
 function cancelarEdicionUsuario() {
@@ -1415,6 +1394,7 @@ function cancelarEdicionUsuario() {
 
 function limpiarFormularioUsuario() {
   document.getElementById('nuevoUsuario').value = '';
+  document.getElementById('nuevoUsuario').disabled = false;
   document.getElementById('nuevoPass').value = '';
   document.getElementById('nombreCompletoUsuario').value = '';
   document.getElementById('rolUsuario').value = 'seccion';
@@ -1430,9 +1410,9 @@ function cargarListaUsuarios() {
     let rolTexto = v.rol === 'admin' ? 'Administrador' : (v.rol === 'proyectos' ? 'Supervisor' : 'Operador');
     const badgeMaestra = esMaestra ? '<span class="badge-maestra">🔑 MAESTRA</span>' : '';
     const botones = esMaestra
-      ? `<span class="text-xs text-gray-500 italic">Cuenta protegida — no editable</span>`
+      ? `<button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar permisos</button><span class="text-xs text-gray-500 italic ml-2">(no se puede borrar)</span>`
       : `<button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button><button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>`;
-    c.innerHTML += `<div class="border rounded p-3 bg-white flex justify-between items-center mb-2 ${esMaestra ? 'border-yellow-400 bg-yellow-50' : ''}"><div><b>${v.nombre}</b>${badgeMaestra}<br>Usuario: ${k} | Rol Base: ${rolTexto}</div><div class="flex gap-2">${botones}</div></div>`;
+    c.innerHTML += `<div class="border rounded p-3 bg-white flex justify-between items-center mb-2 ${esMaestra ? 'border-yellow-400 bg-yellow-50' : ''}"><div><b>${v.nombre}</b>${badgeMaestra}<br>Usuario: ${k} | Rol Base: ${rolTexto}</div><div class="flex gap-2 items-center">${botones}</div></div>`;
   }
 }
 
@@ -1768,9 +1748,6 @@ function cerrarModalCaptura() {
   document.getElementById('modalCapturaOrden').classList.remove('flex');
 }
 
-// ============================================================
-// GUARDAR CAPTURA ORDEN (usa nombre real del titular si es maestra)
-// ============================================================
 async function guardarCapturaOrden() {
   const ordenId = document.getElementById('capturaOrdenId').value;
   const solicitudId = document.getElementById('capturaSolicitudId').value;
@@ -2085,7 +2062,7 @@ async function eliminarProveedor(id) {
 }
 
 // ============================================================
-// IMPRIMIR SOLICITUD (usa nombre real del titular si es maestra)
+// IMPRIMIR SOLICITUD
 // ============================================================
 async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
@@ -2116,7 +2093,7 @@ async function imprimirSolicitud(id) {
 }
 
 // ============================================================
-// IMPRIMIR ORDEN DE TRABAJO (usa nombre real del titular)
+// IMPRIMIR ORDEN DE TRABAJO
 // ============================================================
 async function imprimirOrdenTrabajo(id) {
   const ordenes = await apiRequest('/api/ordenes');
