@@ -33,6 +33,7 @@
 
     .badge-desbloqueado { background: #a855f7; color: #fff; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .badge-pendiente-mantenimiento { background: #facc15; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .badge-maestra { background: #fde047; color: #713f12; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; margin-left: 6px; }
 
     .observacion-item { display: flex; justify-content: space-between; gap: 8px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; margin-top: 6px; }
     .obs-autor { font-weight: 700; font-size: 12px; }
@@ -99,6 +100,7 @@
   <div class="font-bold">
     🛠️ Mantenimiento
     <span class="hidden md:inline font-normal opacity-80">| <span id="nombreUsuarioActivo"></span></span>
+    <span id="badgeMaestra" class="hidden"><span class="badge-maestra">🔑 CUENTA MAESTRA</span></span>
   </div>
   <button onclick="cerrarSesion()" class="bg-white/20 px-3 py-1 rounded text-sm">Cerrar sesión</button>
 </div>
@@ -111,15 +113,15 @@
   <div class="relative">
     <button id="navMantenimiento" onclick="toggleMenu('subMenuMantenimiento')" class="bg-gray-100 px-3 py-2 rounded text-sm">⚙️ Mantenimiento ▼</button>
     <div id="subMenuMantenimiento" class="absolute hidden bg-white shadow-xl rounded border mt-1 z-50 min-w-[220px] p-2 space-y-1">
-      <button onclick="mostrarSeccion('panelCoordinacion','solicitudes')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">📋 Bandeja Coordinación</button>
-      <button onclick="mostrarSeccion('panelEmpleados')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">👥 Empleados</button>
-      <button onclick="mostrarSeccion('panelOrdenes')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">📋 Órdenes de Trabajo</button>
-      <button onclick="mostrarSeccion('panelIncidencias')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🚨 Incidencias / Permisos</button>
-      <button onclick="mostrarSeccion('panelCompras')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🛒 Compras</button>
-      <button onclick="mostrarSeccion('panelSecciones')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🏫 Secciones</button>
-      <button onclick="mostrarSeccion('panelProveedores')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🏷️ Proveedores</button>
-      <button onclick="mostrarSeccion('panelCoordinacion','configuracion')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">⚙️ Configuración</button>
-      <button onclick="mostrarSeccion('panelCoordinacion','usuarios')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">👤 Usuarios</button>
+      <button data-perm="mantenimiento" onclick="mostrarSeccion('panelCoordinacion','solicitudes')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">📋 Bandeja Coordinación</button>
+      <button data-perm="empleados" onclick="mostrarSeccion('panelEmpleados')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">👥 Empleados</button>
+      <button data-perm="ordenes" onclick="mostrarSeccion('panelOrdenes')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">📋 Órdenes de Trabajo</button>
+      <button data-perm="incidencias" onclick="mostrarSeccion('panelIncidencias')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🚨 Incidencias / Permisos</button>
+      <button data-perm="compras" onclick="mostrarSeccion('panelCompras')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🛒 Compras</button>
+      <button data-perm="secciones" onclick="mostrarSeccion('panelSecciones')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🏫 Secciones</button>
+      <button data-perm="proveedores" onclick="mostrarSeccion('panelProveedores')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">🏷️ Proveedores</button>
+      <button data-perm="configuracion" onclick="mostrarSeccion('panelCoordinacion','configuracion')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">⚙️ Configuración</button>
+      <button data-perm="configuracion" onclick="mostrarSeccion('panelCoordinacion','usuarios')" class="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">👤 Usuarios</button>
     </div>
   </div>
 </nav>
@@ -219,7 +221,6 @@
   <section id="panelCoordinacion" class="hidden">
     <h2 class="text-xl font-bold mb-3 text-colegio-azul">⚙️ Coordinación</h2>
     <div id="adminSolicitudes">
-      <!-- CAMBIO 1: Pestañas agregadas en Bandeja Coordinación -->
       <div class="flex gap-2 mb-3">
         <button id="tabCoordServicios" onclick="cambiarTabCoord('servicio')" class="px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul">Servicios</button>
         <button id="tabCoordEventos" onclick="cambiarTabCoord('evento')" class="px-4 py-2 font-semibold text-gray-500">Eventos</button>
@@ -240,7 +241,7 @@
         <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggleConcluidasCoordinacion" onchange="filtrarSolicitudesCoordinacion()"> Mostrar concluidas</label>
         <button onclick="limpiarFiltros()" class="bg-gray-200 rounded px-3 py-2 text-sm">Limpiar</button>
       </div>
-      
+
       <div id="listaCoordinacion" class="space-y-3"></div>
     </div>
 
@@ -500,10 +501,22 @@ let logoDataURL = '';
 let nombreResponsableMantenimiento = 'Ricardo Madera';
 let tabMisActiva = 'servicio';
 let tabProyActiva = 'servicio';
-let tabCoordActiva = 'servicio'; // Variable para las nuevas pestañas de Coordinación
+let tabCoordActiva = 'servicio';
 let intervaloRefresco = null;
 let incidenciasCache = [];
 let empleadosCache = [];
+
+// ============================================================
+// HELPER: nombre real del titular cuando es cuenta maestra
+// ============================================================
+function nombreTitular() {
+  if (usuarioActivo && usuarioActivo.esMaestra) return usuarioActivo.nombre;
+  return nombreResponsableMantenimiento;
+}
+
+function esCuentaMaestra() {
+  return !!(usuarioActivo && usuarioActivo.esMaestra === true);
+}
 
 function formatearFechaLocal(f) {
   if (!f) return '';
@@ -665,6 +678,9 @@ async function sincronizarDatos() {
   }
 }
 
+// ============================================================
+// LOGIN (Cambio B)
+// ============================================================
 async function iniciarSesion() {
   const user = document.getElementById('usuarioLogin').value.trim();
   const pass = document.getElementById('passLogin').value;
@@ -672,7 +688,13 @@ async function iniciarSesion() {
   try {
     const data = await apiRequest('/api/login', 'POST', { usuario: user, password: pass });
     if (data.success) {
-      usuarioActivo = { id: user, nombre: data.nombre, rol: data.rol, permisos: data.permisos || [] };
+      usuarioActivo = {
+        id: user,
+        nombre: data.nombre,
+        rol: data.rol,
+        permisos: data.permisos || [],
+        esMaestra: data.esMaestra === true
+      };
       localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
       aplicarPermisosUI();
       await cargarDatosIniciales();
@@ -686,38 +708,50 @@ async function iniciarSesion() {
 
 function cerrarSesion() { localStorage.removeItem('usuarioActivo'); location.reload(); }
 
+// ============================================================
+// PERMISOS UI (Cambio A)
+// ============================================================
 function aplicarPermisosUI() {
   document.getElementById('loginModal').classList.add('hidden');
   document.getElementById('barraSuperior').classList.remove('hidden');
   document.getElementById('menuNavegacion').classList.remove('hidden');
   document.getElementById('nombreUsuarioActivo').textContent = usuarioActivo.nombre;
+
+  // Badge de cuenta maestra
+  const badge = document.getElementById('badgeMaestra');
+  if (esCuentaMaestra()) badge.classList.remove('hidden');
+  else badge.classList.add('hidden');
+
   document.getElementById('navSolicitudes').classList.add('hidden');
   document.getElementById('btnProyectos').classList.add('hidden');
   document.getElementById('navMantenimiento').classList.add('hidden');
+
   const p = usuarioActivo.permisos || [];
-  if (p.includes('solicitudes') || usuarioActivo.rol === 'admin') document.getElementById('navSolicitudes').classList.remove('hidden');
-  if (p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
-  const permisosMant = ['mantenimiento', 'empleados', 'ordenes', 'incidencias', 'compras', 'secciones', 'proveedores', 'configuracion'];
-  if (permisosMant.some(x => p.includes(x)) || usuarioActivo.rol === 'admin') document.getElementById('navMantenimiento').classList.remove('hidden');
-  for (let btn of document.getElementById('subMenuMantenimiento').children) {
-    const t = btn.textContent.toLowerCase();
-    if (t.includes('bandeja') && !p.includes('mantenimiento') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('empleados') && !p.includes('empleados') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('órdenes') && !p.includes('ordenes') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('incidencias') && !p.includes('incidencias') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('compras') && !p.includes('compras') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('secciones') && !p.includes('secciones') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('proveedores') && !p.includes('proveedores') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('configuración') && !p.includes('configuracion') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else if (t.includes('usuarios') && !p.includes('configuracion') && usuarioActivo.rol !== 'admin') btn.classList.add('hidden');
-    else btn.classList.remove('hidden');
-  }
+  const maestra = esCuentaMaestra();
+
+  if (maestra || p.includes('solicitudes')) document.getElementById('navSolicitudes').classList.remove('hidden');
+  if (maestra || p.includes('proyectos')) document.getElementById('btnProyectos').classList.remove('hidden');
+
+  const permisosMant = ['mantenimiento','empleados','ordenes','incidencias','compras','secciones','proveedores','configuracion'];
+  if (maestra || permisosMant.some(x => p.includes(x))) document.getElementById('navMantenimiento').classList.remove('hidden');
+
+  // Cada botón del submenú se controla por su data-perm
+  document.querySelectorAll('#subMenuMantenimiento > button').forEach(btn => {
+    const perm = btn.getAttribute('data-perm');
+    if (!perm) { btn.classList.remove('hidden'); return; }
+    if (maestra || p.includes(perm)) btn.classList.remove('hidden');
+    else btn.classList.add('hidden');
+  });
 }
 
+// ============================================================
+// RECUPERAR SESIÓN (Cambio C)
+// ============================================================
 async function recuperarSesion() {
   const guardado = localStorage.getItem('usuarioActivo');
   if (guardado) {
     usuarioActivo = JSON.parse(guardado);
+    if (usuarioActivo.esMaestra === undefined) usuarioActivo.esMaestra = false;
     aplicarPermisosUI();
     await cargarDatosIniciales();
     await cargarSecciones();
@@ -770,6 +804,9 @@ function iniciarAutoRefresco() {
   }, 15000);
 }
 
+// ============================================================
+// TEXTO DEL BOTÓN (Cambio D)
+// ============================================================
 function actualizarTextoBoton() {
   const btnTexto = document.getElementById('btnTextoGuardar');
   const btnIcono = document.getElementById('btnIconoGuardar');
@@ -777,9 +814,15 @@ function actualizarTextoBoton() {
   const idEditar = parseInt(document.getElementById('idEditarSol').value);
   if (!btnTexto || !btnIcono || !btnGuardar) return;
   if (idEditar > 0) { btnTexto.textContent = 'Guardar Cambios'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-edicion'; return; }
-  if (usuarioActivo && (usuarioActivo.rol === 'admin' || usuarioActivo.permisos?.includes('mantenimiento'))) { btnTexto.textContent = 'Guardar Solicitud'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-mantenimiento'; }
-  else if (usuarioActivo && (usuarioActivo.rol === 'proyectos' || usuarioActivo.permisos?.includes('proyectos'))) { btnTexto.textContent = 'Enviar a Mantenimiento'; btnIcono.className = 'fas fa-tools'; btnGuardar.className = 'btn-enviar-mantenimiento'; }
-  else { btnTexto.textContent = 'Enviar a Proyectos Generales'; btnIcono.className = 'fas fa-paper-plane'; btnGuardar.className = 'btn-enviar-proyectos'; }
+  const p = usuarioActivo?.permisos || [];
+  const maestra = esCuentaMaestra();
+  if (maestra || p.includes('mantenimiento')) {
+    btnTexto.textContent = 'Guardar Solicitud'; btnIcono.className = 'fas fa-save'; btnGuardar.className = 'btn-guardar-mantenimiento';
+  } else if (p.includes('proyectos')) {
+    btnTexto.textContent = 'Enviar a Mantenimiento'; btnIcono.className = 'fas fa-tools'; btnGuardar.className = 'btn-enviar-mantenimiento';
+  } else {
+    btnTexto.textContent = 'Enviar a Proyectos Generales'; btnIcono.className = 'fas fa-paper-plane'; btnGuardar.className = 'btn-enviar-proyectos';
+  }
 }
 
 function nuevaSolicitud() {
@@ -801,9 +844,8 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
     document.getElementById('adminSolicitudes').classList.add('hidden');
     document.getElementById('adminUsuarios').classList.add('hidden');
     document.getElementById('adminConfiguracion').classList.add('hidden');
-    if (subpanel === 'solicitudes') { 
-      document.getElementById('adminSolicitudes').classList.remove('hidden'); 
-      // Al mostrar, forzamos el tab a servicios por defecto
+    if (subpanel === 'solicitudes') {
+      document.getElementById('adminSolicitudes').classList.remove('hidden');
       cambiarTabCoord('servicio');
     }
     else if (subpanel === 'usuarios') { document.getElementById('adminUsuarios').classList.remove('hidden'); cargarListaUsuarios(); }
@@ -823,6 +865,9 @@ function mostrarCamposEvento() {
   document.getElementById('camposEvento').classList.toggle('hidden', document.getElementById('tipoSolicitud').value !== 'evento');
 }
 
+// ============================================================
+// GUARDAR SOLICITUD (Cambio E)
+// ============================================================
 async function guardarSolicitud() {
   const idEditar = parseInt(document.getElementById('idEditarSol').value);
   const tipo = document.getElementById('tipoSolicitud').value;
@@ -840,30 +885,36 @@ async function guardarSolicitud() {
   };
   if (!datos.descripcion || !datos.fechaSolicitud) { alert('⚠️ Completa la descripción y la fecha'); return; }
   if (tipo === 'evento' && (!datos.nombreEvento || !datos.fechaEvento || !datos.lugarEvento)) { alert('⚠️ Completa datos del evento'); return; }
+  const p = usuarioActivo.permisos || [];
+  const maestra = esCuentaMaestra();
+  const puedeAutoAprobar = maestra || p.includes('proyectos') || p.includes('mantenimiento');
   try {
     if (idEditar > 0) {
       const original = solicitudes.find(x => x.id === idEditar);
       let nuevoEstado = original.estado;
       if (original.estado === 'DESBLOQUEADA') {
-        if (usuarioActivo.rol === 'seccion') { nuevoEstado = 'PENDIENTE_PROYECTOS'; datos.autorizadoPor = null; }
+        if (!puedeAutoAprobar) { nuevoEstado = 'PENDIENTE_PROYECTOS'; datos.autorizadoPor = null; }
         else { nuevoEstado = 'APROBADA'; datos.autorizadoPor = usuarioActivo.nombre; datos.fechaAutorizacion = new Date().toISOString(); }
-      } else if (original.estado === 'APROBADA' && (usuarioActivo.rol === 'proyectos' || usuarioActivo.rol === 'admin')) {
+      } else if (original.estado === 'APROBADA' && puedeAutoAprobar) {
         nuevoEstado = 'APROBADA'; datos.autorizadoPor = usuarioActivo.nombre; datos.fechaAutorizacion = new Date().toISOString();
       }
       await apiRequest(`/api/solicitudes/${idEditar}`, 'PUT', { ...datos, id: idEditar, estado: nuevoEstado, observaciones: original.observaciones || [] });
       alert('✅ Solicitud actualizada correctamente');
     } else {
-      if (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos') {
+      if (puedeAutoAprobar) {
         datos.estado = 'APROBADA'; datos.autorizadoPor = usuarioActivo.nombre; datos.fechaAutorizacion = new Date().toISOString();
         alert('✅ Solicitud creada y autorizada automáticamente');
-      } else { datos.estado = 'PENDIENTE_PROYECTOS'; alert('✅ Enviada a Proyectos para su revisión'); }
+      } else {
+        datos.estado = 'PENDIENTE_PROYECTOS';
+        alert('✅ Enviada a Proyectos para su revisión');
+      }
       await apiRequest('/api/solicitudes', 'POST', datos);
     }
     await cargarDatosIniciales();
     guardarRespaldoLocal();
     cancelarEdicionSol();
-    if (usuarioActivo.rol === 'proyectos') mostrarSeccion('bandejaProyectos');
-    else if (usuarioActivo.rol === 'admin') mostrarSeccion('panelCoordinacion', 'solicitudes');
+    if (maestra || p.includes('mantenimiento')) mostrarSeccion('panelCoordinacion', 'solicitudes');
+    else if (p.includes('proyectos')) mostrarSeccion('bandejaProyectos');
     else mostrarSeccion('misSolicitudes');
   } catch (error) { alert('❌ Error: ' + error.message); }
 }
@@ -882,7 +933,6 @@ function cambiarTabProy(tipo) {
   cargarBandejaProyectos();
 }
 
-// NUEVA FUNCIÓN: Manejo de pestañas en Coordinación
 function cambiarTabCoord(tipo) {
   tabCoordActiva = tipo;
   document.getElementById('tabCoordServicios').className = tipo === 'servicio' ? 'px-4 py-2 font-semibold text-colegio-azul border-b-2 border-colegio-azul' : 'px-4 py-2 font-semibold text-gray-500';
@@ -907,7 +957,7 @@ function cargarMisSolicitudes() {
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
   if (mis.length === 0) { lista.innerHTML = '<p class="text-gray-500">No tienes solicitudes registradas con estos filtros.</p>'; return; }
-  
+
   mis.forEach(s => {
     let est = '', claseExtra = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; claseExtra = 'estado-desbloqueado'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
@@ -924,7 +974,7 @@ function cargarMisSolicitudes() {
     let botonModificar = '';
     if (s.estado !== 'RECHAZADA' && s.estado !== 'APROBADA' && s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO') botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
     else if (s.estado === 'DESBLOQUEADA') botonModificar = `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>`;
-    
+
     lista.innerHTML += `
       <div class="border rounded-lg p-4 bg-white shadow-sm ${claseExtra}">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -952,24 +1002,27 @@ function limpiarFiltrosMis() {
   cargarMisSolicitudes();
 }
 
+// ============================================================
+// BANDEJA PROYECTOS (Cambio F)
+// ============================================================
 function cargarBandejaProyectos() {
   const lista = document.getElementById('listaProyectos');
   lista.innerHTML = '';
-  const tienePermiso = (usuarioActivo.permisos && usuarioActivo.permisos.includes('proyectos')) || usuarioActivo.rol === 'proyectos';
+  const p = usuarioActivo.permisos || [];
+  const tienePermiso = esCuentaMaestra() || p.includes('proyectos');
   if (!tienePermiso) { lista.innerHTML = '<p class="text-red-500 font-bold p-4 bg-red-50 rounded">⛔ Acceso Denegado.</p>'; return; }
   const fBuscar = document.getElementById('filtroProyBuscar').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroProyFecha').value;
   const fEstado = document.getElementById('filtroProyEstado').value;
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
-  
-  // CAMBIO 2: Si es supervisor (proyectos), ocultar solicitudes creadas por admin
-  if (usuarioActivo.rol === 'proyectos') {
+
+  // Si NO es cuenta maestra y tiene permiso 'proyectos' (supervisor),
+  // ocultar solicitudes creadas por otros admins no-maestros.
+  if (!esCuentaMaestra() && p.includes('proyectos')) {
     proyectos = proyectos.filter(s => {
-      // Buscamos al creador (solicitante) en la lista de usuarios para ver su rol
       const creadorInfo = Object.values(usuarios).find(u => u.nombre === s.solicitante);
-      // Si el creador es admin, lo excluimos de la bandeja del supervisor
-      if (creadorInfo && creadorInfo.rol === 'admin') return false;
+      if (creadorInfo && creadorInfo.rol === 'admin' && !creadorInfo.esMaestra) return false;
       return true;
     });
   }
@@ -983,18 +1036,18 @@ function cargarBandejaProyectos() {
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
   if (proyectos.length === 0) { lista.innerHTML = '<p class="text-gray-500">✅ Sin solicitudes con estos filtros.</p>'; return; }
-  
+
   proyectos.forEach(s => {
     let etiqueta = '', colorFila = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { etiqueta = '🔓 Desbloqueada'; colorFila = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') { etiqueta = '🟡 En evaluación'; colorFila = 'bg-yellow-50'; }
     else if (s.estado === 'APROBADA') { etiqueta = '🟢 Autorizada'; colorFila = 'bg-green-50'; }
     else if (s.estado === 'CONCLUIDO') {
-      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; 
+      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)';
       colorFila = 'bg-gray-100 opacity-75';
     }
     else if (s.estado === 'CONCLUIDO_DIRECTO') {
-      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; 
+      etiqueta = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)';
       colorFila = 'bg-gray-100 opacity-75';
     }
     else if (s.estado === 'RECHAZADA') { etiqueta = '🔴 Rechazada'; colorFila = 'bg-red-50'; }
@@ -1013,7 +1066,7 @@ function cargarBandejaProyectos() {
       botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
     }
     botones += `<button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
-    
+
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1055,7 +1108,7 @@ async function rechazar(id) {
 async function marcarConcluidaDirecto(id) {
   if (!confirm('✅ ¿Marcar como CONCLUIDA DIRECTA?\n\nEsto cerrará la solicitud SIN generar una Orden de Trabajo.')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: nombreResponsableMantenimiento, fechaConclusion: new Date().toISOString() });
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Solicitud concluida directamente'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1063,7 +1116,7 @@ async function marcarConcluidaDirecto(id) {
 async function concluirEvento(id) {
   if (!confirm('✅ ¿Marcar este EVENTO como CONCLUIDO?\n\nEsto cerrará la solicitud del evento.')) return;
   try {
-    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: nombreResponsableMantenimiento, fechaConclusion: new Date().toISOString() });
+    await apiRequest(`/api/solicitudes/${id}`, 'PUT', { estado: 'CONCLUIDO_DIRECTO', concluidoPor: usuarioActivo.nombre, fechaConclusion: new Date().toISOString() });
     await cargarDatosIniciales(); alert('✅ Evento concluido'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1106,7 +1159,9 @@ function recargarVistaActual() {
 function editarSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
-  const esSupervisor = (usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos');
+  const p = usuarioActivo.permisos || [];
+  const maestra = esCuentaMaestra();
+  const esSupervisor = maestra || p.includes('proyectos') || p.includes('mantenimiento');
   const esCreador = s.solicitante === usuarioActivo.nombre;
   if (esSupervisor) {
     if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') { if (confirm('⚠️ Esta solicitud ya está autorizada/concluida.\n\n¿Deseas abrir el editor para modificarla de todos modos?')) cargarDatosEdicion(s); return; }
@@ -1161,6 +1216,9 @@ function cancelarEdicionSol() {
   document.getElementById('btnCancelarSol').classList.add('hidden');
 }
 
+// ============================================================
+// COORDINACIÓN (Cambio G)
+// ============================================================
 function filtrarSolicitudesCoordinacion() {
   const fSolicitante = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
   const fFecha = document.getElementById('filtroFecha').value;
@@ -1168,45 +1226,45 @@ function filtrarSolicitudesCoordinacion() {
   const mostrarConcluidas = document.getElementById('toggleConcluidasCoordinacion').checked;
   const lista = document.getElementById('listaCoordinacion');
   lista.innerHTML = '';
-  
-  // Filtramos primero por el tab activo (servicio o evento)
+
   let filtradas = solicitudes.filter(s => s.tipo === tabCoordActiva);
 
   if (!mostrarConcluidas && !fEstado) filtradas = filtradas.filter(s => s.estado !== 'CONCLUIDO' && s.estado !== 'CONCLUIDO_DIRECTO');
   if (fSolicitante) filtradas = filtradas.filter(s => s.solicitante.toLowerCase().includes(fSolicitante) || (s.nombreEvento && s.nombreEvento.toLowerCase().includes(fSolicitante)));
   if (fFecha) filtradas = filtradas.filter(s => s.fechaSolicitud === fFecha || s.fechaEvento === fFecha);
   if (fEstado) filtradas = filtradas.filter(s => s.estado === fEstado);
-  
-  // Ordenamiento: Eventos por fecha_evento (más cercano), Servicios por fecha_solicitud (más reciente)
+
   filtradas.sort((a, b) => {
     if (tabCoordActiva === 'evento') return new Date(a.fechaEvento || a.fechaSolicitud) - new Date(b.fechaEvento || b.fechaSolicitud);
     return new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud);
   });
-  
+
   if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin solicitudes.</p>'; return; }
-  
+
+  const p = usuarioActivo?.permisos || [];
+  const maestra = esCuentaMaestra();
+  const esAdmin = maestra || p.includes('mantenimiento');
+
   filtradas.forEach(s => {
     let est = '', clase = '', badge = '';
     if (s.estado === 'DESBLOQUEADA') { est = '🔓 Desbloqueada'; clase = 'bg-yellow-50'; badge = '<span class="badge-desbloqueado">🔓 DESBLOQUEADA</span>'; }
     else if (s.estado === 'PENDIENTE_PROYECTOS') { est = '🟡 En evaluación'; clase = 'bg-yellow-50'; badge = '<span class="badge-pendiente-mantenimiento">🟡 EN EVALUACIÓN</span>'; }
     else if (s.estado === 'APROBADA') { est = '🟢 Autorizada'; clase = 'bg-green-50'; }
     else if (s.estado === 'CONCLUIDO') {
-      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)'; 
+      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Orden)';
       clase = 'bg-gray-100 opacity-75';
     }
     else if (s.estado === 'CONCLUIDO_DIRECTO') {
-      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)'; 
+      est = s.tipo === 'evento' ? '✅ Concluida' : '✅ Concluida (Directo)';
       clase = 'bg-gray-100 opacity-75';
     }
     else if (s.estado === 'RECHAZADA') { est = '🔴 Rechazada'; clase = 'bg-red-50'; }
 
-    const esAdmin = usuarioActivo?.rol === 'admin' || (usuarioActivo?.permisos && usuarioActivo.permisos.includes('mantenimiento'));
-    
     let btnConcluir = (s.tipo === 'servicio' && s.estado === 'APROBADA' && esAdmin)
       ? `<button onclick="marcarConcluidaDirecto(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Directo</button>` : '';
-    let btnConcluirEvento = (s.tipo === 'evento' && s.estado === 'APROBADA' && usuarioActivo?.rol === 'admin')
+    let btnConcluirEvento = (s.tipo === 'evento' && s.estado === 'APROBADA' && esAdmin)
       ? `<button onclick="concluirEvento(${s.id})" class="bg-colegio-verde text-white px-3 py-1 rounded text-sm">✅ Concluir Evento</button>` : '';
-      
+
     let btnDesbloquear = ((s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') && esAdmin)
       ? `<button onclick="desbloquearSolicitud(${s.id})" class="bg-colegio-morado text-white px-3 py-1 rounded text-sm">🔓 Desbloquear</button>` : '';
     let btnBloquear = (s.estado === 'DESBLOQUEADA' && esAdmin) ? `<button onclick="bloquearSolicitud(${s.id})" class="btn-bloquear">🔒 Bloquear</button>` : '';
@@ -1215,17 +1273,17 @@ function filtrarSolicitudesCoordinacion() {
     let btnObservacion = (puedeModificar && esAdmin) ? `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>` : '';
     let btnModificar = (puedeModificar && esAdmin) ? `<button onclick="editarSolicitud(${s.id})" class="bg-colegio-naranja text-white px-3 py-1 rounded text-sm">✏️ Modificar</button>` : '';
     let btnWhatsApp = (numeroWhatsAppDestino && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO')) ? `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : '';
-    
+
     let btnGenerarOrden = (s.estado === 'APROBADA' && s.tipo === 'servicio' && esAdmin)
       ? `<button onclick="abrirModalOrden(${s.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">📋 Generar Orden</button>` : '';
-      
+
     let obsHTML = '';
     if (s.observaciones && s.observaciones.length > 0) {
       obsHTML = `<div class="mt-2"><span class="font-semibold text-sm">📝 Observaciones:</span>`;
-      s.observaciones.forEach((obs, i) => { obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div><div class="obs-texto">${obs.texto}</div></div></div>`; });
+      s.observaciones.forEach((obs) => { obsHTML += `<div class="observacion-item"><div><div class="obs-autor">${obs.autor} (${obs.rol}) <span class="obs-fecha">- ${formatearFechaLocal(obs.fecha)}</span></div><div class="obs-texto">${obs.texto}</div></div></div>`; });
       obsHTML += `</div>`;
     }
-    
+
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${clase} shadow-sm">
         <div class="font-bold">${s.tipo === 'servicio' ? '🛠️ Servicio' : '📅 Evento'} — ${s.area}</div>
@@ -1255,21 +1313,29 @@ function limpiarFiltros() {
   filtrarSolicitudesCoordinacion();
 }
 
+// ============================================================
+// OBSERVACIONES (Cambio J)
+// ============================================================
 async function agregarObservacion(id) {
-  const tienePermiso = usuarioActivo.rol === 'admin' || usuarioActivo.rol === 'proyectos' || (usuarioActivo.permisos && usuarioActivo.permisos.includes('mantenimiento'));
+  const p = usuarioActivo.permisos || [];
+  const tienePermiso = esCuentaMaestra() || p.includes('proyectos') || p.includes('mantenimiento');
   if (!tienePermiso) { alert('⚠️ Sin permiso'); return; }
   const observacion = prompt('📝 Observación para #' + id + ':');
   if (!observacion) return;
+  const rolEtiqueta = esCuentaMaestra() ? 'Cuenta Maestra' : (p.includes('mantenimiento') ? 'Mantenimiento' : 'Proyectos');
   try {
-    await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: usuarioActivo.rol === 'admin' ? 'Mantenimiento' : 'Proyectos', texto: observacion.trim() });
+    await apiRequest(`/api/solicitudes/${id}/observaciones`, 'POST', { autor: usuarioActivo.nombre, rol: rolEtiqueta, texto: observacion.trim() });
     await cargarDatosIniciales(); alert('✅ Observación agregada'); recargarVistaActual();
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// WHATSAPP (Cambio K)
+// ============================================================
 function enviarWhatsApp(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!numeroWhatsAppDestino) { alert('⚠️ Sin número WhatsApp'); return; }
-  
+
   let mensaje = `*SOLICITUD DE ${s.tipo === 'servicio' ? 'MANTENIMIENTO' : 'EVENTO'}*\n`;
   mensaje += `Folio: #${s.id}\n`;
   if (s.tipo === 'evento') mensaje += `Evento: ${s.nombreEvento || 'N/A'}\n`;
@@ -1288,10 +1354,13 @@ function enviarWhatsApp(id) {
     mensaje += `\n*Observaciones:*\n`;
     s.observaciones.forEach(obs => { mensaje += `- ${obs.autor} (${obs.rol}): ${obs.texto}\n`; });
   }
-  
+
   window.open('https://wa.me/' + numeroWhatsAppDestino + '?text=' + encodeURIComponent(mensaje), '_blank');
 }
 
+// ============================================================
+// USUARIOS (Cambio H)
+// ============================================================
 async function agregarUsuario() {
   const user = document.getElementById('nuevoUsuario').value.trim();
   const pass = document.getElementById('nuevoPass').value.trim();
@@ -1299,6 +1368,10 @@ async function agregarUsuario() {
   const rol = document.getElementById('rolUsuario').value;
   const editando = document.getElementById('editandoUsuario').value;
   const permisos = Array.from(document.querySelectorAll('.permiso-checkbox:checked')).map(cb => cb.value);
+  if (editando === 'mantenimiento' || user === 'mantenimiento') {
+    alert('🔒 La cuenta maestra no se puede editar ni recrear desde el panel.');
+    return;
+  }
   if (!user || !nombre || (!editando && !pass)) { alert('⚠️ Complete los campos'); return; }
   if (pass && pass.length < 6) { alert('⚠️ La contraseña debe tener al menos 6 caracteres'); return; }
   try {
@@ -1317,6 +1390,10 @@ async function agregarUsuario() {
 }
 
 function editarUsuario(username) {
+  if (username === 'mantenimiento') {
+    alert('🔒 La cuenta maestra no se puede editar desde el panel.\n\nEdita su nombre directamente en la base de datos (D1) o usa la variable de entorno NOMBRE_TITULAR_MAESTRA del Worker.');
+    return;
+  }
   const user = usuarios[username];
   if (!user) return;
   document.getElementById('nuevoUsuario').value = username;
@@ -1349,24 +1426,31 @@ function cargarListaUsuarios() {
   c.innerHTML = '';
   if (Object.keys(usuarios).length === 0) { c.innerHTML = '<p class="text-gray-500">No hay usuarios.</p>'; return; }
   for (const [k, v] of Object.entries(usuarios)) {
+    const esMaestra = v.esMaestra || k === 'mantenimiento';
     let rolTexto = v.rol === 'admin' ? 'Administrador' : (v.rol === 'proyectos' ? 'Supervisor' : 'Operador');
-    c.innerHTML += `<div class="border rounded p-3 bg-white flex justify-between items-center mb-2"><div><b>${v.nombre}</b><br>Usuario: ${k} | Rol Base: ${rolTexto}</div><div class="flex gap-2"><button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button><button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button></div></div>`;
+    const badgeMaestra = esMaestra ? '<span class="badge-maestra">🔑 MAESTRA</span>' : '';
+    const botones = esMaestra
+      ? `<span class="text-xs text-gray-500 italic">Cuenta protegida — no editable</span>`
+      : `<button onclick="editarUsuario('${k}')" class="btn-editar-usuario">✏️ Editar</button><button onclick="eliminarUsuario('${k}')" class="bg-red-100 px-2 py-1 rounded text-sm">🗑️ Eliminar</button>`;
+    c.innerHTML += `<div class="border rounded p-3 bg-white flex justify-between items-center mb-2 ${esMaestra ? 'border-yellow-400 bg-yellow-50' : ''}"><div><b>${v.nombre}</b>${badgeMaestra}<br>Usuario: ${k} | Rol Base: ${rolTexto}</div><div class="flex gap-2">${botones}</div></div>`;
   }
 }
 
 async function eliminarUsuario(u) {
+  if (u === 'mantenimiento') { alert('🔒 No se puede eliminar la cuenta maestra.'); return; }
   if (!confirm(`⚠️ ¿ELIMINAR al usuario "${u}"?`)) return;
   try { await apiRequest(`/api/usuarios/${u}`, 'DELETE'); await cargarDatosIniciales(); cargarListaUsuarios(); alert('🗑️ Eliminado'); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
 async function guardarNombreMantenimiento() {
   const nuevoNombre = document.getElementById('nombreMantenimiento').value.trim();
   if (!nuevoNombre) return;
   try {
     await apiRequest('/api/configuracion', 'PUT', { nombreResponsableMantenimiento: nuevoNombre });
     nombreResponsableMantenimiento = nuevoNombre;
-    if (usuarios.admin) usuarios.admin.nombre = nuevoNombre;
-    if (usuarioActivo && usuarioActivo.id === 'admin') { usuarioActivo.nombre = nuevoNombre; localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo)); document.getElementById('nombreUsuarioActivo').textContent = nuevoNombre; }
     await cargarDatosIniciales(); cargarListaUsuarios(); alert('✅ Actualizado');
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
@@ -1408,6 +1492,9 @@ async function actualizarWhatsApp() {
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// EXPORTAR EXCEL
+// ============================================================
 async function exportarExcelAnalisis() {
   try {
     const [sols, ordenes, compras, incidencias, empleados] = await Promise.all([apiRequest('/api/solicitudes'), apiRequest('/api/ordenes'), apiRequest('/api/compras'), apiRequest('/api/incidencias'), apiRequest('/api/empleados')]);
@@ -1487,6 +1574,9 @@ async function restaurarRespaldo(input) {
   lector.readAsText(archivo);
 }
 
+// ============================================================
+// EMPLEADOS
+// ============================================================
 async function cargarEmpleados() {
   const lista = document.getElementById('listaEmpleados');
   lista.innerHTML = 'Cargando...';
@@ -1568,6 +1658,9 @@ async function eliminarEmpleado(id) {
   try { await apiRequest(`/api/empleados/${id}`, 'DELETE'); cargarEmpleados(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// ÓRDENES
+// ============================================================
 function cargarOrdenes() {
   const lista = document.getElementById('listaOrdenes');
   lista.innerHTML = 'Cargando...';
@@ -1675,6 +1768,9 @@ function cerrarModalCaptura() {
   document.getElementById('modalCapturaOrden').classList.remove('flex');
 }
 
+// ============================================================
+// GUARDAR CAPTURA ORDEN (usa nombre real del titular si es maestra)
+// ============================================================
 async function guardarCapturaOrden() {
   const ordenId = document.getElementById('capturaOrdenId').value;
   const solicitudId = document.getElementById('capturaSolicitudId').value;
@@ -1684,7 +1780,7 @@ async function guardarCapturaOrden() {
   const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
   if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
   try {
-    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: nombreResponsableMantenimiento });
+    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: nombreTitular() });
     alert('✅ Concluida');
     cerrarModalCaptura();
     cargarOrdenes();
@@ -1692,6 +1788,9 @@ async function guardarCapturaOrden() {
   } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// INCIDENCIAS
+// ============================================================
 async function cargarIncidencias() {
   const lista = document.getElementById('listaIncidencias');
   const selectEmp = document.getElementById('incidenciaEmpleado');
@@ -1815,7 +1914,7 @@ async function imprimirIncidencia(id) {
   const dur = calcularDuracionPermiso(i, emp);
   const formato = document.getElementById('formatoImpresion');
   formato.innerHTML = `
-    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Permiso / Incidencia</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${i.id}</div></div></div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Permiso / Incidencia</div><div class="subtitulo-header">${nombreTitular()}</div><div class="folio-header">Folio: #${i.id}</div></div></div>
     <div class="titulo-central">FORMATO DE PERMISO</div>
     <table>
       <tr><td>Empleado</td><td>${i.empleado_nombre || ''}</td></tr>
@@ -1828,11 +1927,14 @@ async function imprimirIncidencia(id) {
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${i.empleado_nombre || ''}</div><div class="linea"></div><div class="firma-cargo">Empleado</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
-      <div class="firma-item"><div class="firma-nombre">${nombreResponsableMantenimiento}</div><div class="linea"></div><div class="firma-cargo">Mantenimiento</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
+      <div class="firma-item"><div class="firma-nombre">${nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">Mantenimiento</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
     </div>`;
   window.print();
 }
 
+// ============================================================
+// COMPRAS
+// ============================================================
 async function cargarCompras() {
   const lista = document.getElementById('listaCompras');
   lista.innerHTML = 'Cargando...';
@@ -1847,7 +1949,7 @@ async function cargarCompras() {
     if (fSol) filtradas = filtradas.filter(c => (c.solicitado_por || '').toLowerCase().includes(fSol));
     if (fFecha) filtradas = filtradas.filter(c => c.fecha === fFecha);
     if (filtradas.length === 0) { lista.innerHTML = '<p class="text-gray-500">Sin compras con esos filtros.</p>'; return; }
-    
+
     lista.innerHTML = filtradas.map(c => `
       <div class="border rounded p-4 bg-white shadow-sm">
         <div class="font-bold">Compra ${c.folio || 'SC-' + c.id} - ${c.proveedor_nombre || 'Sin proveedor'}</div>
@@ -1914,7 +2016,7 @@ async function imprimirCompra(id) {
   const c = compras.find(x => x.id === id);
   if (!c) return;
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: ${c.folio || 'SC-' + c.id}</div></div></div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Compra</div><div class="subtitulo-header">${nombreTitular()}</div><div class="folio-header">Folio: ${c.folio || 'SC-' + c.id}</div></div></div>
     <table>
       <tr><td>Proveedor</td><td>${c.proveedor_nombre || ''}</td></tr>
       <tr><td>Fecha</td><td>${c.fecha}</td></tr>
@@ -1926,6 +2028,9 @@ async function imprimirCompra(id) {
   window.print();
 }
 
+// ============================================================
+// SECCIONES
+// ============================================================
 async function cargarSecciones() {
   try {
     const secciones = await apiRequest('/api/secciones');
@@ -1955,6 +2060,9 @@ async function eliminarSeccion(id) {
   try { await apiRequest(`/api/secciones/${id}`, 'DELETE'); cargarListaSecciones(); cargarSecciones(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// PROVEEDORES
+// ============================================================
 async function cargarListaProveedores() {
   const lista = document.getElementById('listaProveedores');
   lista.innerHTML = 'Cargando...';
@@ -1976,17 +2084,19 @@ async function eliminarProveedor(id) {
   try { await apiRequest(`/api/proveedores/${id}`, 'DELETE'); cargarListaProveedores(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// IMPRIMIR SOLICITUD (usa nombre real del titular si es maestra)
+// ============================================================
 async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
   if (!s) return;
 
-  // Detecta si el autorizador es de proyectos
   const usuarioAutorizador = Object.values(usuarios).find(u => u.nombre === s.autorizadoPor);
   const esDeProyectos = usuarioAutorizador && (usuarioAutorizador.rol === 'proyectos' || (usuarioAutorizador.permisos && usuarioAutorizador.permisos.includes('proyectos')));
   const leyendaAutorizo = esDeProyectos ? 'Autorizó (Proyectos)' : 'Autorizó';
 
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Folio: #${s.id}</div></div></div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div><div class="subtitulo-header">${nombreTitular()}</div><div class="folio-header">Folio: #${s.id}</div></div></div>
     <table>
       <tr><td>Sección / Área</td><td>${s.area}</td></tr>
       <tr><td>Solicitante</td><td>${s.solicitante}</td></tr>
@@ -2005,12 +2115,15 @@ async function imprimirSolicitud(id) {
   window.print();
 }
 
+// ============================================================
+// IMPRIMIR ORDEN DE TRABAJO (usa nombre real del titular)
+// ============================================================
 async function imprimirOrdenTrabajo(id) {
   const ordenes = await apiRequest('/api/ordenes');
   const o = ordenes.find(x => x.id === id);
   if (!o) return;
   document.getElementById('formatoImpresion').innerHTML = `
-    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Trabajo</div><div class="subtitulo-header">${nombreResponsableMantenimiento}</div><div class="folio-header">Orden #${o.id} - Solicitud #${o.solicitud_id}</div></div></div>
+    <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Orden de Trabajo</div><div class="subtitulo-header">${nombreTitular()}</div><div class="folio-header">Orden #${o.id} - Solicitud #${o.solicitud_id}</div></div></div>
     <table>
       <tr><td>Asignado a</td><td>${o.empleado_nombre || '—'}</td></tr>
       <tr><td>Descripción</td><td>${o.descripcion || ''}</td></tr>
