@@ -1012,10 +1012,19 @@ function cargarBandejaProyectos() {
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
 
+  // ✅ NUEVA LÓGICA: Supervisores con permiso de proyectos SOLO ven lo que ELLOS autorizaron
   if (!esCuentaMaestra()) {
     proyectos = proyectos.filter(s => {
+      // Excluir solicitudes del administrador
       const creadorInfo = Object.values(usuarios).find(u => u.nombre === s.solicitante);
       if (creadorInfo && creadorInfo.rol === 'admin' && !creadorInfo.esMaestra) return false;
+      
+      // Si la solicitud está autorizada, SOLO mostrar si la autorizó el usuario activo
+      if (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO') {
+        return s.autorizadoPor === usuarioActivo.nombre;
+      }
+      
+      // Pendientes/rechazadas/desbloqueadas: mostrarlas normalmente
       return true;
     });
   }
