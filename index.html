@@ -507,11 +507,15 @@ let incidenciasCache = [];
 let empleadosCache = [];
 
 // ============================================================
-// HELPER: nombre real del titular cuando es cuenta maestra
+// HELPERS: nombre y cargo del titular
 // ============================================================
 function nombreTitular() {
   if (usuarioActivo && usuarioActivo.esMaestra) return usuarioActivo.nombre;
   return nombreResponsableMantenimiento;
+}
+
+function cargoResponsableMantenimiento() {
+  return 'Responsable de Mantenimiento';
 }
 
 function esCuentaMaestra() {
@@ -994,7 +998,7 @@ function limpiarFiltrosMis() {
 }
 
 // ============================================================
-// BANDEJA PROYECTOS (solo por permisos)
+// BANDEJA PROYECTOS
 // ============================================================
 function cargarBandejaProyectos() {
   const lista = document.getElementById('listaProyectos');
@@ -1008,7 +1012,6 @@ function cargarBandejaProyectos() {
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
 
-  // Supervisores (no maestros): ocultan solicitudes creadas por otros admins no-maestros.
   if (!esCuentaMaestra()) {
     proyectos = proyectos.filter(s => {
       const creadorInfo = Object.values(usuarios).find(u => u.nombre === s.solicitante);
@@ -1200,7 +1203,7 @@ function cancelarEdicionSol() {
 }
 
 // ============================================================
-// COORDINACIÓN (solo por permisos)
+// COORDINACIÓN
 // ============================================================
 function filtrarSolicitudesCoordinacion() {
   const fSolicitante = document.getElementById('filtroSolicitante').value.toLowerCase().trim();
@@ -1290,7 +1293,7 @@ function limpiarFiltros() {
 }
 
 // ============================================================
-// OBSERVACIONES (solo por permisos)
+// OBSERVACIONES
 // ============================================================
 async function agregarObservacion(id) {
   const p = usuarioActivo.permisos || [];
@@ -1335,8 +1338,7 @@ function enviarWhatsApp(id) {
 }
 
 // ============================================================
-// USUARIOS — la maestra se puede editar (nombre/rol/permisos),
-// pero no renombrar ni borrar
+// USUARIOS
 // ============================================================
 async function agregarUsuario() {
   const user = document.getElementById('nuevoUsuario').value.trim();
@@ -1757,7 +1759,7 @@ async function guardarCapturaOrden() {
   const recibidoPor = document.getElementById('capturaRecibidoPor').value.trim();
   if (!fecha || !horaInicio || !horaFin || !recibidoPor) { alert('⚠️ Llena todos los campos.'); return; }
   try {
-    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: nombreTitular() });
+    await apiRequest(`/api/ordenes/${ordenId}`, 'PUT', { fechaAtencion: fecha, horaInicio, horaFin, recibidoPor, solicitud_id: solicitudId, concluidoPor: usuarioActivo.nombre });
     alert('✅ Concluida');
     cerrarModalCaptura();
     cargarOrdenes();
@@ -1884,6 +1886,9 @@ async function eliminarIncidencia(id) {
   try { await apiRequest(`/api/incidencias/${id}`, 'DELETE'); cargarIncidencias(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// IMPRIMIR INCIDENCIA (parcheado)
+// ============================================================
 async function imprimirIncidencia(id) {
   const i = incidenciasCache.find(x => x.id === id);
   if (!i) return;
@@ -1904,7 +1909,7 @@ async function imprimirIncidencia(id) {
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${i.empleado_nombre || ''}</div><div class="linea"></div><div class="firma-cargo">Empleado</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
-      <div class="firma-item"><div class="firma-nombre">${nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">Mantenimiento</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
+      <div class="firma-item"><div class="firma-nombre">${nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">${cargoResponsableMantenimiento()}</div><div class="firma-fecha">Fecha: ${new Date().toLocaleDateString('es-MX')}</div></div>
     </div>`;
   window.print();
 }
@@ -1988,6 +1993,9 @@ async function eliminarCompra(id) {
   try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// IMPRIMIR COMPRA (parcheado)
+// ============================================================
 async function imprimirCompra(id) {
   const compras = await apiRequest('/api/compras');
   const c = compras.find(x => x.id === id);
@@ -2001,7 +2009,10 @@ async function imprimirCompra(id) {
       <tr><td>Artículos</td><td>${(c.articulos || []).map(a => `${a.cantidad}x ${a.articulo}`).join('<br>')}</td></tr>
       <tr><td>Observaciones</td><td>${c.observaciones || '—'}</td></tr>
     </table>
-    <div class="firmas"><div class="firma-item"><div class="linea"></div><div class="firma-cargo">Solicitó</div></div><div class="firma-item"><div class="linea"></div><div class="firma-cargo">Autorizó</div></div></div>`;
+    <div class="firmas">
+      <div class="firma-item"><div class="firma-nombre">${c.solicitado_por || ''}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
+      <div class="firma-item"><div class="firma-nombre">${nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">Autorizó</div></div>
+    </div>`;
   window.print();
 }
 
@@ -2062,7 +2073,7 @@ async function eliminarProveedor(id) {
 }
 
 // ============================================================
-// IMPRIMIR SOLICITUD
+// IMPRIMIR SOLICITUD (parcheado)
 // ============================================================
 async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
@@ -2082,18 +2093,18 @@ async function imprimirSolicitud(id) {
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
       <tr><td>${leyendaAutorizo}</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
-      <tr><td>Coordinador (Mantenimiento)</td><td><b>${s.concluidoPor || '—'}</b></td></tr>
+      <tr><td>Responsable (Mantenimiento)</td><td><b>${s.concluidoPor || '—'}</b></td></tr>
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
       <div class="firma-item"><div class="firma-nombre">${s.autorizadoPor || ''}</div><div class="linea"></div><div class="firma-cargo">${leyendaAutorizo}</div></div>
-      <div class="firma-item"><div class="firma-nombre">${s.concluidoPor || ''}</div><div class="linea"></div><div class="firma-cargo">Coordinador (Mantenimiento)</div></div>
+      <div class="firma-item"><div class="firma-nombre">${s.concluidoPor || nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">${cargoResponsableMantenimiento()}</div></div>
     </div>`;
   window.print();
 }
 
 // ============================================================
-// IMPRIMIR ORDEN DE TRABAJO
+// IMPRIMIR ORDEN DE TRABAJO (parcheado)
 // ============================================================
 async function imprimirOrdenTrabajo(id) {
   const ordenes = await apiRequest('/api/ordenes');
@@ -2113,8 +2124,8 @@ async function imprimirOrdenTrabajo(id) {
       <tr><td>Recibido por</td><td>${o.recibidoPor || '_______________________________'}</td></tr>
     </table>
     <div class="firmas" style="margin-top: 80px;">
-      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Firma del Técnico (Mantenimiento)</div><div class="firma-nombre">${o.empleado_nombre || ''}</div></div>
-      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Firma de quien recibe el trabajo</div><div class="firma-nombre">${o.recibidoPor || 'Nombre y Firma'}</div></div>
+      <div class="firma-item"><div class="firma-nombre">${o.empleado_nombre || ''}</div><div class="linea"></div><div class="firma-cargo">Técnico de Mantenimiento</div></div>
+      <div class="firma-item"><div class="firma-nombre">${o.recibidoPor || nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">Recibió</div></div>
     </div>
     <div class="pie-pagina"><span>Sistema de Mantenimiento</span><span>Generado: ${new Date().toLocaleString('es-MX')}</span></div>`;
   window.print();
