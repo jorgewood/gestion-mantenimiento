@@ -846,7 +846,6 @@ function mostrarSeccion(id, subpanel = 'solicitudes') {
     document.getElementById('adminConfiguracion').classList.add('hidden');
     if (subpanel === 'solicitudes') {
       document.getElementById('adminSolicitudes').classList.remove('hidden');
-      // Respeta el tab activo (si venías en Eventos, sigues en Eventos)
       cambiarTabCoord(tabCoordActiva);
     }
     else if (subpanel === 'usuarios') { document.getElementById('adminUsuarios').classList.remove('hidden'); cargarListaUsuarios(); }
@@ -1221,9 +1220,6 @@ function filtrarSolicitudesCoordinacion() {
   if (fFecha) filtradas = filtradas.filter(s => s.fechaSolicitud === fFecha || s.fechaEvento === fFecha);
   if (fEstado) filtradas = filtradas.filter(s => s.estado === fEstado);
 
-  // ============ ORDENAMIENTO ============
-  // Servicios: por fecha_creacion (más reciente arriba)
-  // Eventos:   por fecha_evento (más cercano arriba)
   filtradas.sort((a, b) => {
     if (tabCoordActiva === 'evento') {
       const fa = a.fechaEvento ? new Date(a.fechaEvento).getTime() : Infinity;
@@ -1999,6 +1995,9 @@ async function eliminarCompra(id) {
   try { await apiRequest(`/api/compras/${id}`, 'DELETE'); cargarCompras(); } catch (e) { alert('❌ Error: ' + e.message); }
 }
 
+// ============================================================
+// IMPRIMIR COMPRA — solo líneas + textos "Solicitó" / "Autorizó"
+// ============================================================
 async function imprimirCompra(id) {
   const compras = await apiRequest('/api/compras');
   const c = compras.find(x => x.id === id);
@@ -2013,8 +2012,8 @@ async function imprimirCompra(id) {
       <tr><td>Observaciones</td><td>${c.observaciones || '—'}</td></tr>
     </table>
     <div class="firmas">
-      <div class="firma-item"><div class="firma-nombre">${c.solicitado_por || ''}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
-      <div class="firma-item"><div class="firma-nombre">${nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">Autorizó</div></div>
+      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
+      <div class="firma-item"><div class="linea"></div><div class="firma-cargo">Autorizó</div></div>
     </div>`;
   window.print();
 }
@@ -2076,7 +2075,7 @@ async function eliminarProveedor(id) {
 }
 
 // ============================================================
-// IMPRIMIR SOLICITUD
+// IMPRIMIR SOLICITUD — responsable solo si ya está concluida
 // ============================================================
 async function imprimirSolicitud(id) {
   const s = solicitudes.find(x => x.id === id);
@@ -2085,6 +2084,18 @@ async function imprimirSolicitud(id) {
   const usuarioAutorizador = Object.values(usuarios).find(u => u.nombre === s.autorizadoPor);
   const esDeProyectos = usuarioAutorizador && (usuarioAutorizador.rol === 'proyectos' || (usuarioAutorizador.permisos && usuarioAutorizador.permisos.includes('proyectos')));
   const leyendaAutorizo = esDeProyectos ? 'Autorizó (Proyectos)' : 'Autorizó';
+
+  // 🔑 Solo mostrar responsable si la solicitud YA fue concluida
+  const estaConcluida = (s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO');
+  const nombreResponsable = estaConcluida ? (s.concluidoPor || nombreTitular()) : '';
+
+  const filaResponsable = estaConcluida
+    ? `<tr><td>Responsable (Mantenimiento)</td><td><b>${nombreResponsable}</b></td></tr>`
+    : '';
+
+  const firmaResponsable = estaConcluida
+    ? `<div class="firma-item"><div class="firma-nombre">${nombreResponsable}</div><div class="linea"></div><div class="firma-cargo">${cargoResponsableMantenimiento()}</div></div>`
+    : '';
 
   document.getElementById('formatoImpresion').innerHTML = `
     <div class="header-impresion">${logoDataURL ? `<img src="${logoDataURL}" class="logo-impresion">` : ''}<div><div class="titulo-principal">Solicitud de ${s.tipo === 'servicio' ? 'Servicio' : 'Evento'}</div><div class="subtitulo-header">${nombreTitular()}</div><div class="folio-header">Folio: #${s.id}</div></div></div>
@@ -2096,12 +2107,12 @@ async function imprimirSolicitud(id) {
       <tr><td>Descripción</td><td>${s.descripcion}</td></tr>
       <tr><td>Estado</td><td>${s.estado}</td></tr>
       <tr><td>${leyendaAutorizo}</td><td><b>${s.autorizadoPor || '—'}</b></td></tr>
-      <tr><td>Responsable (Mantenimiento)</td><td><b>${s.concluidoPor || '—'}</b></td></tr>
+      ${filaResponsable}
     </table>
     <div class="firmas">
       <div class="firma-item"><div class="firma-nombre">${s.solicitante}</div><div class="linea"></div><div class="firma-cargo">Solicitó</div></div>
       <div class="firma-item"><div class="firma-nombre">${s.autorizadoPor || ''}</div><div class="linea"></div><div class="firma-cargo">${leyendaAutorizo}</div></div>
-      <div class="firma-item"><div class="firma-nombre">${s.concluidoPor || nombreTitular()}</div><div class="linea"></div><div class="firma-cargo">${cargoResponsableMantenimiento()}</div></div>
+      ${firmaResponsable}
     </div>`;
   window.print();
 }
