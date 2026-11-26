@@ -1012,11 +1012,16 @@ function cargarBandejaProyectos() {
   const mostrarConcluidas = document.getElementById('toggleConcluidasProyectos').checked;
   let proyectos = solicitudes.filter(s => s.tipo === tabProyActiva);
 
+  // ============ CAMBIO 1: solo solicitudes creadas por OPERADORES ============
+  // La cuenta maestra ve TODO. Los supervisores (rol 'proyectos') solo ven
+  // solicitudes de operadores (rol 'seccion'). Admin y otros supervisores se ocultan.
   if (!esCuentaMaestra()) {
     proyectos = proyectos.filter(s => {
       const creadorInfo = Object.values(usuarios).find(u => u.nombre === s.solicitante);
-      if (creadorInfo && creadorInfo.rol === 'admin' && !creadorInfo.esMaestra) return false;
-      return true;
+      // Si NO se encuentra al creador en la lista de usuarios, lo mostramos por seguridad
+      if (!creadorInfo) return true;
+      // Solo mostrar solicitudes de operadores (rol 'seccion')
+      return creadorInfo.rol === 'seccion';
     });
   }
 
@@ -1053,6 +1058,11 @@ function cargarBandejaProyectos() {
       botones += `<button onclick="agregarObservacion(${s.id})" class="btn-observacion">📝 Observación</button>`;
     }
     botones += `<button onclick="imprimirSolicitud(${s.id})" class="bg-gray-200 px-3 py-1 rounded">🖨️ Imprimir</button>`;
+
+    // ============ CAMBIO 2: botón WhatsApp ============
+    if (numeroWhatsAppDestino && (s.estado === 'APROBADA' || s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO')) {
+      botones += `<button onclick="enviarWhatsApp(${s.id})" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
+    }
 
     lista.innerHTML += `
       <div class="border rounded-lg p-4 ${colorFila} shadow-sm">
@@ -1495,7 +1505,7 @@ async function exportarExcelAnalisis() {
       { Métrica: 'En evaluación', Valor: sols.filter(s => s.estado === 'PENDIENTE_PROYECTOS').length },
       { Métrica: 'Concluidas (Orden)', Valor: sols.filter(s => s.estado === 'CONCLUIDO').length }, { Métrica: 'Concluidas (Directo)', Valor: sols.filter(s => s.estado === 'CONCLUIDO_DIRECTO').length },
       { Métrica: 'Rechazadas', Valor: sols.filter(s => s.estado === 'RECHAZADA').length }, { Métrica: 'Desbloqueadas', Valor: sols.filter(s => s.estado === 'DESBLOQUEADA').length },
-      { Métrica: 'Órdenes de Trabajo', Valor: ordenes.length }, { Métrica: 'Órdenes de Compra', Valor: compras.length }, { Métrica: 'Incidencias / Permisos', Valor: incidencias.length },
+      { Métrica: 'Órdenes de Trabajo', Valor: ordenes.length }, { Métrica: 'Órdenes de Compra', valor: compras.length }, { Métrica: 'Incidencias / Permisos', Valor: incidencias.length },
     ];
     const hojaSols = sols.map(s => ({
       Folio: s.id, Tipo: s.tipo, Area: s.area, Solicitante: s.solicitante, Fecha_Solicitud: s.fechaSolicitud, Fecha_Evento: s.fechaEvento || '', Nombre_Evento: s.nombreEvento || '', Lugar_Evento: s.lugarEvento || '', Descripcion: s.descripcion, Estado: s.estado, Autorizado_Por: s.autorizadoPor || '', Fecha_Autorizacion: s.fechaAutorizacion || '', Concluido_Por: s.concluidoPor || '', Fecha_Conclusion: s.fechaConclusion || '', Fecha_Creacion: s.fecha_creacion || '', Num_Observaciones: (s.observaciones || []).length
@@ -2085,7 +2095,6 @@ async function imprimirSolicitud(id) {
   const esDeProyectos = usuarioAutorizador && (usuarioAutorizador.rol === 'proyectos' || (usuarioAutorizador.permisos && usuarioAutorizador.permisos.includes('proyectos')));
   const leyendaAutorizo = esDeProyectos ? 'Autorizó (Proyectos)' : 'Autorizó';
 
-  // 🔑 Solo mostrar responsable si la solicitud YA fue concluida
   const estaConcluida = (s.estado === 'CONCLUIDO' || s.estado === 'CONCLUIDO_DIRECTO');
   const nombreResponsable = estaConcluida ? (s.concluidoPor || nombreTitular()) : '';
 
